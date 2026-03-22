@@ -68,7 +68,7 @@ class _LifeScreenState extends State<LifeScreen> {
       widget.character.age = 90;
       widget.character.money += 450230;
       widget.character.connections += 7;
-      
+
       if (widget.character.lifeLog.isEmpty) {
         widget.character.lifeLog.addAll([
           'Age 80: Peacefully retired — Enjoying the golden years.',
@@ -98,7 +98,9 @@ class _LifeScreenState extends State<LifeScreen> {
       barrierDismissible: false,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           backgroundColor: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -109,7 +111,10 @@ class _LifeScreenState extends State<LifeScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFB39DDB).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
@@ -205,7 +210,11 @@ class _LifeScreenState extends State<LifeScreen> {
                       // Recent Journey Title
                       Row(
                         children: const [
-                          Icon(Icons.history, color: Color(0x99B39DDB), size: 20),
+                          Icon(
+                            Icons.history,
+                            color: Color(0x99B39DDB),
+                            size: 20,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             'Recent Journey',
@@ -218,9 +227,7 @@ class _LifeScreenState extends State<LifeScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Expanded(
-                        child: _buildLogList(c),
-                      ),
+                      Expanded(child: _buildLogList(c)),
                       const SizedBox(height: 100), // Space for bottom nav
                     ],
                   ),
@@ -230,66 +237,9 @@ class _LifeScreenState extends State<LifeScreen> {
           ),
 
           // Custom Bottom Navigation
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildBottomNav(),
-          ),
+          Align(alignment: Alignment.bottomCenter, child: _buildBottomNav()),
 
-          // Central FAB (Moved here so taps aren't clipped by the bottom nav bounds)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 60),
-              child: GestureDetector(
-                onTap: _ageUp,
-                child: Container(
-                  width: 76,
-                  height: 76,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFB2DFDB).withOpacity(0.5),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      )
-                    ],
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFB2DFDB), Color(0xFF90CAF9)],
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.add, color: Colors.white, size: 32),
-                          Text(
-                            'AGE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2,
-                              height: 0.8,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );
@@ -363,18 +313,34 @@ class _LifeScreenState extends State<LifeScreen> {
               GestureDetector(
                 onTap: _simLife,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF9800).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFF9800).withOpacity(0.2)),
+                    border: Border.all(
+                      color: const Color(0xFFFF9800).withOpacity(0.2),
+                    ),
                   ),
                   child: Row(
                     children: const [
-                      Icon(Icons.fast_forward, color: Color(0xFFFF9800), size: 16),
+                      Icon(
+                        Icons.fast_forward,
+                        color: Color(0xFFFF9800),
+                        size: 16,
+                      ),
                       SizedBox(width: 4),
-                      Text('SIM LIFE', style: TextStyle(color: Color(0xFFFF9800), fontSize: 10, fontWeight: FontWeight.bold)),
+                      Text(
+                        'SIM LIFE',
+                        style: TextStyle(
+                          color: Color(0xFFFF9800),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -387,7 +353,11 @@ class _LifeScreenState extends State<LifeScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0x1AB39DDB)),
                 ),
-                child: const Icon(Icons.settings, color: Color(0xFFB39DDB), size: 20),
+                child: const Icon(
+                  Icons.settings,
+                  color: Color(0xFFB39DDB),
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -494,14 +464,49 @@ class _LifeScreenState extends State<LifeScreen> {
             crossAxisSpacing: 24,
             mainAxisSpacing: 14,
             children: [
-              _buildStatBar('Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFFFF9C4)),
-              _buildStatBar('Health', Icons.favorite, c.health, const Color(0xFFF8BBD0)),
-              _buildStatBar('Smarts', Icons.psychology, c.smarts, const Color(0xFFB2DFDB)),
+              _buildStatBar(
+                'Happiness',
+                Icons.sentiment_satisfied,
+                c.happiness,
+                const Color(0xFFFFF9C4),
+              ),
+              _buildStatBar(
+                'Health',
+                Icons.favorite,
+                c.health,
+                const Color(0xFFF8BBD0),
+              ),
+              _buildStatBar(
+                'Smarts',
+                Icons.psychology,
+                c.smarts,
+                const Color(0xFFB2DFDB),
+              ),
               _buildStatBar('Looks', Icons.face, c.looks, Colors.white),
-              _buildStatBar('Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF)),
-              _buildStatBar('Connect', Icons.hub, c.connections, const Color(0xFF009688)),
-              _buildStatBar('Streets', Icons.directions_run, c.streetSense, const Color(0xFFFF9800)),
-              _buildStatBar('Discipline', Icons.timer, c.discipline, const Color(0xFF3F51B5)),
+              _buildStatBar(
+                'Reputation',
+                Icons.star,
+                c.reputation,
+                const Color(0xFF7C4DFF),
+              ),
+              _buildStatBar(
+                'Connect',
+                Icons.hub,
+                c.connections,
+                const Color(0xFF009688),
+              ),
+              _buildStatBar(
+                'Streets',
+                Icons.directions_run,
+                c.streetSense,
+                const Color(0xFFFF9800),
+              ),
+              _buildStatBar(
+                'Discipline',
+                Icons.timer,
+                c.discipline,
+                const Color(0xFF3F51B5),
+              ),
             ],
           ),
         ],
@@ -696,17 +701,28 @@ class _LifeScreenState extends State<LifeScreen> {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: index == 0 ? const Color(0xFFB39DDB) : const Color(0xFFF0F0F7),
+                        color: index == 0
+                            ? const Color(0xFFB39DDB)
+                            : const Color(0xFFF0F0F7),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: index == 0
-                            ? [BoxShadow(color: const Color(0xFFB39DDB).withOpacity(0.4), blurRadius: 8)]
+                            ? [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFB39DDB,
+                                  ).withOpacity(0.4),
+                                  blurRadius: 8,
+                                ),
+                              ]
                             : [],
                       ),
                       child: Center(
                         child: Text(
                           ageStr,
                           style: TextStyle(
-                            color: index == 0 ? Colors.white : const Color(0xFF9E9E9E),
+                            color: index == 0
+                                ? Colors.white
+                                : const Color(0xFF9E9E9E),
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
                           ),
@@ -742,7 +758,11 @@ class _LifeScreenState extends State<LifeScreen> {
                               letterSpacing: 1.5,
                             ),
                           ),
-                          const Icon(Icons.schedule, size: 16, color: Color(0xFFE0E0E0)),
+                          const Icon(
+                            Icons.schedule,
+                            size: 16,
+                            color: Color(0xFFE0E0E0),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -786,69 +806,72 @@ class _LifeScreenState extends State<LifeScreen> {
         alignment: Alignment.center,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.group, 'Social'),
-              _buildNavItem(Icons.work, 'Job'),
-              const SizedBox(width: 60), // Space for center FAB
-              _buildNavItem(Icons.school, 'School'),
-              _buildDoingItem(),
+              Expanded(child: _buildNavItem(Icons.group, 'Social')),
+              Expanded(child: _buildNavItem(Icons.work, 'Job')),
+              Expanded(
+                child: GestureDetector(
+                  onTap: _ageUp,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFB2DFDB), Color(0xFF90CAF9)],
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFB2DFDB).withOpacity(0.4),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.add, color: Colors.white, size: 28),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'AGE',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFFB2DFDB),
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(child: _buildNavItem(Icons.school, 'School')),
+              Expanded(child: _buildNavItem(Icons.explore, 'Doing')),
             ],
           ),
-
         ],
       ),
     );
   }
 
   Widget _buildNavItem(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: const Color(0xFFBDBDBD), size: 28),
-        const SizedBox(height: 6),
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-            color: Color(0xFFBDBDBD),
-            letterSpacing: 1,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDoingItem() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFB39DDB), Color(0xFFD1C4E9)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.4),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.explore, color: Colors.white, size: 20),
-          SizedBox(height: 2),
+        children: [
+          Icon(icon, color: const Color(0xFFBDBDBD), size: 28),
+          const SizedBox(height: 6),
           Text(
-            'DOING',
-            style: TextStyle(
+            label.toUpperCase(),
+            style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: Colors.white,
+              color: Color(0xFFBDBDBD),
               letterSpacing: 1,
             ),
           ),
@@ -856,4 +879,5 @@ class _LifeScreenState extends State<LifeScreen> {
       ),
     );
   }
+
 }
