@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/character.dart';
 import 'life_screen.dart';
@@ -6,8 +7,7 @@ class CharacterCreationScreen extends StatefulWidget {
   const CharacterCreationScreen({super.key});
 
   @override
-  State<CharacterCreationScreen> createState() =>
-      _CharacterCreationScreenState();
+  State<CharacterCreationScreen> createState() => _CharacterCreationScreenState();
 }
 
 class _CharacterCreationScreenState extends State<CharacterCreationScreen>
@@ -21,9 +21,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
   void initState() {
     super.initState();
     _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
+        vsync: this, duration: const Duration(milliseconds: 900));
     _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
   }
@@ -40,12 +38,10 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Enter your name first'),
-          backgroundColor: Colors.red.shade800,
+          content: const Text('Enter your name first', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
       return;
@@ -65,191 +61,280 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D1A),
+      backgroundColor: const Color(0xFFFAF9FE),
       body: Stack(
         children: [
-          // Background decoration
+          // Animated Background Elements
           Positioned(
-            top: -60,
-            right: -60,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFFFD700).withOpacity(0.05),
-              ),
-            ),
+            top: MediaQuery.of(context).size.height * 0.20,
+            left: -100,
+            child: _buildBlurredCircle(const Color(0x330058BC)),
           ),
           Positioned(
-            bottom: -80,
-            left: -40,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF006B3C).withOpacity(0.08),
-              ),
-            ),
+            bottom: MediaQuery.of(context).size.height * 0.20,
+            right: -100,
+            child: _buildBlurredCircle(const Color(0x338A2BB9)),
           ),
 
-          // Main content
           SafeArea(
             child: FadeTransition(
               opacity: _fadeIn,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Column(
-                  children: [
-                    const Spacer(),
-
-                    // Logo area
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFFFD700).withOpacity(0.1),
-                        border: Border.all(
-                          color: const Color(0xFFFFD700).withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: const Center(
-                        child: Text('🇬🇭', style: TextStyle(fontSize: 42)),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'GHANA LIFE',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFFFFD700),
-                        letterSpacing: 4,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Every choice shapes your destiny',
-                      style: TextStyle(
-                        color: Colors.white38,
-                        fontSize: 13,
-                        letterSpacing: 1,
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    // Name field
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'YOUR NAME',
-                          style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 11,
-                            letterSpacing: 2,
-                            fontWeight: FontWeight.bold,
+                        ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: [Colors.blue.shade700!, Colors.blue.shade500!],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ).createShader(bounds),
+                          child: const Text(
+                            'GHANA LIFE',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _nameController,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE3E2E7),
+                            shape: BoxShape.circle,
                           ),
-                          decoration: InputDecoration(
-                            hintText: 'Enter your name',
-                            hintStyle: const TextStyle(color: Colors.white24),
-                            filled: true,
-                            fillColor: const Color(0xFF12122A),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
+                          child: const Icon(Icons.help_outline, color: Color(0xFF414755)),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 120),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Title Block
+                          const Text(
+                            'Begin Your Story',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 40,
+                              height: 1.1,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF1A1B1F),
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Create your unique identity',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xFF414755),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFFFD700),
-                                width: 1.5,
+                          ),
+                          const SizedBox(height: 40),
+
+                          const Padding(
+                            padding: EdgeInsets.only(left: 16),
+                            child: Text(
+                              "What's your name?",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF1A1B1F),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Gender selection
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'GENDER',
-                          style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 11,
-                            letterSpacing: 2,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(height: 12),
+                          // Name Input
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0x33C1C6D7)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.02),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                )
+                              ],
+                            ),
+                            child: TextField(
+                              controller: _nameController,
+                              cursorColor: const Color(0xFF1A1B1F),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1A1B1F),
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'Enter name...',
+                                hintStyle: TextStyle(color: Colors.black38, fontWeight: FontWeight.w400),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(20),
+                                suffixIcon: Icon(Icons.edit, color: Color(0xFF0070EB)),
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(child: _genderCard('Male', '👦')),
-                            const SizedBox(width: 12),
-                            Expanded(child: _genderCard('Female', '👧')),
-                          ],
-                        ),
-                      ],
-                    ),
+                          const SizedBox(height: 32),
 
-                    const SizedBox(height: 32),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 16),
+                            child: Text(
+                              "Choose your essence",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF1A1B1F),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Gender Selection Grid
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildGenderCard(
+                                  'Male',
+                                  Icons.person,
+                                  Colors.blue.shade50!,
+                                  Colors.blue.shade500!,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildGenderCard(
+                                  'Female',
+                                  Icons.person_3,
+                                  Colors.purple.shade50!,
+                                  Colors.purple.shade500!,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
 
-                    // Start button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _startGame,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFD700),
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                          // Attributes Preview
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF4F3F8),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                )
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFF6D9FF),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.psychology, color: Color(0xFF7201A2)),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'INITIAL STATS',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.5,
+                                          color: Color(0xFF414755),
+                                        ),
+                                      ),
+                                      Text(
+                                        'Randomizing Traits...',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1A1B1F),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.refresh, color: Color(0xFF0058BC)),
+                                ),
+                              ],
+                            ),
                           ),
-                          elevation: 8,
-                          shadowColor: const Color(0xFFFFD700).withOpacity(0.4),
-                        ),
-                        child: const Text(
-                          'BEGIN YOUR LIFE',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
-                    const Spacer(),
-
-                    const Text(
-                      'Made in Ghana 🇬🇭',
-                      style: TextStyle(color: Colors.white24, fontSize: 12),
+          // Bottom Action Container
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: InkWell(
+                onTap: _startGame,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [Colors.teal.shade500!, Colors.teal.shade700!],
                     ),
-                    const SizedBox(height: 16),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.teal.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        'Begin Your Life',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Icon(Icons.rocket_launch, color: Colors.white),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -259,36 +344,66 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
     );
   }
 
-  Widget _genderCard(String gender, String emoji) {
-    final selected = _selectedGender == gender;
+  Widget _buildBlurredCircle(Color color) {
+    return Container(
+      width: 256,
+      height: 256,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color,
+            blurRadius: 80,
+            spreadRadius: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGenderCard(String gender, IconData icon, Color bgColor, Color iconColor) {
+    bool isSelected = _selectedGender == gender;
     return GestureDetector(
       onTap: () => setState(() => _selectedGender = gender),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: selected
-              ? const Color(0xFFFFD700).withOpacity(0.12)
-              : const Color(0xFF12122A),
-          borderRadius: BorderRadius.circular(14),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? const Color(0xFFFFD700) : Colors.white12,
-            width: selected ? 1.5 : 1,
+            color: isSelected ? const Color(0xFF0058BC) : const Color(0x1AC1C6D7),
+            width: isSelected ? 2 : 1,
           ),
+          boxShadow: [
+            if (!isSelected)
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              )
+          ],
         ),
         child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 6),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+              child: Icon(icon, size: 36, color: iconColor),
+            ),
+            const SizedBox(height: 16),
             Text(
               gender,
-              style: TextStyle(
-                color: selected ? const Color(0xFFFFD700) : Colors.white38,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1B1F)),
             ),
+            if (isSelected) ...[
+              const SizedBox(height: 12),
+              const Icon(Icons.check_circle, color: Color(0xFF0058BC), size: 24),
+            ] else ...[
+              const SizedBox(height: 36), // 12 + 24 to match height
+            ]
           ],
         ),
       ),
