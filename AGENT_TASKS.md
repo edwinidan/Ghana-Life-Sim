@@ -155,7 +155,7 @@ The event library must reach a minimum of 300 events before the game feels repla
 - [x] DONE — Write 38 more Ghana-specific events covering: funeral attendance obligations, outdooring ceremonies, paying for a relative's school fees, chieftaincy family drama, election season pressure, ECG bill shock, potholes destroying your car, connections getting you a job, police checkpoint bribe decision, sending money home from abroad, jollof rice debate causing a fight, pastor prophesying about your future, getting 419-scammed, Accra flooding affecting your home, chop bar business, susu savings group
 
 ### 3.8 Rare and Wild Events (All Ages) — Target: 15 events
-- [ ] TODO — Write 15 rare events (very low trigger probability, surprising and memorable): winning the lottery, being approached for a movie role, viral social media moment, accidentally becoming a meme, long-lost wealthy relative appearing, surviving a serious accident, being offered a bribe by a government official, witnessing something you should not have
+- [x] DONE — Write 15 rare events (very low trigger probability, surprising and memorable): winning the lottery, being approached for a movie role, viral social media moment, accidentally becoming a meme, long-lost wealthy relative appearing, surviving a serious accident, being offered a bribe by a government official, witnessing something you should not have
 
 ---
 
@@ -371,8 +371,8 @@ Do not start this phase until Phase 7 is complete and the game loop is solid. Mo
 ## Phase 11 — Store Preparation and Launch
 
 ### 11.1 App Icon and Splash Screen
-- [ ] TODO — Design app icon (Ghana flag accents mixed with the new pastel light theme, soft gradients)
-- [ ] TODO — Generate all required icon sizes using `flutter_launcher_icons` package
+- [x] DONE — Design app icon (Ghana flag accents mixed with the new pastel light theme, soft gradients)
+- [x] DONE — Generate all required icon sizes using `flutter_launcher_icons` package
 - [ ] TODO — Create splash screen using `flutter_native_splash` package
 
 ### 11.2 Android Build
@@ -441,5 +441,5 @@ lib/
 
 ## What To Do Next
 
-The next incomplete task is Phase 3.8 — Rare and Wild Events.
-Start there. Work downward through Phase 3 in order.
+The next incomplete task is Phase 4 — Career Progression System.
+Start there. Work downward through Phase 4 in order.
