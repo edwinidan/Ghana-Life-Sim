@@ -350,9 +350,9 @@ lib/
 ```
 
 ### Save System
-- Local save only in v1 using shared_preferences or hive
-- Designed so cloud save can be added later without restructuring
-- No user accounts in v1
+- Local save using Hive database (`hive_flutter` and `hive_generator`).
+- Currently persists the entire `Character` model locally between sessions.
+- No user accounts or cloud saves in v1.
 
 ### Content Architecture
 - Events start close to code for prototyping
@@ -363,12 +363,16 @@ lib/
 ## 16. UI and Visual Design
 
 ### Design Direction
-- Dark theme throughout
-- Primary accent: Gold (#FFD700) — Ghanaian flag reference
-- Secondary accent: Green (#4CAF50) — Ghanaian flag reference
-- Background: Deep navy/dark (#0D0D1A, #12122A)
-- Clean, mobile-friendly layout with expressive event cards
-- Life stage color coding for visual progression feedback
+- Light theme throughout (Modern, clean, and airy)
+- Primary palette: Soft Pastels and Gradients
+  - Purples/Lilac: `#B39DDB`, `#D1C4E9`
+  - Blues/Teals: `#90CAF9`, `#B2DFDB`
+  - Pinks/Soft Reds: `#F8BBD0`
+  - Warning/Action: `#FF9800`, Emerald Teals
+- Backgrounds: Off-white/Surface colors (e.g., `#FAF9FE`, `#F5F5F5`)
+- Clean, mobile-friendly layout heavily utilizing soft rounded `Material` cards and `LinearGradient`s.
+- Strong emphasis on drop shadows (`blurRadius: 10` to `30`, `opacity: 0.1` to `0.4`) for depth.
+- Life stage color coding for visual progression feedback.
 
 ### Key Screens
 - **Character Creation** — Name input, gender selection, animated intro
@@ -472,8 +476,8 @@ These are explicitly out of scope for v1 but planned for future updates:
 | Outcome display | ✅ Complete |
 | Death screen | ✅ Complete |
 | Initial event library (~12 events) | ✅ Complete |
-| UI visual redesign (dark theme, gold accents, animations) | ✅ Complete |
-| Save system | 🔲 Not started |
+| UI visual redesign (light theme, pastel gradients, modern animations) | ✅ Complete |
+| Save system | ✅ Complete (Hive) |
 | Full event library (300+ events) | 🔲 Not started |
 | Career progression logic | 🔲 Not started |
 | Relationship system | 🔲 Not started |

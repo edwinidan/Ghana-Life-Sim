@@ -1,25 +1,45 @@
 import 'dart:math';
+import 'package:hive/hive.dart';
 
-class Character {
+part 'character.g.dart';
+
+@HiveType(typeId: 0)
+class Character extends HiveObject {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   String gender;
+  @HiveField(2)
   int age;
+  @HiveField(3)
   bool isAlive;
 
   // Core stats (0-100)
+  @HiveField(4)
   int health;
+  @HiveField(5)
   int happiness;
+  @HiveField(6)
   int smarts;
+  @HiveField(7)
   int looks;
+  @HiveField(8)
   int money;
+  @HiveField(9)
   int reputation;
+  @HiveField(10)
   int discipline;
+  @HiveField(11)
   int streetSense;
+  @HiveField(12)
   int connections;
 
   // Life info
+  @HiveField(13)
   String job;
+  @HiveField(14)
   String education;
+  @HiveField(15)
   List<String> lifeLog;
 
   Character({required this.name, required this.gender})

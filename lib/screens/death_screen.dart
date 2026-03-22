@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../models/character.dart';
 import 'character_creation_screen.dart';
+import '../services/save_service.dart';
 
 class DeathScreen extends StatelessWidget {
   final Character character;
@@ -437,11 +439,14 @@ class DeathScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const CharacterCreationScreen()),
-              );
+            onPressed: () async {
+              await SaveService.deleteSave();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CharacterCreationScreen()),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 18),

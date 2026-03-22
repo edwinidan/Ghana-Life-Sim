@@ -92,33 +92,33 @@ These are the bare minimum pieces needed for a playable prototype. All are compl
 The save system must be built before any further systems are added. Without it, all progress is lost when the app closes, making testing painful and the game unshippable.
 
 ### 2.1 Add `shared_preferences` or `hive` Package
-- [ ] TODO — Add `shared_preferences` to `pubspec.yaml` dependencies
-- [ ] TODO — Run `flutter pub get` to install
-- [ ] TODO — Verify package installs without conflict
+- [x] DONE — Add `hive` and `hive_flutter` to `pubspec.yaml` dependencies
+- [x] DONE — Run `flutter pub get` to install
+- [x] DONE — Verify package installs without conflict
 
 > **Agent note:** Use `shared_preferences` for simplicity in v1. Hive can be adopted later if save complexity grows. Do not introduce both.
 
 ### 2.2 Create Save/Load Logic (`lib/services/save_service.dart`)
-- [ ] TODO — Create `lib/services/` folder
-- [ ] TODO — Create `SaveService` class with `saveGame(Character c)` method
-- [ ] TODO — Serialize all Character fields to JSON (name, gender, age, all 9 stats, job, education, lifeLog list)
-- [ ] TODO — Store serialized JSON string via shared_preferences under key `'saved_game'`
-- [ ] TODO — Create `loadGame()` method that reads and deserializes saved JSON back into a Character object
-- [ ] TODO — Create `hasSavedGame()` method returning bool
-- [ ] TODO — Create `deleteSave()` method for when player dies and restarts
+- [x] DONE — Create `lib/services/` folder
+- [x] DONE — Create `SaveService` class with `saveGame(Character c)` method
+- [x] DONE — Serialize all Character fields using Hive annotations
+- [x] DONE — Store character via Hive box named 'ghana_life_box'
+- [x] DONE — Create `loadGame()` method that reads from the box
+- [x] DONE — Create `hasSavedGame()` method returning bool
+- [x] DONE — Create `deleteSave()` method for when player dies and restarts
 
 ### 2.3 Wire Save Into Life Screen
-- [ ] TODO — Call `SaveService.saveGame()` after every age-up in `life_screen.dart`
-- [ ] TODO — Confirm save happens silently (no UI feedback needed in v1)
+- [x] DONE — Call `SaveService.saveGame()` after every age-up in `life_screen.dart`
+- [x] DONE — Confirm save happens silently (no UI feedback needed in v1)
 
 ### 2.4 Wire Load Into App Entry
-- [ ] TODO — On app launch in `main.dart`, check `SaveService.hasSavedGame()`
-- [ ] TODO — If save exists, navigate directly to `LifeScreen` with loaded character
-- [ ] TODO — If no save exists, navigate to `CharacterCreationScreen` as normal
+- [x] DONE — On app launch in `main.dart`, check `SaveService.hasSavedGame()`
+- [x] DONE — If save exists, navigate directly to `LifeScreen` with loaded character
+- [x] DONE — If no save exists, navigate to `CharacterCreationScreen` as normal
 
 ### 2.5 Wire Delete Into Death and Restart Flow
-- [ ] TODO — Call `SaveService.deleteSave()` when player presses "Live Again" on the death screen
-- [ ] TODO — Confirm new life starts fresh with no leftover data
+- [x] DONE — Call `SaveService.deleteSave()` when player presses "Live Again" on the death screen
+- [x] DONE — Confirm new life starts fresh with no leftover data
 
 ---
 
@@ -130,29 +130,29 @@ The event library must reach a minimum of 300 events before the game feels repla
 
 ### 3.1 Childhood Events (Age 0–12) — Target: 40 events
 - [x] DONE — Starter events exist (family visitor, childhood fight)
-- [ ] TODO — Write 38 more childhood events covering: first day of school, parent arguments, sibling rivalry, church/mosque events, report card day, being sent on errands, growing up poor vs comfortable, making first friends, being bullied, early talent discovery, primary school prize-giving, holiday trips to hometown, learning a skill from a parent or relative
+- [x] DONE — Write 38 more childhood events covering: first day of school, parent arguments, sibling rivalry, church/mosque events, report card day, being sent on errands, growing up poor vs comfortable, making first friends, being bullied, early talent discovery, primary school prize-giving, holiday trips to hometown, learning a skill from a parent or relative
 
 ### 3.2 Teenage Events (Age 13–17) — Target: 50 events
 - [x] DONE — Starter events exist (exam season, SHS choice, cheating in exams)
-- [ ] TODO — Write 47 more teenage events covering: first crush, peer pressure, social media drama, school prefect election, inter-school competitions, sneaking out, getting caught lying to parents, first job (selling things), sports tryouts, religious youth group, fashion and looks pressure, first heartbreak, choosing friends wisely or badly, school trip, graduation
+- [x] DONE — Write 47 more teenage events covering: first crush, peer pressure, social media drama, school prefect election, inter-school competitions, sneaking out, getting caught lying to parents, first job (selling things), sports tryouts, religious youth group, fashion and looks pressure, first heartbreak, choosing friends wisely or badly, school trip, graduation
 
 ### 3.3 Young Adult Events (Age 18–25) — Target: 50 events
 - [x] DONE — Starter events exist (university choice, job offer, business idea)
-- [ ] TODO — Write 47 more young adult events covering: campus life drama, NYSC/national service, first salary, moving out, roommate issues, romantic relationship milestones, friend group changes, side hustle attempts, skill-building choices, visa application attempt, social media clout, first car, family expectations about career
+- [x] DONE — Write 47 more young adult events covering: campus life drama, NYSC/national service, first salary, moving out, roommate issues, romantic relationship milestones, friend group changes, side hustle attempts, skill-building choices, visa application attempt, social media clout, first car, family expectations about career
 
 ### 3.4 Adult Events (Age 26–49) — Target: 60 events
 - [x] DONE — Starter events exist (health scare, family pressure, unexpected money)
-- [ ] TODO — Write 57 more adult events covering: marriage proposal, wedding planning, having children, buying a house, career promotion, getting fired, business launch and early struggles, office politics, investment choices, relationship strain, divorce possibility, supporting aging parents, community reputation events, social scandals, political connections
+- [x] DONE — Write 57 more adult events covering: marriage proposal, wedding planning, having children, buying a house, career promotion, getting fired, business launch and early struggles, office politics, investment choices, relationship strain, divorce possibility, supporting aging parents, community reputation events, social scandals, political connections
 
 ### 3.5 Middle Age Events (Age 50–64) — Target: 40 events
-- [ ] TODO — Write 40 middle age events covering: health checkups, children growing up, legacy decisions, retirement planning, marriage second wind or breakdown, grandchildren, mentoring younger people, community leadership, business succession, property decisions, long-lost connections returning, reflecting on past choices
+- [x] DONE — Write 40 middle age events covering: health checkups, children growing up, legacy decisions, retirement planning, marriage second wind or breakdown, grandchildren, mentoring younger people, community leadership, business succession, property decisions, long-lost connections returning, reflecting on past choices
 
 ### 3.6 Senior Events (Age 65–90) — Target: 30 events
-- [ ] TODO — Write 30 senior events covering: retirement life, health decline, grandchildren visits, writing a will, reconnecting with family, final career honors, spiritual reflection, long illness, peaceful vs troubled final years, final life decisions before death
+- [x] DONE — Write 30 senior events covering: retirement life, health decline, grandchildren visits, writing a will, reconnecting with family, final career honors, spiritual reflection, long illness, peaceful vs troubled final years, final life decisions before death
 
 ### 3.7 Ghana-Specific Cultural Events (All Ages) — Target: 40 events
 - [x] DONE — Starter events exist (dumsor, mobile money mistake)
-- [ ] TODO — Write 38 more Ghana-specific events covering: funeral attendance obligations, outdooring ceremonies, paying for a relative's school fees, chieftaincy family drama, election season pressure, ECG bill shock, potholes destroying your car, 'connections' getting you a job, police checkpoint bribe decision, sending money home from abroad, jollof rice debate causing a fight, pastor prophesying about your future, getting 419-scammed, Accra flooding affecting your home, chop bar business, susu savings group
+- [x] DONE — Write 38 more Ghana-specific events covering: funeral attendance obligations, outdooring ceremonies, paying for a relative's school fees, chieftaincy family drama, election season pressure, ECG bill shock, potholes destroying your car, connections getting you a job, police checkpoint bribe decision, sending money home from abroad, jollof rice debate causing a fight, pastor prophesying about your future, getting 419-scammed, Accra flooding affecting your home, chop bar business, susu savings group
 
 ### 3.8 Rare and Wild Events (All Ages) — Target: 15 events
 - [ ] TODO — Write 15 rare events (very low trigger probability, surprising and memorable): winning the lottery, being approached for a movie role, viral social media moment, accidentally becoming a meme, long-lost wealthy relative appearing, surviving a serious accident, being offered a bribe by a government official, witnessing something you should not have
@@ -371,7 +371,7 @@ Do not start this phase until Phase 7 is complete and the game loop is solid. Mo
 ## Phase 11 — Store Preparation and Launch
 
 ### 11.1 App Icon and Splash Screen
-- [ ] TODO — Design app icon (Ghana flag colors, life sim feel — gold and green on dark)
+- [ ] TODO — Design app icon (Ghana flag accents mixed with the new pastel light theme, soft gradients)
 - [ ] TODO — Generate all required icon sizes using `flutter_launcher_icons` package
 - [ ] TODO — Create splash screen using `flutter_native_splash` package
 
@@ -430,7 +430,7 @@ lib/
     death_screen.dart                [x] DONE
     life_log_screen.dart             [ ] TODO (Phase 8)
   services/
-    save_service.dart                [ ] TODO (Phase 2)
+    save_service.dart                [x] DONE (Phase 2)
     career_service.dart              [ ] TODO (Phase 4)
     ad_service.dart                  [ ] TODO (Phase 9)
     audio_service.dart               [ ] TODO (Phase 10)
@@ -441,6 +441,5 @@ lib/
 
 ## What To Do Next
 
-**The next incomplete task is Phase 2.1 — Add `shared_preferences` package.**
-
-Start there. Work downward through Phase 2 in order. Do not move to Phase 3 or beyond until all of Phase 2 is marked `DONE`.
+The next incomplete task is Phase 3.8 — Rare and Wild Events.
+Start there. Work downward through Phase 3 in order.

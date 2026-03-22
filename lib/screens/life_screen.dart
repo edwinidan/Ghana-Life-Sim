@@ -4,6 +4,7 @@ import '../models/character.dart';
 import '../models/event.dart';
 import '../data/events.dart';
 import 'death_screen.dart';
+import '../services/save_service.dart';
 
 class LifeScreen extends StatefulWidget {
   final Character character;
@@ -20,6 +21,7 @@ class _LifeScreenState extends State<LifeScreen> {
   void _ageUp() {
     setState(() {
       widget.character.age++;
+      SaveService.saveGame(widget.character);
 
       if (widget.character.age > 50) {
         widget.character.adjustStat('health', -2);
