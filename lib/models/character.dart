@@ -42,12 +42,41 @@ class Character extends HiveObject {
   @HiveField(15)
   List<String> lifeLog;
 
+  @HiveField(16)
+  String careerPath;
+  @HiveField(17)
+  int careerLevel;
+  @HiveField(18)
+  int monthlyIncome;
+
+  @HiveField(19)
+  String educationLevel;
+  @HiveField(20)
+  bool isEnrolled;
+  @HiveField(21)
+  String enrolledIn;
+  @HiveField(22)
+  int yearsLeftInSchool;
+  @HiveField(23)
+  List<String> sideGigs;
+  @HiveField(24)
+  int sideGigIncome;
+
   Character({required this.name, required this.gender})
     : age = 0,
       isAlive = true,
       job = 'None',
       education = 'None',
       lifeLog = [],
+      careerPath = 'None',
+      careerLevel = 0,
+      monthlyIncome = 0,
+      educationLevel = 'None',
+      isEnrolled = false,
+      enrolledIn = '',
+      yearsLeftInSchool = 0,
+      sideGigs = [],
+      sideGigIncome = 0,
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),

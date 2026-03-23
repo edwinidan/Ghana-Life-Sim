@@ -5,6 +5,7 @@ import 'adult_events.dart';
 import 'ghana_events.dart';
 import 'rare_events.dart';
 import 'senior_events.dart';
+import 'career_events.dart';
 import '../models/event.dart';
 
 final List<LifeEvent> allEvents = [
@@ -15,6 +16,8 @@ final List<LifeEvent> allEvents = [
   ...seniorEvents,
   ...ghanaEvents,
   ...rareEvents,
+  ...careerEntryEvents,
+  ...careerSpecificEvents,
   LifeEvent(
     title: 'Struck by Lightning ⚡',
     description:

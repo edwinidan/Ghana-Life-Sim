@@ -33,13 +33,22 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..connections = fields[12] as int
       ..job = fields[13] as String
       ..education = fields[14] as String
-      ..lifeLog = (fields[15] as List).cast<String>();
+      ..lifeLog = (fields[15] as List).cast<String>()
+      ..careerPath = fields[16] as String
+      ..careerLevel = fields[17] as int
+      ..monthlyIncome = fields[18] as int
+      ..educationLevel = fields[19] as String
+      ..isEnrolled = fields[20] as bool
+      ..enrolledIn = fields[21] as String
+      ..yearsLeftInSchool = fields[22] as int
+      ..sideGigs = (fields[23] as List).cast<String>()
+      ..sideGigIncome = fields[24] as int;
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -71,7 +80,25 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(14)
       ..write(obj.education)
       ..writeByte(15)
-      ..write(obj.lifeLog);
+      ..write(obj.lifeLog)
+      ..writeByte(16)
+      ..write(obj.careerPath)
+      ..writeByte(17)
+      ..write(obj.careerLevel)
+      ..writeByte(18)
+      ..write(obj.monthlyIncome)
+      ..writeByte(19)
+      ..write(obj.educationLevel)
+      ..writeByte(20)
+      ..write(obj.isEnrolled)
+      ..writeByte(21)
+      ..write(obj.enrolledIn)
+      ..writeByte(22)
+      ..write(obj.yearsLeftInSchool)
+      ..writeByte(23)
+      ..write(obj.sideGigs)
+      ..writeByte(24)
+      ..write(obj.sideGigIncome);
   }
 
   @override

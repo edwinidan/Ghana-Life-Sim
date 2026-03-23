@@ -3,7 +3,11 @@ import 'dart:math';
 import '../models/character.dart';
 import '../models/event.dart';
 import '../data/events.dart';
+import '../services/career_service.dart';
+import '../services/school_service.dart';
 import 'death_screen.dart';
+import 'school_screen.dart';
+import 'job_screen.dart';
 import '../services/save_service.dart';
 
 class LifeScreen extends StatefulWidget {
@@ -17,6 +21,7 @@ class LifeScreen extends StatefulWidget {
 class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
   final ScrollController _logScrollController = ScrollController();
+  int _selectedTab = 0; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
 
   void _ageUp() {
     setState(() {
@@ -27,9 +32,24 @@ class _LifeScreenState extends State<LifeScreen> {
         widget.character.adjustStat('health', -2);
       }
 
+      // School: progress if enrolled
+      if (widget.character.isEnrolled) {
+        SchoolService.progressSchool(widget.character);
+      }
+
+      // Career: promotion check + income
+      if (CareerService.checkPromotion(widget.character)) {
+        CareerService.applyPromotion(widget.character);
+      }
+      if (widget.character.monthlyIncome > 0) {
+        int incomeGain = (widget.character.monthlyIncome / 1000).floor().clamp(1, 15);
+        widget.character.adjustStat('money', incomeGain);
+      }
+
       final validEvents = allEvents.where((e) {
-        return widget.character.age >= e.minAge &&
-            widget.character.age <= e.maxAge;
+        final ageOk = widget.character.age >= e.minAge && widget.character.age <= e.maxAge;
+        final careerOk = e.requiredCareer == null || e.requiredCareer == widget.character.careerPath;
+        return ageOk && careerOk;
       }).toList();
 
       if (validEvents.isNotEmpty) {
@@ -191,57 +211,62 @@ class _LifeScreenState extends State<LifeScreen> {
   Widget build(BuildContext context) {
     final c = widget.character;
 
+    Widget tabBody;
+    if (_selectedTab == 1) {
+      tabBody = JobScreen(
+        character: c,
+        onCharacterUpdated: () => setState(() {}),
+      );
+    } else if (_selectedTab == 3) {
+      tabBody = SchoolScreen(
+        character: c,
+        onCharacterUpdated: () => setState(() {}),
+      );
+    } else {
+      tabBody = Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _buildStatsCard(c),
+                  const SizedBox(height: 16),
+                  _buildFundsCard(c),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: const [
+                      Icon(Icons.history, color: Color(0x99B39DDB), size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Recent Journey',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF757575),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(child: _buildLogList(c)),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFCFAFF),
       body: Stack(
         children: [
-          // Main Body
-          Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 16),
-                      _buildStatsCard(c),
-                      const SizedBox(height: 16),
-                      _buildFundsCard(c),
-                      const SizedBox(height: 16),
-                      // Recent Journey Title
-                      Row(
-                        children: const [
-                          Icon(
-                            Icons.history,
-                            color: Color(0x99B39DDB),
-                            size: 20,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Recent Journey',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF757575),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Expanded(child: _buildLogList(c)),
-                      const SizedBox(height: 100), // Space for bottom nav
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Custom Bottom Navigation
+          tabBody,
           Align(alignment: Alignment.bottomCenter, child: _buildBottomNav()),
-
-
         ],
       ),
     );
@@ -510,6 +535,90 @@ class _LifeScreenState extends State<LifeScreen> {
                 const Color(0xFF3F51B5),
               ),
             ],
+          ),
+          if (c.careerPath != 'None') ...[const SizedBox(height: 16), _buildCareerRow(c)],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCareerRow(Character c) {
+    final careerData = CareerService.getCareerData(c);
+    final levelTitle = (careerData != null && c.careerLevel >= 1 && c.careerLevel <= careerData.levels.length)
+        ? careerData.levels[c.careerLevel - 1].title
+        : '';
+    String fmt(int n) => n.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+    final totalIncome = c.monthlyIncome + c.sideGigIncome;
+    final incomeText = c.monthlyIncome > 0 ? 'GHS ${fmt(c.monthlyIncome)} / month' : '';
+    final totalText = c.sideGigIncome > 0 ? 'Total: GHS ${fmt(totalIncome)} / month' : '';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.25)),
+      ),
+      child: Row(
+        children: [
+          const Text('💼', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${c.careerPath}${levelTitle.isNotEmpty ? ' — $levelTitle' : ''}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                    if (c.educationLevel != 'None') ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          c.educationLevel,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                if (incomeText.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    incomeText,
+                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ],
+                if (c.sideGigs.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    '+ ${c.sideGigs.length} side gig${c.sideGigs.length > 1 ? 's' : ''}',
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+                  ),
+                ],
+                if (totalText.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    totalText,
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
@@ -809,8 +918,8 @@ class _LifeScreenState extends State<LifeScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: _buildNavItem(Icons.group, 'Social')),
-              Expanded(child: _buildNavItem(Icons.work, 'Job')),
+              Expanded(child: _buildNavItem(Icons.group, 'Social', 0)),
+              Expanded(child: _buildNavItem(Icons.work, 'Job', 1)),
               Expanded(
                 child: GestureDetector(
                   onTap: _ageUp,
@@ -851,8 +960,8 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                 ),
               ),
-              Expanded(child: _buildNavItem(Icons.school, 'School')),
-              Expanded(child: _buildNavItem(Icons.explore, 'Doing')),
+              Expanded(child: _buildNavItem(Icons.school, 'School', 3)),
+              Expanded(child: _buildNavItem(Icons.explore, 'Doing', 4)),
             ],
           ),
         ],
@@ -860,24 +969,32 @@ class _LifeScreenState extends State<LifeScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: const Color(0xFFBDBDBD), size: 28),
-          const SizedBox(height: 6),
-          Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFFBDBDBD),
-              letterSpacing: 1,
+  Widget _buildNavItem(IconData icon, String label, int tabIndex) {
+    final isActive = _selectedTab == tabIndex;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedTab = tabIndex),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive ? const Color(0xFFB39DDB) : const Color(0xFFBDBDBD),
+              size: 28,
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              label.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: isActive ? const Color(0xFFB39DDB) : const Color(0xFFBDBDBD),
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

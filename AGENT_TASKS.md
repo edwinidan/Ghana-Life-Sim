@@ -164,35 +164,73 @@ The event library must reach a minimum of 300 events before the game feels repla
 Requires Phase 2 (save system) to be complete first so career state persists.
 
 ### 4.1 Extend Character Model for Career
-- [ ] TODO — Add `careerPath` string field to Character (e.g. 'Civil Service', 'Tech', 'Trade', 'Healthcare', 'Education', 'Entertainment', 'Hustle', 'None')
-- [ ] TODO — Add `careerLevel` int field (0 = unemployed, 1 = entry, 2 = mid, 3 = senior)
-- [ ] TODO — Add `monthlyIncome` int field derived from careerPath + careerLevel
-- [ ] TODO — Update `SaveService` to serialize and deserialize new fields
+- [x] DONE — Added `careerPath` string field to Character (HiveField 16)
+- [x] DONE — Added `careerLevel` int field (0 = unemployed, 1 = entry, 2 = mid, 3 = senior) (HiveField 17)
+- [x] DONE — Added `monthlyIncome` int field derived from careerPath + careerLevel (HiveField 18)
+- [x] DONE — Ran `dart run build_runner build --delete-conflicting-outputs` to regenerate character.g.dart
 
 ### 4.2 Create Career Data (`lib/data/careers.dart`)
-- [ ] TODO — Create `Career` class with fields: name, levels (list of level names), salaries (list per level), statRequirements per level
-- [ ] TODO — Define all 7 career paths with 3 levels each and salary ranges
-- [ ] TODO — Define stat requirements for each promotion level (e.g. Tech mid-level requires smarts >= 60)
+- [x] DONE — Created `CareerLevel` and `CareerData` classes (plain Dart, not Hive)
+- [x] DONE — Defined all 7 career paths with 3 levels each: Civil Service, Healthcare, Education, Tech, Trade, Entertainment, Hustle
+- [x] DONE — Defined stat requirements for each promotion level
 
-### 4.3 Career Entry Events
-- [ ] TODO — Write career selection events that fire around age 18–22 allowing player to enter a career path
-- [ ] TODO — Career entry event choices should set `careerPath` and `careerLevel = 1` on the character
-- [ ] TODO — Entry requirements should check relevant stats (e.g. university education for healthcare)
+### 4.3 Career Entry Events (REDESIGNED — Job Tab)
+- [x] DONE — Removed 7 career entry events from `lib/data/career_events.dart` (career entry now via Job tab)
+- [x] DONE — Removed `careerToSet` trigger block from `_makeChoice` in life_screen.dart
+- [x] DONE — Career entry now handled exclusively through `lib/screens/job_screen.dart` + `JobService`
 
 ### 4.4 Career Progression Logic
-- [ ] TODO — Create `CareerService` in `lib/services/career_service.dart`
-- [ ] TODO — Implement `checkPromotion(Character c)` — evaluates if character meets stat thresholds for next career level
-- [ ] TODO — Implement `applyPromotion(Character c)` — increments careerLevel, updates income, adds to lifeLog
-- [ ] TODO — Call `checkPromotion` annually during age-up in life screen
-- [ ] TODO — Promotion chance should not be guaranteed — add randomness factor so same stats don't always promote same year
+- [x] DONE — Created `CareerService` in `lib/services/career_service.dart`
+- [x] DONE — Implemented `checkPromotion(Character c)` with 40% random chance per year if stat requirements met
+- [x] DONE — Implemented `applyPromotion(Character c)` — increments careerLevel, syncs income, logs to lifeLog
+- [x] DONE — Called `checkPromotion` + `applyPromotion` annually during age-up in life_screen.dart
+- [x] DONE — Income applied annually during age-up (GHS 1000/month = +1 money stat, capped at +15)
 
 ### 4.5 Career-Specific Events
-- [ ] TODO — Write 5–8 events per career path (fired, promoted, office drama, difficult boss, opportunity to switch careers) — total ~45 events
-- [ ] TODO — Filter these events by `careerPath` field so only relevant career events fire
+- [x] DONE — Added `requiredCareer` nullable field to `LifeEvent` in `lib/models/event.dart`
+- [x] DONE — 35 career-specific events (5 per path) remain in `career_events.dart` — fully intact
+- [x] DONE — Event filter in life_screen.dart respects `requiredCareer` — only fires for matching careerPath
 
 ### 4.6 Display Career on Life Screen
-- [ ] TODO — Add career name and level to the life screen header or a dedicated career row below the stats grid
-- [ ] TODO — Show current income somewhere on the main screen (small and clean, not cluttered)
+- [x] DONE — Career row displays below stats grid when careerPath != 'None'
+- [x] DONE — Shows career + level title, monthly income, side gig count, total income, education level badge
+
+## Phase 4 Redesign — Jobs & School System ✅
+
+### 4R.1 Extend Character Model (School + Side Gigs)
+- [x] DONE — Added HiveField 19–24: educationLevel, isEnrolled, enrolledIn, yearsLeftInSchool, sideGigs, sideGigIncome
+- [x] DONE — build_runner ran clean
+
+### 4R.2 Education Data
+- [x] DONE — Created `lib/data/education.dart` with `EducationProgram` class and 5 programs
+
+### 4R.3 Side Gig Data
+- [x] DONE — Created `lib/data/side_gigs.dart` with `SideGig` class and 12 gigs
+
+### 4R.4 SchoolService
+- [x] DONE — Created `lib/services/school_service.dart` with getAvailablePrograms, enroll, progressSchool, getCurrentProgram
+
+### 4R.5 JobService
+- [x] DONE — Created `lib/services/job_service.dart` with getAvailableJobs, getAvailableSideGigs, applyForJob, takeSideGig, quitSideGig, quitJob
+
+### 4R.6 School progression wired into _ageUp
+- [x] DONE — `SchoolService.progressSchool()` called when `character.isEnrolled` on every age-up
+
+### 4R.7 School Tab Screen
+- [x] DONE — Created `lib/screens/school_screen.dart` with enrollment card, level badge, available programs
+
+### 4R.8 Job Tab Screen
+- [x] DONE — Created `lib/screens/job_screen.dart` with current job, job listings, active side gigs, available gigs
+
+### 4R.9 Bottom Nav Wired
+- [x] DONE — School (tab 3) and Job (tab 1) tabs in bottom nav now navigate to their screens
+- [x] DONE — Nav items highlight active tab in pastel purple
+
+### 4R.10 Career Display Updated
+- [x] DONE — _buildCareerRow shows side gig count, total income (main + side gigs), education level badge
+
+### 4R.11 flutter analyze
+- [x] DONE — Zero errors (pre-existing warnings in unmodified files only)
 
 ---
 
@@ -419,19 +457,26 @@ Do not start this phase until Phase 7 is complete and the game loop is solid. Mo
 lib/
   main.dart                          [x] DONE
   models/
-    character.dart                   [x] DONE
+    character.dart                   [x] DONE (HiveFields 0–24)
     event.dart                       [x] DONE
   data/
-    events.dart                      [x] DONE (12 starter events)
-    careers.dart                     [ ] TODO (Phase 4)
+    events.dart                      [x] DONE (300+ events)
+    careers.dart                     [x] DONE (Phase 4)
+    career_events.dart               [x] DONE (35 career-specific events; entry events removed)
+    education.dart                   [x] DONE (Phase 4 Redesign — 5 programs)
+    side_gigs.dart                   [x] DONE (Phase 4 Redesign — 12 gigs)
   screens/
     character_creation_screen.dart   [x] DONE
     life_screen.dart                 [x] DONE
     death_screen.dart                [x] DONE
+    school_screen.dart               [x] DONE (Phase 4 Redesign)
+    job_screen.dart                  [x] DONE (Phase 4 Redesign)
     life_log_screen.dart             [ ] TODO (Phase 8)
   services/
     save_service.dart                [x] DONE (Phase 2)
-    career_service.dart              [ ] TODO (Phase 4)
+    career_service.dart              [x] DONE (Phase 4)
+    school_service.dart              [x] DONE (Phase 4 Redesign)
+    job_service.dart                 [x] DONE (Phase 4 Redesign)
     ad_service.dart                  [ ] TODO (Phase 9)
     audio_service.dart               [ ] TODO (Phase 10)
   widgets/                           [ ] TODO (as needed)
@@ -441,5 +486,6 @@ lib/
 
 ## What To Do Next
 
-The next incomplete task is Phase 4 — Career Progression System.
-Start there. Work downward through Phase 4 in order.
+Phase 4 Redesign — Jobs & School System is complete.
+The next incomplete task is Phase 5 — Relationship System.
+Start there. Work downward through Phase 5 in order.
