@@ -5,9 +5,11 @@ import '../models/event.dart';
 import '../data/events.dart';
 import '../services/career_service.dart';
 import '../services/school_service.dart';
+import '../services/relationship_service.dart';
 import 'death_screen.dart';
 import 'school_screen.dart';
 import 'job_screen.dart';
+import 'social_screen.dart';
 import '../services/save_service.dart';
 
 class LifeScreen extends StatefulWidget {
@@ -21,7 +23,7 @@ class LifeScreen extends StatefulWidget {
 class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
   final ScrollController _logScrollController = ScrollController();
-  int _selectedTab = 0; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
+  int _selectedTab = 4; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
 
   void _ageUp() {
     setState(() {
@@ -42,14 +44,37 @@ class _LifeScreenState extends State<LifeScreen> {
         CareerService.applyPromotion(widget.character);
       }
       if (widget.character.monthlyIncome > 0) {
-        int incomeGain = (widget.character.monthlyIncome / 1000).floor().clamp(1, 15);
+        int incomeGain = (widget.character.monthlyIncome / 1000).floor().clamp(
+          1,
+          15,
+        );
         widget.character.adjustStat('money', incomeGain);
       }
 
+      // Relationship progression
+      if (widget.character.relationshipStatus == 'Dating' ||
+          widget.character.relationshipStatus == 'Married') {
+        RelationshipService.progressRelationship(widget.character);
+      }
+
+      // Auto-divorce if relationship score hits 0
+      if ((widget.character.relationshipStatus == 'Dating' ||
+              widget.character.relationshipStatus == 'Married') &&
+          widget.character.relationshipScore <= 0) {
+        RelationshipService.divorce(widget.character);
+      }
+
       final validEvents = allEvents.where((e) {
-        final ageOk = widget.character.age >= e.minAge && widget.character.age <= e.maxAge;
-        final careerOk = e.requiredCareer == null || e.requiredCareer == widget.character.careerPath;
-        return ageOk && careerOk;
+        final ageOk =
+            widget.character.age >= e.minAge &&
+            widget.character.age <= e.maxAge;
+        final careerOk =
+            e.requiredCareer == null ||
+            e.requiredCareer == widget.character.careerPath;
+        final relationshipOk =
+            e.requiredRelationshipStatus == null ||
+            e.requiredRelationshipStatus == widget.character.relationshipStatus;
+        return ageOk && careerOk && relationshipOk;
       }).toList();
 
       if (validEvents.isNotEmpty) {
@@ -212,7 +237,12 @@ class _LifeScreenState extends State<LifeScreen> {
     final c = widget.character;
 
     Widget tabBody;
-    if (_selectedTab == 1) {
+    if (_selectedTab == 0) {
+      tabBody = SocialScreen(
+        character: c,
+        onCharacterUpdated: () => setState(() {}),
+      );
+    } else if (_selectedTab == 1) {
       tabBody = JobScreen(
         character: c,
         onCharacterUpdated: () => setState(() {}),
@@ -270,6 +300,23 @@ class _LifeScreenState extends State<LifeScreen> {
         ],
       ),
     );
+  }
+
+  String _relationshipLabel(Character c) {
+    switch (c.relationshipStatus) {
+      case 'Dating':
+        return '💕 Dating ${c.partnerName}';
+      case 'Engaged':
+        return '💍 Engaged to ${c.partnerName}';
+      case 'Married':
+        return '💒 Married to ${c.partnerName}';
+      case 'Divorced':
+        return '💔 Divorced';
+      case 'Widowed':
+        return '🕊️ Widowed';
+      default:
+        return '';
+    }
   }
 
   Widget _buildHeader() {
@@ -455,6 +502,17 @@ class _LifeScreenState extends State<LifeScreen> {
                       ),
                     ],
                   ),
+                  if (c.relationshipStatus != 'Single') ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _relationshipLabel(c),
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(204),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ],
               ),
               Column(
@@ -536,7 +594,10 @@ class _LifeScreenState extends State<LifeScreen> {
               ),
             ],
           ),
-          if (c.careerPath != 'None') ...[const SizedBox(height: 16), _buildCareerRow(c)],
+          if (c.careerPath != 'None') ...[
+            const SizedBox(height: 16),
+            _buildCareerRow(c),
+          ],
         ],
       ),
     );
@@ -544,13 +605,23 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildCareerRow(Character c) {
     final careerData = CareerService.getCareerData(c);
-    final levelTitle = (careerData != null && c.careerLevel >= 1 && c.careerLevel <= careerData.levels.length)
+    final levelTitle =
+        (careerData != null &&
+            c.careerLevel >= 1 &&
+            c.careerLevel <= careerData.levels.length)
         ? careerData.levels[c.careerLevel - 1].title
         : '';
-    String fmt(int n) => n.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+    String fmt(int n) => n.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
     final totalIncome = c.monthlyIncome + c.sideGigIncome;
-    final incomeText = c.monthlyIncome > 0 ? 'GHS ${fmt(c.monthlyIncome)} / month' : '';
-    final totalText = c.sideGigIncome > 0 ? 'Total: GHS ${fmt(totalIncome)} / month' : '';
+    final incomeText = c.monthlyIncome > 0
+        ? 'GHS ${fmt(c.monthlyIncome)} / month'
+        : '';
+    final totalText = c.sideGigIncome > 0
+        ? 'Total: GHS ${fmt(totalIncome)} / month'
+        : '';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -583,14 +654,21 @@ class _LifeScreenState extends State<LifeScreen> {
                     if (c.educationLevel != 'None') ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           c.educationLevel,
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -600,21 +678,32 @@ class _LifeScreenState extends State<LifeScreen> {
                   const SizedBox(height: 2),
                   Text(
                     incomeText,
-                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
                 if (c.sideGigs.isNotEmpty) ...[
                   const SizedBox(height: 2),
                   Text(
                     '+ ${c.sideGigs.length} side gig${c.sideGigs.length > 1 ? 's' : ''}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 11,
+                    ),
                   ),
                 ],
                 if (totalText.isNotEmpty) ...[
                   const SizedBox(height: 2),
                   Text(
                     totalText,
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ],
               ],
@@ -944,7 +1033,11 @@ class _LifeScreenState extends State<LifeScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.add, color: Colors.white, size: 28),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       const Text(
@@ -980,7 +1073,9 @@ class _LifeScreenState extends State<LifeScreen> {
           children: [
             Icon(
               icon,
-              color: isActive ? const Color(0xFFB39DDB) : const Color(0xFFBDBDBD),
+              color: isActive
+                  ? const Color(0xFFB39DDB)
+                  : const Color(0xFFBDBDBD),
               size: 28,
             ),
             const SizedBox(height: 6),
@@ -989,7 +1084,9 @@ class _LifeScreenState extends State<LifeScreen> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w900,
-                color: isActive ? const Color(0xFFB39DDB) : const Color(0xFFBDBDBD),
+                color: isActive
+                    ? const Color(0xFFB39DDB)
+                    : const Color(0xFFBDBDBD),
                 letterSpacing: 1,
               ),
             ),
@@ -998,5 +1095,4 @@ class _LifeScreenState extends State<LifeScreen> {
       ),
     );
   }
-
 }

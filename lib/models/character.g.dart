@@ -42,13 +42,21 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..enrolledIn = fields[21] as String
       ..yearsLeftInSchool = fields[22] as int
       ..sideGigs = (fields[23] as List).cast<String>()
-      ..sideGigIncome = fields[24] as int;
+      ..sideGigIncome = fields[24] as int
+      ..relationshipStatus = fields[25] as String
+      ..partnerName = fields[26] as String
+      ..partnerJob = fields[27] as String
+      ..partnerPersonality = fields[28] as String
+      ..relationshipScore = fields[29] as int
+      ..numberOfChildren = fields[30] as int
+      ..isCheating = fields[31] as bool
+      ..sidePartnerName = fields[32] as String;
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(25)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -98,7 +106,23 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(23)
       ..write(obj.sideGigs)
       ..writeByte(24)
-      ..write(obj.sideGigIncome);
+      ..write(obj.sideGigIncome)
+      ..writeByte(25)
+      ..write(obj.relationshipStatus)
+      ..writeByte(26)
+      ..write(obj.partnerName)
+      ..writeByte(27)
+      ..write(obj.partnerJob)
+      ..writeByte(28)
+      ..write(obj.partnerPersonality)
+      ..writeByte(29)
+      ..write(obj.relationshipScore)
+      ..writeByte(30)
+      ..write(obj.numberOfChildren)
+      ..writeByte(31)
+      ..write(obj.isCheating)
+      ..writeByte(32)
+      ..write(obj.sidePartnerName);
   }
 
   @override

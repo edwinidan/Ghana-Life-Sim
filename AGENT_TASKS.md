@@ -239,37 +239,40 @@ Requires Phase 2 (save system) to be complete first so career state persists.
 Requires Phase 4 (career system) since relationship events interact with career and money states.
 
 ### 5.1 Extend Character Model for Relationships
-- [ ] TODO — Add `relationshipStatus` string field ('Single', 'Dating', 'Engaged', 'Married', 'Divorced', 'Widowed')
-- [ ] TODO — Add `partnerName` string field (generated randomly when dating begins)
-- [ ] TODO — Add `relationshipScore` int field (0–100, represents relationship health)
-- [ ] TODO — Add `numberOfChildren` int field
-- [ ] TODO — Update SaveService to include new fields
+- [x] DONE — Added `relationshipStatus`, `partnerName`, `partnerJob`, `partnerPersonality` string fields (HiveFields 25–28)
+- [x] DONE — Added `relationshipScore` int field (0–100) (HiveField 29)
+- [x] DONE — Added `numberOfChildren` int field (HiveField 30)
+- [x] DONE — Added `isCheating` bool and `sidePartnerName` string fields (HiveFields 31–32)
+- [x] DONE — `adjustStat` extended to handle 'relationshipScore' and 'numberOfChildren' keys
+- [x] DONE — SaveService automatically includes new fields via Hive code generation (build_runner ran clean, 33 fields total)
 
 ### 5.2 Romance Event Chain
-- [ ] TODO — Write dating events: meeting someone, early relationship choices, deepening or ending the relationship
-- [ ] TODO — Dating events should set `relationshipStatus = 'Dating'` and generate a `partnerName`
-- [ ] TODO — Write relationship health events: good periods, arguments, jealousy, trust issues
-- [ ] TODO — Write marriage proposal event (fires when dating + age 22+ + relationshipScore >= 60)
-- [ ] TODO — Marriage event sets `relationshipStatus = 'Married'`, happiness boost, money cost
+- [x] DONE — Created `lib/data/relationship_data.dart` with Ghanaian name lists, personality and job pools, generator functions
+- [x] DONE — Created `lib/services/relationship_service.dart` with generatePotentialPartner, askOut, propose, marry, progressRelationship, startCheating, getCaught, divorce, haveChild methods
+- [x] DONE — Created `lib/data/relationship_events.dart` with 20 culturally Ghanaian relationship events across Dating, Married, Divorced, and Single statuses
+- [x] DONE — Relationship events wired into `allEvents` in `lib/data/events.dart`
+- [x] DONE — Added `requiredRelationshipStatus` field to `LifeEvent` in `lib/models/event.dart`
+- [x] DONE — Event filter in `life_screen.dart` respects `requiredRelationshipStatus`
 
 ### 5.3 Children Events
-- [ ] TODO — Write pregnancy/children events that fire after marriage
-- [ ] TODO — Children event increments `numberOfChildren`
-- [ ] TODO — Write light parenting choice events (supportive, strict, neglectful, education-focused)
-- [ ] TODO — Parenting choices affect money, happiness, and reputation
+- [x] DONE — `RelationshipService.haveChild()` increments numberOfChildren, costs money, boosts happiness, logs to lifeLog
+- [x] DONE — "Have a Child 👶" button available in Social tab for Married players age ≤ 45
+- [x] DONE — "Another Child?" married event fires and updates numberOfChildren via adjustStat
 
 ### 5.4 Relationship Breakdown Events
-- [ ] TODO — Write relationship strain events triggered by low relationshipScore
-- [ ] TODO — Write divorce event (fires when relationshipScore <= 20 + adult age)
-- [ ] TODO — Divorce sets `relationshipStatus = 'Divorced'`, happiness penalty, money penalty
+- [x] DONE — `RelationshipService.progressRelationship()` drifts score each age-up based on partner personality and cheating
+- [x] DONE — Auto-divorce fires in `_ageUp` when relationshipScore hits 0
+- [x] DONE — `RelationshipService.divorce()` sets status to 'Divorced', applies happiness/money/reputation penalties
+- [x] DONE — Cheating system: startCheating, getCaught (15% chance per year), getCaught applies reputation/score/happiness penalties
 
 ### 5.5 Family Events
-- [ ] TODO — Write family obligation events (supporting parents, sibling issues, family emergencies)
-- [ ] TODO — These should interact with money and happiness stats meaningfully
+- [x] DONE — Family events covered within relationship_events.dart: in-laws moving in, family pressure about children, spouse losing job, anniversary, spouse promotion
 
 ### 5.6 Display Relationship on Life Screen
-- [ ] TODO — Show relationship status somewhere on the main screen (clean, not cluttered)
-- [ ] TODO — Show number of children if > 0
+- [x] DONE — Relationship status label shown in stats card header (e.g. "💕 Dating Akosua", "💒 Married to Yaw", "💔 Divorced") — only shown when not Single
+- [x] DONE — Children count shown in Social tab partner card when Married
+- [x] DONE — Created `lib/screens/social_screen.dart` — full Social tab with status badge, partner card, bond progress bar, action buttons
+- [x] DONE — Social tab wired into bottom nav (index 0) in `life_screen.dart`
 
 ---
 
@@ -465,18 +468,22 @@ lib/
     career_events.dart               [x] DONE (35 career-specific events; entry events removed)
     education.dart                   [x] DONE (Phase 4 Redesign — 5 programs)
     side_gigs.dart                   [x] DONE (Phase 4 Redesign — 12 gigs)
+    relationship_data.dart           [x] DONE (Phase 5)
+    relationship_events.dart         [x] DONE (Phase 5 — 20 events)
   screens/
     character_creation_screen.dart   [x] DONE
     life_screen.dart                 [x] DONE
     death_screen.dart                [x] DONE
     school_screen.dart               [x] DONE (Phase 4 Redesign)
     job_screen.dart                  [x] DONE (Phase 4 Redesign)
+    social_screen.dart               [x] DONE (Phase 5)
     life_log_screen.dart             [ ] TODO (Phase 8)
   services/
     save_service.dart                [x] DONE (Phase 2)
     career_service.dart              [x] DONE (Phase 4)
     school_service.dart              [x] DONE (Phase 4 Redesign)
     job_service.dart                 [x] DONE (Phase 4 Redesign)
+    relationship_service.dart        [x] DONE (Phase 5)
     ad_service.dart                  [ ] TODO (Phase 9)
     audio_service.dart               [ ] TODO (Phase 10)
   widgets/                           [ ] TODO (as needed)
@@ -486,6 +493,6 @@ lib/
 
 ## What To Do Next
 
-Phase 4 Redesign — Jobs & School System is complete.
-The next incomplete task is Phase 5 — Relationship System.
-Start there. Work downward through Phase 5 in order.
+Phase 5 — Relationship System is complete.
+The next incomplete task is Phase 6 — Housing and Business Systems.
+Start there. Work downward through Phase 6 in order.

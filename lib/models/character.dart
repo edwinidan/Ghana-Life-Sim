@@ -62,6 +62,23 @@ class Character extends HiveObject {
   @HiveField(24)
   int sideGigIncome;
 
+  @HiveField(25)
+  String relationshipStatus; // 'Single', 'Dating', 'Engaged', 'Married', 'Divorced', 'Widowed'
+  @HiveField(26)
+  String partnerName; // name of current partner, '' if none
+  @HiveField(27)
+  String partnerJob; // partner's job title
+  @HiveField(28)
+  String partnerPersonality; // e.g. 'Ambitious', 'Clingy', 'Funny', 'Jealous', 'Calm', 'Spiritual'
+  @HiveField(29)
+  int relationshipScore; // 0–100, health of current relationship
+  @HiveField(30)
+  int numberOfChildren; // total children
+  @HiveField(31)
+  bool isCheating; // true if player is seeing someone on the side
+  @HiveField(32)
+  String sidePartnerName; // name of person being cheated with, '' if not cheating
+
   Character({required this.name, required this.gender})
     : age = 0,
       isAlive = true,
@@ -77,6 +94,14 @@ class Character extends HiveObject {
       yearsLeftInSchool = 0,
       sideGigs = [],
       sideGigIncome = 0,
+      relationshipStatus = 'Single',
+      partnerName = '',
+      partnerJob = '',
+      partnerPersonality = '',
+      relationshipScore = 0,
+      numberOfChildren = 0,
+      isCheating = false,
+      sidePartnerName = '',
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -120,6 +145,12 @@ class Character extends HiveObject {
         break;
       case 'connections':
         connections = (connections + amount).clamp(0, 100);
+        break;
+      case 'relationshipScore':
+        relationshipScore = (relationshipScore + amount).clamp(0, 100);
+        break;
+      case 'numberOfChildren':
+        numberOfChildren = (numberOfChildren + amount).clamp(0, 99);
         break;
     }
   }

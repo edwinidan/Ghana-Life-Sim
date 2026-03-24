@@ -20,6 +20,7 @@ class LifeEvent {
   final int maxAge;
   final Map<String, int> statRequirements;
   final String? requiredCareer; // if set, only fires for this careerPath
+  final String? requiredRelationshipStatus; // if set, only fires for this relationshipStatus
 
   const LifeEvent({
     required this.title,
@@ -29,5 +30,6 @@ class LifeEvent {
     this.maxAge = 90,
     this.statRequirements = const {},
     this.requiredCareer,
+    this.requiredRelationshipStatus,
   });
 }
