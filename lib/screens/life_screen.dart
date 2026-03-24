@@ -16,6 +16,7 @@ import '../services/save_service.dart';
 import '../services/housing_service.dart';
 import '../services/business_service.dart';
 import '../services/health_service.dart';
+import 'life_log_screen.dart';
 
 class LifeScreen extends StatefulWidget {
   final Character character;
@@ -28,11 +29,80 @@ class LifeScreen extends StatefulWidget {
 class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
   int _selectedTab = 4; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
+  String _previousLifeStage = '';
+
+  static const Map<String, String> _statDescriptions = {
+    'health':      'Your physical wellbeing. Reaches 0 and it\'s over. Protect it. 💪',
+    'happiness':   'How content you are. Affects relationships and life rating. 😊',
+    'smarts':      'Your intelligence. Needed for education and tech careers. 🧠',
+    'looks':       'Your appearance. Affects romance and entertainment careers. ✨',
+    'money':       'Your financial power. Needed for housing, business, and marriage. 💰',
+    'reputation':  'How Ghana sees you. Affects connections and opportunities. 🌟',
+    'discipline':  'Your work ethic. Needed for promotions and civil service. 📋',
+    'streetSense': 'Your hustle instinct. Needed for trade and survival. 🛣️',
+    'connections': 'Your network. Opens doors money alone cannot. 🤝',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _previousLifeStage = widget.character.lifeStage;
+  }
+
+  Color _lifeStageColor(String stage) {
+    switch (stage) {
+      case 'Toddler':     return const Color(0xFFF8BBD0);
+      case 'Child':       return const Color(0xFFB2DFDB);
+      case 'Teenager':    return const Color(0xFFB39DDB);
+      case 'Young Adult': return const Color(0xFF90CAF9);
+      case 'Adult':       return const Color(0xFFA5D6A7);
+      case 'Middle Aged': return const Color(0xFFFFCC80);
+      case 'Senior':      return const Color(0xFFCFD8DC);
+      default:            return const Color(0xFFB39DDB);
+    }
+  }
+
+  String _avatarEmoji(String gender, String lifeStage) {
+    if (gender == 'Male') {
+      switch (lifeStage) {
+        case 'Toddler':     return '👶';
+        case 'Child':       return '🧒';
+        case 'Teenager':    return '👦';
+        case 'Young Adult': return '🧑';
+        case 'Adult':       return '👨';
+        case 'Middle Aged': return '👨‍🦳';
+        case 'Senior':      return '👴';
+        default:            return '🧑';
+      }
+    } else {
+      switch (lifeStage) {
+        case 'Toddler':     return '👶';
+        case 'Child':       return '🧒';
+        case 'Teenager':    return '👧';
+        case 'Young Adult': return '🧑';
+        case 'Adult':       return '👩';
+        case 'Middle Aged': return '👩‍🦳';
+        case 'Senior':      return '👵';
+        default:            return '🧑';
+      }
+    }
+  }
 
   void _ageUp() {
     setState(() {
       widget.character.age++;
       SaveService.saveGame(widget.character);
+
+      // Life stage transition check
+      final newStage = widget.character.lifeStage;
+      if (_previousLifeStage.isNotEmpty && newStage != _previousLifeStage) {
+        _previousLifeStage = newStage;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showLifeStageModal(newStage);
+        });
+      } else {
+        _previousLifeStage = newStage;
+      }
 
       // Refined aging health decay
       if (widget.character.age >= 80) {
@@ -384,6 +454,144 @@ class _LifeScreenState extends State<LifeScreen> {
     }
   }
 
+  void _showLifeStageModal(String stageName) {
+    final stageEmojis = {
+      'Toddler':     '👶',
+      'Child':       '🧒',
+      'Teenager':    '🧑',
+      'Young Adult': '🧑‍🎓',
+      'Adult':       '👨',
+      'Middle Aged': '👨‍🦳',
+      'Senior':      '👴',
+    };
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(stageEmojis[stageName] ?? '🧑', style: const TextStyle(fontSize: 64)),
+              const SizedBox(height: 16),
+              Text(
+                'NEW LIFE STAGE',
+                style: TextStyle(fontSize: 11, color: Colors.grey[500], letterSpacing: 2, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                stageName,
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: _lifeStageColor(stageName)),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getStageDescription(stageName),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _lifeStageColor(stageName),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    elevation: 0,
+                  ),
+                  child: const Text("Let's Go", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getStageDescription(String stage) {
+    switch (stage) {
+      case 'Child':       return 'School, chores, and discovering the world. 🌍';
+      case 'Teenager':    return 'Exams, crushes, and questionable decisions. 😅';
+      case 'Young Adult': return 'University, first jobs, and figuring life out. 🎓';
+      case 'Adult':       return 'Career, relationships, and real responsibilities. 💼';
+      case 'Middle Aged': return 'You\'ve seen things. Now you manage things. 🧠';
+      case 'Senior':      return 'Legacy time. What will they say about you? 🕊️';
+      default:            return 'A new chapter begins. 📖';
+    }
+  }
+
+  void _showStatTooltip(String statKey, String label, IconData icon, int value, Color color) {
+    final description = _statDescriptions[statKey] ?? '';
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 32,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Icon(icon, size: 48, color: color == Colors.white ? Colors.grey[400] : color),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF424242)),
+            ),
+            const SizedBox(height: 16),
+            // Progress bar
+            Container(
+              height: 12,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FractionallySizedBox(
+                  widthFactor: value / 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: color == Colors.white ? const Color(0xFFB39DDB) : color,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$value / 100',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 24, right: 24, bottom: 16),
@@ -397,27 +605,20 @@ class _LifeScreenState extends State<LifeScreen> {
           Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFB39DDB), Color(0xFFF8BBD0)],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _lifeStageColor(widget.character.lifeStage),
+                    width: 3,
                   ),
+                  color: Colors.white,
                 ),
-                padding: const EdgeInsets.all(2),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      widget.character.gender == 'Male' ? '👦' : '👧',
-                      style: const TextStyle(fontSize: 24),
-                    ),
+                child: Center(
+                  child: Text(
+                    _avatarEmoji(widget.character.gender, widget.character.lifeStage),
+                    style: const TextStyle(fontSize: 26),
                   ),
                 ),
               ),
@@ -484,18 +685,24 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                 ),
               ),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0x0DB39DDB),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0x1AB39DDB)),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LifeLogScreen(character: widget.character),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.settings,
-                  color: Color(0xFFB39DDB),
-                  size: 20,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0x0DB39DDB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0x1AB39DDB)),
+                  ),
+                  child: const Center(
+                    child: Text('📖', style: TextStyle(fontSize: 18)),
+                  ),
                 ),
               ),
             ],
@@ -623,49 +830,22 @@ class _LifeScreenState extends State<LifeScreen> {
             crossAxisSpacing: 24,
             mainAxisSpacing: 14,
             children: [
-              _buildStatBar(
-                'Happiness',
-                Icons.sentiment_satisfied,
-                c.happiness,
-                const Color(0xFFFFF9C4),
-              ),
-              _buildStatBar(
-                'Health',
-                Icons.favorite,
-                c.health,
-                const Color(0xFFF8BBD0),
-              ),
-              _buildStatBar(
-                'Smarts',
-                Icons.psychology,
-                c.smarts,
-                const Color(0xFFB2DFDB),
-              ),
-              _buildStatBar('Looks', Icons.face, c.looks, Colors.white),
-              _buildStatBar(
-                'Reputation',
-                Icons.star,
-                c.reputation,
-                const Color(0xFF7C4DFF),
-              ),
-              _buildStatBar(
-                'Connect',
-                Icons.hub,
-                c.connections,
-                const Color(0xFF009688),
-              ),
-              _buildStatBar(
-                'Streets',
-                Icons.directions_run,
-                c.streetSense,
-                const Color(0xFFFF9800),
-              ),
-              _buildStatBar(
-                'Discipline',
-                Icons.timer,
-                c.discipline,
-                const Color(0xFF3F51B5),
-              ),
+              _buildStatBar('Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFFFF9C4),
+                statKey: 'happiness', onTap: () => _showStatTooltip('happiness', 'Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFFFF9C4))),
+              _buildStatBar('Health', Icons.favorite, c.health, const Color(0xFFF8BBD0),
+                statKey: 'health', onTap: () => _showStatTooltip('health', 'Health', Icons.favorite, c.health, const Color(0xFFF8BBD0))),
+              _buildStatBar('Smarts', Icons.psychology, c.smarts, const Color(0xFFB2DFDB),
+                statKey: 'smarts', onTap: () => _showStatTooltip('smarts', 'Smarts', Icons.psychology, c.smarts, const Color(0xFFB2DFDB))),
+              _buildStatBar('Looks', Icons.face, c.looks, Colors.white,
+                statKey: 'looks', onTap: () => _showStatTooltip('looks', 'Looks', Icons.face, c.looks, Colors.white)),
+              _buildStatBar('Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF),
+                statKey: 'reputation', onTap: () => _showStatTooltip('reputation', 'Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF))),
+              _buildStatBar('Connect', Icons.hub, c.connections, const Color(0xFF009688),
+                statKey: 'connections', onTap: () => _showStatTooltip('connections', 'Connections', Icons.hub, c.connections, const Color(0xFF009688))),
+              _buildStatBar('Streets', Icons.directions_run, c.streetSense, const Color(0xFFFF9800),
+                statKey: 'streetSense', onTap: () => _showStatTooltip('streetSense', 'Street Sense', Icons.directions_run, c.streetSense, const Color(0xFFFF9800))),
+              _buildStatBar('Discipline', Icons.timer, c.discipline, const Color(0xFF3F51B5),
+                statKey: 'discipline', onTap: () => _showStatTooltip('discipline', 'Discipline', Icons.timer, c.discipline, const Color(0xFF3F51B5))),
             ],
           ),
           if (c.careerPath != 'None') ...[
@@ -788,8 +968,10 @@ class _LifeScreenState extends State<LifeScreen> {
     );
   }
 
-  Widget _buildStatBar(String label, IconData icon, int value, Color color) {
-    return Column(
+  Widget _buildStatBar(String label, IconData icon, int value, Color color, {String statKey = '', VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -840,6 +1022,7 @@ class _LifeScreenState extends State<LifeScreen> {
           ),
         ),
       ],
+      ),
     );
   }
 

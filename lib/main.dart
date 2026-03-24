@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/character_creation_screen.dart';
 import 'screens/life_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'services/save_service.dart';
 import 'models/character.dart';
 
@@ -48,6 +50,13 @@ class _AppEntryState extends State<AppEntry> {
   }
 
   Future<void> _determineRoute() async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboardingSeen = prefs.getBool('onboarding_seen') ?? false;
+    if (!onboardingSeen) {
+      if (mounted) setState(() => _destination = const OnboardingScreen());
+      return;
+    }
+
     if (SaveService.hasSavedGame()) {
       final character = await SaveService.loadGame();
       if (character != null && !character.isDead) {

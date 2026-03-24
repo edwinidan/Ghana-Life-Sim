@@ -345,29 +345,32 @@ Can be built in parallel with Phase 6.
 
 ---
 
-## Phase 8 — UI Polish and Life Screen Enhancement
-
-Can be started after Phase 3 (more events) is done so there is enough content to see the UI working well.
+## Phase 8 — UI Polish and Life Screen Enhancement ✅
 
 ### 8.1 Life Log Screen
-- [ ] TODO — Create `lib/screens/life_log_screen.dart`
-- [ ] TODO — Full scrollable timeline of lifeLog entries with age labels
-- [ ] TODO — Accessible via a button on the main life screen (small icon, not intrusive)
+- [x] DONE — Created `lib/screens/life_log_screen.dart` with scrollable alternating card list
+- [x] DONE — Accessible via 📖 button in life screen header (replaced settings gear)
+- [x] DONE — FAB scrolls to bottom of log; empty state shows friendly message
 
 ### 8.2 Stats Detail View
-- [ ] TODO — Tapping a stat card on the main screen should show a small tooltip or bottom sheet explaining what that stat does and what affects it
+- [x] DONE — Tapping any stat bar shows a bottom sheet with icon, progress bar, value, and description
+- [x] DONE — `_showStatTooltip` method added to `_LifeScreenState`; `_buildStatBar` accepts `onTap` callback
 
 ### 8.3 Onboarding Flow
-- [ ] TODO — Create a first-launch detection flag using shared_preferences
-- [ ] TODO — On first launch only, show 3–4 brief onboarding cards explaining stats and how the game works
-- [ ] TODO — Skip button available from card 1
-- [ ] TODO — Never show onboarding again after it has been seen or skipped
+- [x] DONE — `shared_preferences: ^2.2.2` added to pubspec.yaml
+- [x] DONE — Created `lib/screens/onboarding_screen.dart` with 4 cards, PageView, dot indicators
+- [x] DONE — Skip button on pages 0–2; "Start My Life 🇬🇭" on page 3
+- [x] DONE — Sets `onboarding_seen = true` via SharedPreferences on complete or skip
+- [x] DONE — `main.dart` checks flag before save check — onboarding shows on first launch only
 
 ### 8.4 Transition Animations
-- [ ] TODO — Add life stage transition moment — when the player crosses into a new life stage (e.g. Child → Teenager), show a brief full-screen overlay announcing the new stage with its color
+- [x] DONE — Life stage transition modal fires when player crosses stage boundaries
+- [x] DONE — Modal shows stage emoji, stage name in stage accent color, description, and "Let's Go" button
 
 ### 8.5 Character Avatar Progression
-- [ ] TODO — Update the header avatar emoji to reflect life stage (baby, child, teen, adult, elderly) rather than staying the same through the whole life
+- [x] DONE — Avatar emoji changes by gender + life stage (Toddler → Child → Teen → Adult → Senior)
+- [x] DONE — Avatar wrapped in colored ring matching current life stage accent color
+- [x] DONE — `_lifeStageColor` and `_avatarEmoji` helpers added to `_LifeScreenState`
 
 ---
 
@@ -497,7 +500,8 @@ lib/
     job_screen.dart                  [x] DONE (Phase 4 Redesign)
     social_screen.dart               [x] DONE (Phase 5)
     doing_screen.dart                [x] DONE (Phase 6)
-    life_log_screen.dart             [ ] TODO (Phase 8)
+    life_log_screen.dart             [x] DONE (Phase 8)
+    onboarding_screen.dart           [x] DONE (Phase 8)
   services/
     save_service.dart                [x] DONE (Phase 2)
     career_service.dart              [x] DONE (Phase 4)
@@ -515,6 +519,6 @@ lib/
 
 ## What To Do Next
 
-Phase 6 — Housing and Business Systems is complete, including the post-phase doing tab restructure (separate Housing and Business screens, scrollable main life screen).
-The next incomplete task is Phase 7 — Health System Refinement.
-Start there. Work downward through Phase 7 in order.
+Phase 8 — UI Polish is complete.
+The next incomplete task is Phase 9 — Monetization Integration.
+Do not start Phase 9 until the game loop has been tested on device and feels solid.
