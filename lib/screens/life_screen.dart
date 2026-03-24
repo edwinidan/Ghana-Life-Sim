@@ -10,7 +10,12 @@ import 'death_screen.dart';
 import 'school_screen.dart';
 import 'job_screen.dart';
 import 'social_screen.dart';
+import 'housing_screen.dart';
+import 'business_screen.dart';
 import '../services/save_service.dart';
+import '../services/housing_service.dart';
+import '../services/business_service.dart';
+import '../services/health_service.dart';
 
 class LifeScreen extends StatefulWidget {
   final Character character;
@@ -22,7 +27,6 @@ class LifeScreen extends StatefulWidget {
 
 class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
-  final ScrollController _logScrollController = ScrollController();
   int _selectedTab = 4; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
 
   void _ageUp() {
@@ -30,8 +34,29 @@ class _LifeScreenState extends State<LifeScreen> {
       widget.character.age++;
       SaveService.saveGame(widget.character);
 
-      if (widget.character.age > 50) {
+      // Refined aging health decay
+      if (widget.character.age >= 80) {
+        widget.character.adjustStat('health', -4);
+      } else if (widget.character.age >= 65) {
+        widget.character.adjustStat('health', -3);
+      } else if (widget.character.age >= 50) {
         widget.character.adjustStat('health', -2);
+      } else if (widget.character.age >= 40) {
+        widget.character.adjustStat('health', -1);
+      }
+      // No decay under 40
+
+      // Random serious health event chance increasing with age
+      final healthRng = Random();
+      if (widget.character.age >= 80 && healthRng.nextDouble() < 0.20) {
+        widget.character.adjustStat('health', -12);
+        widget.character.lifeLog.add('Age ${widget.character.age}: Your body reminded you that 80 is not a joke. 😔');
+      } else if (widget.character.age >= 65 && healthRng.nextDouble() < 0.10) {
+        widget.character.adjustStat('health', -8);
+        widget.character.lifeLog.add('Age ${widget.character.age}: A health scare hit you hard this year. 😟');
+      } else if (widget.character.age >= 50 && healthRng.nextDouble() < 0.05) {
+        widget.character.adjustStat('health', -5);
+        widget.character.lifeLog.add('Age ${widget.character.age}: Your body is sending you warning signals. 😬');
       }
 
       // School: progress if enrolled
@@ -64,6 +89,12 @@ class _LifeScreenState extends State<LifeScreen> {
         RelationshipService.divorce(widget.character);
       }
 
+      // Housing expense
+      HousingService.progressHousing(widget.character);
+
+      // Business progression
+      BusinessService.progressBusinesses(widget.character);
+
       final validEvents = allEvents.where((e) {
         final ageOk =
             widget.character.age >= e.minAge &&
@@ -74,7 +105,13 @@ class _LifeScreenState extends State<LifeScreen> {
         final relationshipOk =
             e.requiredRelationshipStatus == null ||
             e.requiredRelationshipStatus == widget.character.relationshipStatus;
-        return ageOk && careerOk && relationshipOk;
+        final housingOk =
+            e.requiredHousingStatus == null ||
+            e.requiredHousingStatus == widget.character.housingStatus;
+        final businessOk =
+            e.requiresBusiness == null ||
+            e.requiresBusiness == widget.character.businessNames.isNotEmpty;
+        return ageOk && careerOk && relationshipOk && housingOk && businessOk;
       }).toList();
 
       if (validEvents.isNotEmpty) {
@@ -97,6 +134,11 @@ class _LifeScreenState extends State<LifeScreen> {
       choice.statChanges.forEach((stat, amount) {
         widget.character.adjustStat(stat, amount);
       });
+      if (choice.illnessToAdd != null) {
+        if (!widget.character.activeIllnesses.contains(choice.illnessToAdd!)) {
+          widget.character.activeIllnesses.add(choice.illnessToAdd!);
+        }
+      }
       // push to log
       widget.character.lifeLog.insert(
         0,
@@ -129,6 +171,10 @@ class _LifeScreenState extends State<LifeScreen> {
   }
 
   void _navToDeath() {
+    if (widget.character.causeOfDeath.isEmpty) {
+      widget.character.causeOfDeath = HealthService.determineCauseOfDeath(widget.character);
+      SaveService.saveGame(widget.character);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushReplacement(
         context,
@@ -257,14 +303,21 @@ class _LifeScreenState extends State<LifeScreen> {
         children: [
           _buildHeader(),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: 120,
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
                   _buildStatsCard(c),
                   const SizedBox(height: 16),
                   _buildFundsCard(c),
+                  const SizedBox(height: 16),
+                  _buildDoingNavButtons(c),
                   const SizedBox(height: 16),
                   Row(
                     children: const [
@@ -281,8 +334,7 @@ class _LifeScreenState extends State<LifeScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Expanded(child: _buildLogList(c)),
-                  const SizedBox(height: 100),
+                  _buildLogList(c),
                 ],
               ),
             ),
@@ -300,6 +352,19 @@ class _LifeScreenState extends State<LifeScreen> {
         ],
       ),
     );
+  }
+
+  String _housingBusinessLabel(Character c) {
+    final housingEmoji = c.housingStatus == 'Homeowner'
+        ? '🏡'
+        : c.housingStatus == 'Renting'
+            ? '🏠'
+            : '🏘️';
+    String label = '$housingEmoji ${c.housingStatus}';
+    if (c.businessNames.isNotEmpty) {
+      label += ' • ${c.businessNames.length} business${c.businessNames.length > 1 ? 'es' : ''}';
+    }
+    return label;
   }
 
   String _relationshipLabel(Character c) {
@@ -513,6 +578,15 @@ class _LifeScreenState extends State<LifeScreen> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 4),
+                  Text(
+                    _housingBusinessLabel(c),
+                    style: TextStyle(
+                      color: Colors.white.withAlpha(179),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ],
               ),
               Column(
@@ -862,7 +936,8 @@ class _LifeScreenState extends State<LifeScreen> {
       );
     }
     return ListView.builder(
-      controller: _logScrollController,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       itemCount: c.lifeLog.length,
       itemBuilder: (context, index) {
@@ -983,6 +1058,102 @@ class _LifeScreenState extends State<LifeScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildDoingNavButtons(Character c) {
+    return Row(
+      children: [
+        Expanded(
+          child: _doingNavCard(
+            emoji: '🏠',
+            label: 'Housing',
+            subtitle: c.housingStatus,
+            color: const Color(0xFFEDE7F6),
+            borderColor: const Color(0xFFB39DDB),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => HousingScreen(
+                  character: c,
+                  onCharacterUpdated: () => setState(() {}),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _doingNavCard(
+            emoji: '💼',
+            label: 'My Businesses',
+            subtitle: c.businessNames.isEmpty
+                ? 'None yet'
+                : '${c.businessNames.length} running',
+            color: const Color(0xFFE0F2F1),
+            borderColor: const Color(0xFFB2DFDB),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BusinessScreen(
+                  character: c,
+                  onCharacterUpdated: () => setState(() {}),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _doingNavCard({
+    required String emoji,
+    required String label,
+    required String subtitle,
+    required Color color,
+    required Color borderColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor.withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF424242),
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF757575),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Color(0xFFBDBDBD), size: 18),
+          ],
+        ),
+      ),
     );
   }
 

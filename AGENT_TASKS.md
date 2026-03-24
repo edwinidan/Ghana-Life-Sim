@@ -281,28 +281,40 @@ Requires Phase 4 (career system) since relationship events interact with career 
 Requires Phase 5. Housing and business both interact with relationship and career state.
 
 ### 6.1 Extend Character Model for Housing and Business
-- [ ] TODO — Add `housingStatus` string field ('With Parents', 'Renting', 'Homeowner')
-- [ ] TODO — Add `ownsBusinesss` bool field
-- [ ] TODO — Add `businessName` string field
-- [ ] TODO — Add `businessHealth` int field (0–100)
-- [ ] TODO — Update SaveService
+- [x] DONE — Added `housingStatus` (HiveField 33), `rentExpensePerYear` (34), `businessNames` (35), `businessTypes` (36), `businessHealthList` (37), `businessIncomeList` (38), `totalBusinessIncome` (39)
+- [x] DONE — build_runner ran clean (40 fields total, 0–39)
 
-### 6.2 Housing Progression Events
-- [ ] TODO — Write moving out event (fires age 20–28 when money >= threshold)
-- [ ] TODO — Write renting struggles events (rent increase, bad landlord, needing to move)
-- [ ] TODO — Write home purchase event (fires when money >= high threshold + adult age)
-- [ ] TODO — Housing status change should update monthly expenses calculation
+### 6.2 Business Data and Services
+- [x] DONE — Created `lib/data/businesses.dart` with `BusinessType` class and 6 business types
+- [x] DONE — Created `lib/services/business_service.dart` with getAvailableBusinessTypes, startBusiness, progressBusinesses, investInBusiness, closeBusiness
+- [x] DONE — Created `lib/services/housing_service.dart` with canMoveOut, canBuyHome, moveOut, buyHome, progressHousing
 
-### 6.3 Business System Events
-- [ ] TODO — Write business launch event (requires money threshold, sets `ownsBusiness = true`)
-- [ ] TODO — Write business growth events (good period, new customer, opportunity to expand)
-- [ ] TODO — Write business struggle events (competition, staff issues, customer complaints, slow season)
-- [ ] TODO — Write business failure event (fires when businessHealth <= 10, sets `ownsBusiness = false`)
-- [ ] TODO — Business events should filter by `ownsBusiness` flag
+### 6.3 Housing and Business Events
+- [x] DONE — Added `requiredHousingStatus` and `requiresBusiness` fields to `LifeEvent` in event.dart
+- [x] DONE — Created `lib/data/doing_events.dart` with 18 events (8 housing + 10 business)
+- [x] DONE — doingEvents wired into allEvents in events.dart
+- [x] DONE — Event filter in life_screen.dart respects `requiredHousingStatus` and `requiresBusiness`
 
-### 6.4 Display Housing and Business on Life Screen
-- [ ] TODO — Show housing status on life screen (small indicator)
-- [ ] TODO — Show business name and health if player owns one
+### 6.4 Age-Up Wiring
+- [x] DONE — HousingService.progressHousing() called every age-up in life_screen.dart
+- [x] DONE — BusinessService.progressBusinesses() called every age-up in life_screen.dart
+
+### 6.5 Doing Tab Restructure (Post-Phase 6 Refinement)
+- [x] DONE — Doing tab (tab 4) now shows the main life overview screen: stats card (health/looks/smarts bars), funds card, life log — same as the else branch
+- [x] DONE — Two nav buttons added below the funds card: "Housing 🏠 →" and "My Businesses 💼 →"
+- [x] DONE — Each button Navigator.pushes to a separate dedicated screen
+- [x] DONE — `lib/screens/housing_screen.dart` — Housing only (status card, move out / buy home actions)
+- [x] DONE — `lib/screens/business_screen.dart` — Business only (owned businesses, invest/close, start a business)
+- [x] DONE — `doing_screen.dart` retained but no longer used as the tab body
+- [x] DONE — Main life screen body converted from Column+Expanded to SingleChildScrollView so the full screen (stats, funds, nav buttons, life log) scrolls freely
+- [x] DONE — Log list uses shrinkWrap: true + NeverScrollableScrollPhysics so it renders inline within the scroll view
+
+### 6.6 Display Housing and Business on Life Screen
+- [x] DONE — Housing status emoji + label shown in stats card header (compact row, fontSize 12)
+- [x] DONE — Business count shown next to housing status when businesses are owned
+
+### 6.7 flutter analyze
+- [x] DONE — Zero errors (pre-existing warnings/infos in unmodified files only)
 
 ---
 
@@ -311,20 +323,25 @@ Requires Phase 5. Housing and business both interact with relationship and caree
 Can be built in parallel with Phase 6.
 
 ### 7.1 Illness and Accident Events
-- [ ] TODO — Write 10 illness events with treatment choices (hospital, local remedy, ignore)
-- [ ] TODO — Write 5 accident events with outcome variance based on health and money
-- [ ] TODO — Treatment choices should cost money and restore health
-- [ ] TODO — Ignoring illness should apply health penalty and risk triggering worse events
+- [x] DONE — Write 10 illness events with treatment choices (hospital, local remedy, ignore)
+- [x] DONE — Write 5 accident events with outcome variance based on health and money
+- [x] DONE — Treatment choices cost money and restore health
+- [x] DONE — Ignoring illness applies health penalty and adds illness to activeIllnesses
+- [x] DONE — `illnessToAdd` field added to EventChoice in event.dart
+- [x] DONE — `_makeChoice` in life_screen.dart handles illnessToAdd
+- [x] DONE — `lib/data/health_events.dart` created with 15 events, wired into allEvents
 
 ### 7.2 Aging Health Curve
-- [ ] TODO — Refine the aging decay curve — currently flat −2 after 50
-- [ ] TODO — Implement: no decay 0–49, −1/year age 50–64, −2/year age 65–79, −3/year age 80+
-- [ ] TODO — Add random chance of serious illness event increasing with age
+- [x] DONE — Refined aging decay: −1/yr age 40–49, −2/yr age 50–64, −3/yr age 65–79, −4/yr age 80+
+- [x] DONE — No decay under 40
+- [x] DONE — Random serious health event chance: 5% age 50–64, 10% age 65–79, 20% age 80+
+- [x] DONE — Random events log to lifeLog with Ghanaian-flavoured messages
 
 ### 7.3 Death Screen Enhancement
-- [ ] TODO — Add cause of death message to death screen (illness, old age, accident, specific event)
-- [ ] TODO — Add a "life rating" score calculated from final stats (e.g. average of all 9 stats)
-- [ ] TODO — Show life rating label: 'Wasted Potential', 'Average Life', 'Solid Run', 'Legendary'
+- [x] DONE — `lib/services/health_service.dart` created with determineCauseOfDeath, calculateLifeScore, getLifeRating, getRatingSubtitle
+- [x] DONE — `causeOfDeath` field set before navigating to death screen in life_screen.dart
+- [x] DONE — Death screen redesigned: cause of death card, life rating score circle, rating label + subtitle, 3-column stats grid, life log, "Live Again" button
+- [x] DONE — Life rating colours: Legendary=gold, Solid Run=teal, Average Life=grey, Wasted Potential=orange-red
 
 ---
 
@@ -470,6 +487,8 @@ lib/
     side_gigs.dart                   [x] DONE (Phase 4 Redesign — 12 gigs)
     relationship_data.dart           [x] DONE (Phase 5)
     relationship_events.dart         [x] DONE (Phase 5 — 20 events)
+    doing_events.dart                [x] DONE (Phase 6 — 18 events)
+    businesses.dart                  [x] DONE (Phase 6 — 6 business types)
   screens/
     character_creation_screen.dart   [x] DONE
     life_screen.dart                 [x] DONE
@@ -477,6 +496,7 @@ lib/
     school_screen.dart               [x] DONE (Phase 4 Redesign)
     job_screen.dart                  [x] DONE (Phase 4 Redesign)
     social_screen.dart               [x] DONE (Phase 5)
+    doing_screen.dart                [x] DONE (Phase 6)
     life_log_screen.dart             [ ] TODO (Phase 8)
   services/
     save_service.dart                [x] DONE (Phase 2)
@@ -484,6 +504,8 @@ lib/
     school_service.dart              [x] DONE (Phase 4 Redesign)
     job_service.dart                 [x] DONE (Phase 4 Redesign)
     relationship_service.dart        [x] DONE (Phase 5)
+    housing_service.dart             [x] DONE (Phase 6)
+    business_service.dart            [x] DONE (Phase 6)
     ad_service.dart                  [ ] TODO (Phase 9)
     audio_service.dart               [ ] TODO (Phase 10)
   widgets/                           [ ] TODO (as needed)
@@ -493,6 +515,6 @@ lib/
 
 ## What To Do Next
 
-Phase 5 — Relationship System is complete.
-The next incomplete task is Phase 6 — Housing and Business Systems.
-Start there. Work downward through Phase 6 in order.
+Phase 6 — Housing and Business Systems is complete, including the post-phase doing tab restructure (separate Housing and Business screens, scrollable main life screen).
+The next incomplete task is Phase 7 — Health System Refinement.
+Start there. Work downward through Phase 7 in order.

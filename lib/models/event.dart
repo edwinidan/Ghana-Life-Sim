@@ -3,12 +3,14 @@ class EventChoice {
   final Map<String, int> statChanges;
   final String outcome;
   final String? careerToSet; // if set, triggers CareerService.enterCareer()
+  final String? illnessToAdd; // if set, adds illness name to activeIllnesses
 
   const EventChoice({
     required this.text,
     required this.statChanges,
     required this.outcome,
     this.careerToSet,
+    this.illnessToAdd,
   });
 }
 
@@ -21,6 +23,8 @@ class LifeEvent {
   final Map<String, int> statRequirements;
   final String? requiredCareer; // if set, only fires for this careerPath
   final String? requiredRelationshipStatus; // if set, only fires for this relationshipStatus
+  final String? requiredHousingStatus; // if set, only fires for this housingStatus
+  final bool? requiresBusiness; // if set, only fires when businessNames.isNotEmpty matches
 
   const LifeEvent({
     required this.title,
@@ -31,5 +35,7 @@ class LifeEvent {
     this.statRequirements = const {},
     this.requiredCareer,
     this.requiredRelationshipStatus,
+    this.requiredHousingStatus,
+    this.requiresBusiness,
   });
 }

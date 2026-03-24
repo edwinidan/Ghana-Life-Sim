@@ -79,6 +79,27 @@ class Character extends HiveObject {
   @HiveField(32)
   String sidePartnerName; // name of person being cheated with, '' if not cheating
 
+  @HiveField(33)
+  String housingStatus; // 'With Parents', 'Renting', 'Homeowner'
+  @HiveField(34)
+  int rentExpensePerYear; // money stat deducted per age-up while renting
+  @HiveField(35)
+  List<String> businessNames; // names of all owned businesses
+  @HiveField(36)
+  List<String> businessTypes; // type matching by index
+  @HiveField(37)
+  List<int> businessHealthList; // health 0–100 per business
+  @HiveField(38)
+  List<int> businessIncomeList; // monthly income per business in GHS
+  @HiveField(39)
+  int totalBusinessIncome; // sum of all business incomes
+
+  @HiveField(40)
+  String causeOfDeath; // set when character dies, '' if alive
+
+  @HiveField(41)
+  List<String> activeIllnesses; // current illnesses affecting the character
+
   Character({required this.name, required this.gender})
     : age = 0,
       isAlive = true,
@@ -102,6 +123,15 @@ class Character extends HiveObject {
       numberOfChildren = 0,
       isCheating = false,
       sidePartnerName = '',
+      housingStatus = 'With Parents',
+      rentExpensePerYear = 0,
+      businessNames = [],
+      businessTypes = [],
+      businessHealthList = [],
+      businessIncomeList = [],
+      totalBusinessIncome = 0,
+      causeOfDeath = '',
+      activeIllnesses = [],
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),

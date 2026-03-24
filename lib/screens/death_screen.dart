@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import '../models/character.dart';
 import 'character_creation_screen.dart';
 import '../services/save_service.dart';
+import '../services/health_service.dart';
 
 class DeathScreen extends StatelessWidget {
   final Character character;
@@ -10,11 +10,14 @@ class DeathScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int lifeScore = HealthService.calculateLifeScore(character);
+    final String rating = HealthService.getLifeRating(lifeScore);
+    final String subtitle = HealthService.getRatingSubtitle(rating);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFCFAFF),
       body: Stack(
         children: [
-          // Main scrollable content
           Column(
             children: [
               _buildHeader(),
@@ -24,20 +27,20 @@ class DeathScreen extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
-                      _buildLegacyCard(),
+                      _buildDeathCard(),
                       const SizedBox(height: 16),
-                      _buildWealthGrid(),
+                      _buildLifeRatingCard(lifeScore, rating, subtitle, context),
                       const SizedBox(height: 16),
-                      _buildLifeAchievements(context),
-                      const SizedBox(height: 140), // Space for bottom actions
+                      _buildStatsGrid(context),
+                      const SizedBox(height: 16),
+                      _buildLifeLog(),
+                      const SizedBox(height: 140),
                     ],
                   ),
                 ),
               ),
             ],
           ),
-
-          // Bottom sticky actions
           Align(
             alignment: Alignment.bottomCenter,
             child: _buildBottomActions(context),
@@ -54,11 +57,7 @@ class DeathScreen extends StatelessWidget {
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0x33B39DDB))),
         boxShadow: [
-          BoxShadow(
-            color: Color(0x0DB39DDB),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-          )
+          BoxShadow(color: Color(0x0DB39DDB), blurRadius: 20, offset: Offset(0, 4))
         ],
       ),
       child: Center(
@@ -89,7 +88,7 @@ class DeathScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegacyCard() {
+  Widget _buildDeathCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -102,7 +101,7 @@ class DeathScreen extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.3),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -115,26 +114,12 @@ class DeathScreen extends StatelessWidget {
             height: 80,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
             ),
-            child: Center(
-              // Grayscale emoji effect
-              child: Opacity(
-                opacity: 0.8,
-                child: Text(
-                  character.gender == 'Male' ? '💀' : '💀',
-                  style: const TextStyle(fontSize: 40),
-                ),
-              ),
+            child: const Center(
+              child: Text('💀', style: TextStyle(fontSize: 40)),
             ),
           ),
           Text(
@@ -151,9 +136,9 @@ class DeathScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: Text(
               'Final Stage: ${character.lifeStage}',
@@ -166,150 +151,71 @@ class DeathScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Column(
-            children: [
-              Text(
-                '${character.age}',
+          Text(
+            '${character.age}',
+            style: const TextStyle(
+              fontSize: 56,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'YEARS OF LIFE',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: Colors.white70,
+              letterSpacing: 3,
+            ),
+          ),
+          if (character.causeOfDeath.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+              ),
+              child: Text(
+                character.causeOfDeath,
                 style: const TextStyle(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w900,
                   color: Colors.white,
-                  height: 1.0,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'YEARS OF IMPACT',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white70,
-                  letterSpacing: 3,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
-            child: const Text(
-              '"Passed away peacefully in their sleep."',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontStyle: FontStyle.italic,
-                height: 1.5,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildWealthGrid() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0x0DB39DDB)),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFB39DDB).withOpacity(0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const Text(
-                  'TOTAL WEALTH',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF9E9E9E),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '\$${character.money}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF424242),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0x0DB39DDB)),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFB39DDB).withOpacity(0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const Text(
-                  'NETWORK',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF9E9E9E),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.hub, color: Color(0xFF009688), size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${character.connections}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF424242),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _buildLifeRatingCard(int score, String rating, String subtitle, BuildContext context) {
+    final Color ratingColor;
+    switch (rating) {
+      case 'Legendary':
+        ratingColor = const Color(0xFFFFD54F);
+        break;
+      case 'Solid Run':
+        ratingColor = const Color(0xFF4DB6AC);
+        break;
+      case 'Average Life':
+        ratingColor = const Color(0xFF9E9E9E);
+        break;
+      default: // Wasted Potential
+        ratingColor = const Color(0xFFFF7043);
+    }
 
-  Widget _buildLifeAchievements(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -317,7 +223,106 @@ class DeathScreen extends StatelessWidget {
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.08),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'LIFE RATING',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF9E9E9E),
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Score circle
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ratingColor.withValues(alpha: 0.12),
+              border: Border.all(color: ratingColor, width: 3),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$score',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: ratingColor,
+                      height: 1.0,
+                    ),
+                  ),
+                  Text(
+                    '/ 100',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: ratingColor.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            rating.toUpperCase(),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: ratingColor,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF757575),
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsGrid(BuildContext context) {
+    final stats = [
+      ('❤️', 'Health', character.health),
+      ('😊', 'Happy', character.happiness),
+      ('🧠', 'Smarts', character.smarts),
+      ('✨', 'Looks', character.looks),
+      ('💰', 'Money', character.money),
+      ('⭐', 'Rep', character.reputation),
+      ('💪', 'Discipline', character.discipline),
+      ('🏃', 'Streets', character.streetSense),
+      ('🤝', 'Connect', character.connections),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0x0DB39DDB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -327,7 +332,7 @@ class DeathScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'LIFE ACHIEVEMENTS',
+            'FINAL STATS',
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
@@ -335,88 +340,108 @@ class DeathScreen extends StatelessWidget {
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           GridView.count(
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 3.2,
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 16,
-            children: [
-              _buildStatBar('Happiness', Icons.sentiment_satisfied, character.happiness, const Color(0xFFFFF9C4), context),
-              _buildStatBar('Health', Icons.favorite, character.health, const Color(0xFFF8BBD0), context),
-              _buildStatBar('Smarts', Icons.psychology, character.smarts, const Color(0xFFB2DFDB), context),
-              _buildStatBar('Looks', Icons.face, character.looks, const Color(0xFFE0E0E0), context),
-              _buildStatBar('Reputation', Icons.star, character.reputation, const Color(0xFF7C4DFF), context),
-              _buildStatBar('Connect', Icons.hub, character.connections, const Color(0xFF009688), context),
-              _buildStatBar('Streets', Icons.directions_run, character.streetSense, const Color(0xFFFF9800), context),
-              _buildStatBar('Discipline', Icons.timer, character.discipline, const Color(0xFF3F51B5), context),
-            ],
+            childAspectRatio: 2.2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 12,
+            children: stats.map((s) => _buildStatCell(s.$1, s.$2, s.$3)).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatBar(String label, IconData icon, int value, Color color, BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildStatCell(String emoji, String label, int value) {
+    return Row(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 14, color: color == const Color(0xFFE0E0E0) ? Colors.grey : color),
-                const SizedBox(width: 4),
-                Text(
-                  label.toUpperCase(),
-                  style: const TextStyle(
-                    color: Color(0xFF757575),
-                    fontSize: 9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5,
-                  ),
+        Text(emoji, style: const TextStyle(fontSize: 18)),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF9E9E9E),
+                  letterSpacing: 0.5,
                 ),
-              ],
-            ),
-            Text(
-              '$value%',
-              style: const TextStyle(
-                color: Color(0xFF757575),
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Container(
-          height: 8,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F5),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 2,
-              )
+              Text(
+                '$value',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF424242),
+                ),
+              ),
             ],
-          ),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: (value / 100) * (MediaQuery.of(context).size.width / 2.8), // approximate width mapping
-              height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLifeLog() {
+    if (character.lifeLog.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0x0DB39DDB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'LIFE LOG',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF9E9E9E),
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...character.lifeLog.take(20).map(
+            (entry) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('•  ', style: TextStyle(color: Color(0xFFB39DDB), fontSize: 12)),
+                  Expanded(
+                    child: Text(
+                      entry,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF616161),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -426,8 +451,8 @@ class DeathScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.0),
-            Colors.white.withOpacity(0.95),
+            Colors.white.withValues(alpha: 0.0),
+            Colors.white.withValues(alpha: 0.95),
             Colors.white,
           ],
           begin: Alignment.topCenter,
@@ -438,78 +463,43 @@ class DeathScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              await SaveService.deleteSave();
-              if (context.mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CharacterCreationScreen()),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Ink(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF34D399), Color(0xFF14B8A6)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                await SaveService.deleteSave();
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CharacterCreationScreen()),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                backgroundColor: const Color(0xFF34D399),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF34D399).withOpacity(0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  )
+                elevation: 0,
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.restart_alt, size: 24),
+                  SizedBox(width: 12),
+                  Text(
+                    'LIVE AGAIN',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ],
               ),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 60, minWidth: double.infinity),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.restart_alt, color: Colors.white, size: 24),
-                    SizedBox(width: 12),
-                    Text(
-                      'START NEW LIFE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.leaderboard, size: 16, color: Color(0xFF9E9E9E)),
-              SizedBox(width: 8),
-              Text(
-                'VIEW GLOBAL LEADERBOARD',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF9E9E9E),
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ],
           ),
         ],
       ),
