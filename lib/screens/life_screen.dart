@@ -262,11 +262,11 @@ class _LifeScreenState extends State<LifeScreen> {
       builder: (ctx) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16.2),
           ),
           backgroundColor: Colors.white,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(18),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,28 +275,28 @@ class _LifeScreenState extends State<LifeScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 7.2,
+                        vertical: 3.6,
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFB39DDB).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6.5),
                       ),
                       child: Text(
                         'Age ${widget.character.age}',
                         style: const TextStyle(
                           color: Color(0xFF5E35B1),
-                          fontSize: 12,
+                          fontSize: 10.8,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10.8),
                     Expanded(
                       child: Text(
                         event.title,
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 16.2,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF424242),
                         ),
@@ -304,35 +304,35 @@ class _LifeScreenState extends State<LifeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14.4),
                 Text(
                   event.description,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 13.5,
                     color: Color(0xFF757575),
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 21.6),
                 ...event.choices.map((choice) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: 10.8),
                     child: InkWell(
                       onTap: () => _makeChoice(choice),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(9.7),
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14.4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF7F7FF),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(9.7),
                           border: Border.all(color: const Color(0xFFE0E0E0)),
                         ),
                         child: Text(
                           choice.text,
                           style: const TextStyle(
                             color: Color(0xFF424242),
-                            fontSize: 14,
+                            fontSize: 12.6,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -375,35 +375,35 @@ class _LifeScreenState extends State<LifeScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                bottom: 120,
+                left: 18,
+                right: 18,
+                bottom: 108,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14.4),
                   _buildStatsCard(c),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14.4),
                   _buildFundsCard(c),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14.4),
                   _buildDoingNavButtons(c),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14.4),
                   Row(
                     children: const [
-                      Icon(Icons.history, color: Color(0x99B39DDB), size: 20),
-                      SizedBox(width: 8),
+                      Icon(Icons.history, color: Color(0x99B39DDB), size: 18),
+                      SizedBox(width: 7.2),
                       Text(
                         'Recent Journey',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14.4,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF757575),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10.8),
                   _buildLogList(c),
                 ],
               ),
@@ -468,30 +468,30 @@ class _LifeScreenState extends State<LifeScreen> {
       context: context,
       barrierDismissible: true,
       builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19.4)),
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(28.8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(stageEmojis[stageName] ?? '🧑', style: const TextStyle(fontSize: 64)),
-              const SizedBox(height: 16),
+              Text(stageEmojis[stageName] ?? '🧑', style: const TextStyle(fontSize: 57.6)),
+              const SizedBox(height: 14.4),
               Text(
                 'NEW LIFE STAGE',
-                style: TextStyle(fontSize: 11, color: Colors.grey[500], letterSpacing: 2, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 9.9, color: Colors.grey[500], letterSpacing: 2, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
               Text(
                 stageName,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: _lifeStageColor(stageName)),
+                style: TextStyle(fontSize: 25.2, fontWeight: FontWeight.w900, color: _lifeStageColor(stageName)),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
               Text(
                 _getStageDescription(stageName),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
+                style: TextStyle(fontSize: 12.6, color: Colors.grey[600], height: 1.5),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 21.6),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -499,11 +499,11 @@ class _LifeScreenState extends State<LifeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _lifeStageColor(stageName),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                    padding: const EdgeInsets.symmetric(vertical: 12.6),
                     elevation: 0,
                   ),
-                  child: const Text("Let's Go", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: const Text("Let's Go", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.4)),
                 ),
               ),
             ],
@@ -531,36 +531,36 @@ class _LifeScreenState extends State<LifeScreen> {
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(21.6)),
       ),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        padding: const EdgeInsets.fromLTRB(21.6, 10.8, 21.6, 28.8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Handle bar
             Container(
-              width: 32,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
+              width: 28.8,
+              height: 3.6,
+              margin: const EdgeInsets.only(bottom: 18),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(1.6),
               ),
             ),
-            Icon(icon, size: 48, color: color == Colors.white ? Colors.grey[400] : color),
-            const SizedBox(height: 12),
+            Icon(icon, size: 43.2, color: color == Colors.white ? Colors.grey[400] : color),
+            const SizedBox(height: 10.8),
             Text(
               label,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF424242)),
+              style: const TextStyle(fontSize: 19.8, fontWeight: FontWeight.w900, color: Color(0xFF424242)),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14.4),
             // Progress bar
             Container(
-              height: 12,
+              height: 10.8,
               decoration: BoxDecoration(
                 color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6.5),
               ),
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -569,22 +569,22 @@ class _LifeScreenState extends State<LifeScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: color == Colors.white ? const Color(0xFFB39DDB) : color,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6.5),
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7.2),
             Text(
               '$value / 100',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 11.7, fontWeight: FontWeight.w700, color: Colors.grey[600]),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             Text(
               description,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
+              style: TextStyle(fontSize: 12.6, color: Colors.grey[600], height: 1.5),
             ),
           ],
         ),
@@ -594,7 +594,7 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.only(top: 50, left: 24, right: 24, bottom: 16),
+      padding: const EdgeInsets.only(top: 45, left: 21.6, right: 21.6, bottom: 14.4),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0x33B39DDB))),
@@ -605,31 +605,31 @@ class _LifeScreenState extends State<LifeScreen> {
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 43.2,
+                height: 43.2,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: _lifeStageColor(widget.character.lifeStage),
-                    width: 3,
+                    width: 2.7,
                   ),
                   color: Colors.white,
                 ),
                 child: Center(
                   child: Text(
                     _avatarEmoji(widget.character.gender, widget.character.lifeStage),
-                    style: const TextStyle(fontSize: 26),
+                    style: const TextStyle(fontSize: 23.4),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10.8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
                     'GHANA LIFE',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16.2,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF424242),
                       letterSpacing: -0.5,
@@ -638,7 +638,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     'LIVE INTENTIONALLY',
                     style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 8.1,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFFB39DDB),
                       letterSpacing: 2,
@@ -654,13 +654,13 @@ class _LifeScreenState extends State<LifeScreen> {
                 onTap: _simLife,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                    horizontal: 10.8,
+                    vertical: 7.2,
                   ),
-                  margin: const EdgeInsets.only(right: 8),
+                  margin: const EdgeInsets.only(right: 7.2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF9800).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(9.7),
                     border: Border.all(
                       color: const Color(0xFFFF9800).withOpacity(0.2),
                     ),
@@ -670,14 +670,14 @@ class _LifeScreenState extends State<LifeScreen> {
                       Icon(
                         Icons.fast_forward,
                         color: Color(0xFFFF9800),
-                        size: 16,
+                        size: 14.4,
                       ),
-                      SizedBox(width: 4),
+                      SizedBox(width: 3.6),
                       Text(
                         'SIM LIFE',
                         style: TextStyle(
                           color: Color(0xFFFF9800),
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -693,15 +693,15 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                 ),
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: const Color(0x0DB39DDB),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(9.7),
                     border: Border.all(color: const Color(0x1AB39DDB)),
                   ),
                   child: const Center(
-                    child: Text('📖', style: TextStyle(fontSize: 18)),
+                    child: Text('📖', style: TextStyle(fontSize: 16.2)),
                   ),
                 ),
               ),
@@ -714,9 +714,9 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildStatsCard(Character c) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(21.6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(19.4),
         gradient: const LinearGradient(
           colors: [Color(0xFFB39DDB), Color(0xFFD1C4E9), Color(0xFF90CAF9)],
           begin: Alignment.topLeft,
@@ -743,18 +743,18 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     c.name,
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 25.2,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5.4),
                   Row(
                     children: [
                       Container(
-                        width: 8,
-                        height: 8,
+                        width: 7.2,
+                        height: 7.2,
                         decoration: const BoxDecoration(
                           color: Color(0xFFB2DFDB),
                           shape: BoxShape.circle,
@@ -763,34 +763,34 @@ class _LifeScreenState extends State<LifeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 7.2),
                       Text(
                         c.lifeStage,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 12.6,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                   if (c.relationshipStatus != 'Single') ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3.6),
                     Text(
                       _relationshipLabel(c),
                       style: TextStyle(
                         color: Colors.white.withAlpha(204),
-                        fontSize: 12,
+                        fontSize: 10.8,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3.6),
                   Text(
                     _housingBusinessLabel(c),
                     style: TextStyle(
                       color: Colors.white.withAlpha(179),
-                      fontSize: 12,
+                      fontSize: 10.8,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -802,7 +802,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     '${c.age}',
                     style: const TextStyle(
-                      fontSize: 48,
+                      fontSize: 43.2,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       height: 1.0,
@@ -811,7 +811,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   const Text(
                     'YEARS OLD',
                     style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 8.1,
                       fontWeight: FontWeight.w900,
                       color: Colors.white70,
                       letterSpacing: 2,
@@ -821,7 +821,7 @@ class _LifeScreenState extends State<LifeScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 21.6),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -849,7 +849,7 @@ class _LifeScreenState extends State<LifeScreen> {
             ],
           ),
           if (c.careerPath != 'None') ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 14.4),
             _buildCareerRow(c),
           ],
         ],
@@ -878,16 +878,16 @@ class _LifeScreenState extends State<LifeScreen> {
         : '';
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10.8, vertical: 9),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(9.7),
         border: Border.all(color: Colors.white.withOpacity(0.25)),
       ),
       child: Row(
         children: [
-          const Text('💼', style: TextStyle(fontSize: 18)),
-          const SizedBox(width: 10),
+          const Text('💼', style: TextStyle(fontSize: 16.2)),
+          const SizedBox(width: 9),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -899,28 +899,28 @@ class _LifeScreenState extends State<LifeScreen> {
                         '${c.careerPath}${levelTitle.isNotEmpty ? ' — $levelTitle' : ''}',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 10.8,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.3,
                         ),
                       ),
                     ),
                     if (c.educationLevel != 'None') ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 7.2),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
+                          horizontal: 5.4,
+                          vertical: 1.8,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(4.9),
                         ),
                         child: Text(
                           c.educationLevel,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: 9,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -929,33 +929,33 @@ class _LifeScreenState extends State<LifeScreen> {
                   ],
                 ),
                 if (incomeText.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1.8),
                   Text(
                     incomeText,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: 11,
+                      fontSize: 9.9,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
                 if (c.sideGigs.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1.8),
                   Text(
                     '+ ${c.sideGigs.length} side gig${c.sideGigs.length > 1 ? 's' : ''}',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
-                      fontSize: 11,
+                      fontSize: 9.9,
                     ),
                   ),
                 ],
                 if (totalText.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1.8),
                   Text(
                     totalText,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 11,
+                      fontSize: 9.9,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -979,13 +979,13 @@ class _LifeScreenState extends State<LifeScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 14, color: color),
-                const SizedBox(width: 6),
+                Icon(icon, size: 12.6, color: color),
+                const SizedBox(width: 5.4),
                 Text(
                   label.toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1,
                   ),
@@ -996,27 +996,27 @@ class _LifeScreenState extends State<LifeScreen> {
               '$value%',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 5.4),
         Container(
-          height: 10,
+          height: 9,
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8.1),
           ),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Container(
               width: (value / 100) * (MediaQuery.of(context).size.width / 2.8),
-              height: 10,
+              height: 9,
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8.1),
               ),
             ),
           ),
@@ -1028,10 +1028,10 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildFundsCard(Character c) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16.2),
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
@@ -1047,26 +1047,26 @@ class _LifeScreenState extends State<LifeScreen> {
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 43.2,
+                height: 43.2,
                 decoration: BoxDecoration(
                   color: const Color(0xFFB2DFDB).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 child: const Icon(
                   Icons.account_balance_wallet,
                   color: Color(0xFF009688),
-                  size: 24,
+                  size: 21.6,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14.4),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'AVAILABLE FUNDS',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF9E9E9E),
                       letterSpacing: 1.5,
@@ -1075,7 +1075,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     '\$${c.money}',
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 25.2,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF424242),
                       letterSpacing: -0.5,
@@ -1087,19 +1087,19 @@ class _LifeScreenState extends State<LifeScreen> {
             ],
           ),
           Container(
-            width: 60,
-            height: 6,
+            width: 54,
+            height: 5.4,
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(4.9),
             ),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                width: 30,
+                width: 27,
                 decoration: BoxDecoration(
                   color: const Color(0xFFB2DFDB).withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(4.9),
                 ),
               ),
             ),
@@ -1135,12 +1135,12 @@ class _LifeScreenState extends State<LifeScreen> {
         }
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 14.4),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(13),
               border: Border.all(color: const Color(0x0DB39DDB)),
               boxShadow: [
                 BoxShadow(
@@ -1156,13 +1156,13 @@ class _LifeScreenState extends State<LifeScreen> {
                 Column(
                   children: [
                     Container(
-                      width: 36,
-                      height: 36,
+                      width: 32.4,
+                      height: 32.4,
                       decoration: BoxDecoration(
                         color: index == 0
                             ? const Color(0xFFB39DDB)
                             : const Color(0xFFF0F0F7),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(9.7),
                         boxShadow: index == 0
                             ? [
                                 BoxShadow(
@@ -1182,24 +1182,24 @@ class _LifeScreenState extends State<LifeScreen> {
                                 ? Colors.white
                                 : const Color(0xFF9E9E9E),
                             fontWeight: FontWeight.w900,
-                            fontSize: 14,
+                            fontSize: 12.6,
                           ),
                         ),
                       ),
                     ),
                     if (index < c.lifeLog.length - 1)
                       Container(
-                        width: 2,
-                        height: 30,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        width: 1.8,
+                        height: 27,
+                        margin: const EdgeInsets.symmetric(vertical: 7.2),
                         decoration: BoxDecoration(
                           color: const Color(0xFFB39DDB).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(1.6),
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14.4),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1210,7 +1210,7 @@ class _LifeScreenState extends State<LifeScreen> {
                           Text(
                             'AGE $ageStr',
                             style: const TextStyle(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFF9E9E9E),
                               letterSpacing: 1.5,
@@ -1218,16 +1218,16 @@ class _LifeScreenState extends State<LifeScreen> {
                           ),
                           const Icon(
                             Icons.schedule,
-                            size: 16,
+                            size: 14.4,
                             color: Color(0xFFE0E0E0),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 5.4),
                       Text(
                         outcome,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 12.6,
                           color: Color(0xFF757575),
                           fontWeight: FontWeight.w500,
                           height: 1.4,
@@ -1265,7 +1265,7 @@ class _LifeScreenState extends State<LifeScreen> {
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10.8),
         Expanded(
           child: _doingNavCard(
             emoji: '💼',
@@ -1301,16 +1301,16 @@ class _LifeScreenState extends State<LifeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12.6, vertical: 12.6),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(13),
           border: Border.all(color: borderColor.withOpacity(0.5)),
         ),
         child: Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(width: 10),
+            Text(emoji, style: const TextStyle(fontSize: 19.8)),
+            const SizedBox(width: 9),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1318,7 +1318,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     label,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 11.7,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF424242),
                     ),
@@ -1326,14 +1326,14 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 11,
+                      fontSize: 9.9,
                       color: Color(0xFF757575),
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFFBDBDBD), size: 18),
+            const Icon(Icons.chevron_right, color: Color(0xFFBDBDBD), size: 16.2),
           ],
         ),
       ),
@@ -1342,10 +1342,10 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildBottomNav() {
     return Container(
-      padding: const EdgeInsets.only(top: 20, bottom: 32, left: 16, right: 16),
+      padding: const EdgeInsets.only(top: 18, bottom: 28.8, left: 14.4, right: 14.4),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(21.6)),
         border: const Border(top: BorderSide(color: Color(0x1AB39DDB))),
         boxShadow: [
           BoxShadow(
@@ -1370,8 +1370,8 @@ class _LifeScreenState extends State<LifeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 43.2,
+                        height: 43.2,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
@@ -1390,14 +1390,14 @@ class _LifeScreenState extends State<LifeScreen> {
                         child: const Icon(
                           Icons.add,
                           color: Colors.white,
-                          size: 28,
+                          size: 25.2,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 5.4),
                       const Text(
                         'AGE',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFFB2DFDB),
                           letterSpacing: 1,
@@ -1421,7 +1421,7 @@ class _LifeScreenState extends State<LifeScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = tabIndex),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 7.2),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1430,13 +1430,13 @@ class _LifeScreenState extends State<LifeScreen> {
               color: isActive
                   ? const Color(0xFFB39DDB)
                   : const Color(0xFFBDBDBD),
-              size: 28,
+              size: 25.2,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5.4),
             Text(
               label.toUpperCase(),
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w900,
                 color: isActive
                     ? const Color(0xFFB39DDB)

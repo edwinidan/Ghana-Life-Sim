@@ -28,7 +28,7 @@ class _HousingScreenState extends State<HousingScreen> {
         content: Text(message),
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
       ),
     );
   }
@@ -56,10 +56,10 @@ class _HousingScreenState extends State<HousingScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(13),
         border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
@@ -71,8 +71,8 @@ class _HousingScreenState extends State<HousingScreen> {
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 40)),
-          const SizedBox(width: 16),
+          Text(emoji, style: const TextStyle(fontSize: 36)),
+          const SizedBox(width: 14.4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,16 +80,16 @@ class _HousingScreenState extends State<HousingScreen> {
                 Text(
                   status,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16.2,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF424242),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 5.4),
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 11.7,
                     color: Color(0xFF757575),
                     height: 1.4,
                   ),
@@ -158,16 +158,16 @@ class _HousingScreenState extends State<HousingScreen> {
 
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14.4),
         decoration: BoxDecoration(
           color: const Color(0xFFF5F5F5),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(9.7),
           border: Border.all(color: Colors.black.withOpacity(0.05)),
         ),
         child: Text(
           reason,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: 11.7,
             color: Color(0xFF9E9E9E),
             fontStyle: FontStyle.italic,
             height: 1.4,
@@ -187,10 +187,10 @@ class _HousingScreenState extends State<HousingScreen> {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16.2),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(11.3),
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(0.4),
@@ -205,16 +205,16 @@ class _HousingScreenState extends State<HousingScreen> {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14.4,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3.6),
             Text(
               subtitle,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 10.8,
                 color: Colors.white.withOpacity(0.85),
               ),
             ),
@@ -233,7 +233,7 @@ class _HousingScreenState extends State<HousingScreen> {
           'Housing 🏠',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 18,
+            fontSize: 16.2,
             color: Color(0xFF424242),
           ),
         ),
@@ -242,36 +242,36 @@ class _HousingScreenState extends State<HousingScreen> {
         iconTheme: const IconThemeData(color: Color(0xFFB39DDB)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: const Color(0x33B39DDB)),
+          child: Container(height: 0.9, color: const Color(0x33B39DDB)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Current Status',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF9E9E9E),
                 letterSpacing: 1.2,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             _buildStatusCard(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 21.6),
             const Text(
               'Actions',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF9E9E9E),
                 letterSpacing: 1.2,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             _buildActions(),
           ],
         ),

@@ -23,18 +23,18 @@ class DeathScreen extends StatelessWidget {
               _buildHeader(),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14.4),
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       _buildDeathCard(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 14.4),
                       _buildLifeRatingCard(lifeScore, rating, subtitle, context),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 14.4),
                       _buildStatsGrid(context),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 14.4),
                       _buildLifeLog(),
-                      const SizedBox(height: 140),
+                      const SizedBox(height: 126),
                     ],
                   ),
                 ),
@@ -52,7 +52,7 @@ class DeathScreen extends StatelessWidget {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.only(top: 60, bottom: 20),
+      padding: const EdgeInsets.only(top: 54, bottom: 18),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0x33B39DDB))),
@@ -66,17 +66,17 @@ class DeathScreen extends StatelessWidget {
             Text(
               'GHANA LIFE',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF424242),
                 letterSpacing: -0.5,
               ),
             ),
-            SizedBox(height: 2),
+            SizedBox(height: 1.8),
             Text(
               'LIVE INTENTIONALLY',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFFB39DDB),
                 letterSpacing: 3,
@@ -91,9 +91,9 @@ class DeathScreen extends StatelessWidget {
   Widget _buildDeathCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(21.6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(19.4),
         gradient: const LinearGradient(
           colors: [Color(0xFF8E9EAB), Color(0xFFB39DDB), Color(0xFF90CAF9)],
           begin: Alignment.topLeft,
@@ -110,81 +110,81 @@ class DeathScreen extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 80,
-            height: 80,
-            margin: const EdgeInsets.only(bottom: 16),
+            width: 72,
+            height: 72,
+            margin: const EdgeInsets.only(bottom: 14.4),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16.2),
               border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
             ),
             child: const Center(
-              child: Text('💀', style: TextStyle(fontSize: 40)),
+              child: Text('💀', style: TextStyle(fontSize: 36)),
             ),
           ),
           Text(
             character.name,
             style: const TextStyle(
-              fontSize: 32,
+              fontSize: 28.8,
               fontWeight: FontWeight.w900,
               color: Colors.white,
               height: 1.1,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7.2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10.8, vertical: 3.6),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16.2),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: Text(
               'Final Stage: ${character.lifeStage}',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 10.8,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 21.6),
           Text(
             '${character.age}',
             style: const TextStyle(
-              fontSize: 56,
+              fontSize: 50.4,
               fontWeight: FontWeight.w900,
               color: Colors.white,
               height: 1.0,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3.6),
           const Text(
             'YEARS OF LIFE',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               color: Colors.white70,
               letterSpacing: 3,
             ),
           ),
           if (character.causeOfDeath.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14.4),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(13),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
               ),
               child: Text(
                 character.causeOfDeath,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 13,
+                  fontSize: 11.7,
                   fontStyle: FontStyle.italic,
                   height: 1.5,
                   fontWeight: FontWeight.w500,
@@ -216,10 +216,10 @@ class DeathScreen extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(21.6),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16.2),
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
@@ -234,21 +234,21 @@ class DeathScreen extends StatelessWidget {
           const Text(
             'LIFE RATING',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               color: Color(0xFF9E9E9E),
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           // Score circle
           Container(
-            width: 100,
-            height: 100,
+            width: 90,
+            height: 90,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: ratingColor.withValues(alpha: 0.12),
-              border: Border.all(color: ratingColor, width: 3),
+              border: Border.all(color: ratingColor, width: 2.7),
             ),
             child: Center(
               child: Column(
@@ -257,7 +257,7 @@ class DeathScreen extends StatelessWidget {
                   Text(
                     '$score',
                     style: TextStyle(
-                      fontSize: 36,
+                      fontSize: 32.4,
                       fontWeight: FontWeight.w900,
                       color: ratingColor,
                       height: 1.0,
@@ -266,7 +266,7 @@ class DeathScreen extends StatelessWidget {
                   Text(
                     '/ 100',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 9.9,
                       fontWeight: FontWeight.w700,
                       color: ratingColor.withValues(alpha: 0.7),
                     ),
@@ -275,21 +275,21 @@ class DeathScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14.4),
           Text(
             rating.toUpperCase(),
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 19.8,
               fontWeight: FontWeight.w900,
               color: ratingColor,
               letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7.2),
           Text(
             subtitle,
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 11.7,
               fontStyle: FontStyle.italic,
               color: Color(0xFF757575),
               height: 1.4,
@@ -315,10 +315,10 @@ class DeathScreen extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16.2),
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
@@ -334,13 +334,13 @@ class DeathScreen extends StatelessWidget {
           const Text(
             'FINAL STATS',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               color: Color(0xFF9E9E9E),
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14.4),
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
@@ -358,8 +358,8 @@ class DeathScreen extends StatelessWidget {
   Widget _buildStatCell(String emoji, String label, int value) {
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 18)),
-        const SizedBox(width: 6),
+        Text(emoji, style: const TextStyle(fontSize: 16.2)),
+        const SizedBox(width: 5.4),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,7 +368,7 @@ class DeathScreen extends StatelessWidget {
               Text(
                 label.toUpperCase(),
                 style: const TextStyle(
-                  fontSize: 8,
+                  fontSize: 7.2,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF9E9E9E),
                   letterSpacing: 0.5,
@@ -377,7 +377,7 @@ class DeathScreen extends StatelessWidget {
               Text(
                 '$value',
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14.4,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF424242),
                 ),
@@ -393,10 +393,10 @@ class DeathScreen extends StatelessWidget {
     if (character.lifeLog.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16.2),
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
@@ -412,25 +412,25 @@ class DeathScreen extends StatelessWidget {
           const Text(
             'LIFE LOG',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               color: Color(0xFF9E9E9E),
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10.8),
           ...character.lifeLog.take(20).map(
             (entry) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 3.6),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('•  ', style: TextStyle(color: Color(0xFFB39DDB), fontSize: 12)),
+                  const Text('•  ', style: TextStyle(color: Color(0xFFB39DDB), fontSize: 10.8)),
                   Expanded(
                     child: Text(
                       entry,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 10.8,
                         color: Color(0xFF616161),
                         height: 1.4,
                       ),
@@ -447,7 +447,7 @@ class DeathScreen extends StatelessWidget {
 
   Widget _buildBottomActions(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 24, bottom: 40, left: 32, right: 32),
+      padding: const EdgeInsets.only(top: 21.6, bottom: 36, left: 28.8, right: 28.8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -476,23 +476,23 @@ class DeathScreen extends StatelessWidget {
                 }
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 18),
+                padding: const EdgeInsets.symmetric(vertical: 16.2),
                 backgroundColor: const Color(0xFF34D399),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 elevation: 0,
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.restart_alt, size: 24),
-                  SizedBox(width: 12),
+                  Icon(Icons.restart_alt, size: 21.6),
+                  SizedBox(width: 10.8),
                   Text(
                     'LIVE AGAIN',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14.4,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1,
                     ),

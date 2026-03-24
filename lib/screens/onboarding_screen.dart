@@ -67,14 +67,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.topRight,
               child: isLastPage
-                  ? const SizedBox(height: 48)
+                  ? const SizedBox(height: 43.2)
                   : TextButton(
                       onPressed: _complete,
                       child: const Text(
                         'Skip',
                         style: TextStyle(
                           color: Color(0xFF9E9E9E),
-                          fontSize: 14,
+                          fontSize: 12.6,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -90,42 +90,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final card = _cards[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 28.8),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(card.emoji, style: const TextStyle(fontSize: 72)),
+                        Text(card.emoji, style: const TextStyle(fontSize: 64.8)),
                         // Ghana flag accent — only on first page
                         if (card.isFirstPage) ...[
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10.8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               _flagDot(const Color(0xFFCE1126)),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 5.4),
                               _flagDot(const Color(0xFFFCD116)),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 5.4),
                               _flagDot(const Color(0xFF006B3F)),
                             ],
                           ),
                         ],
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 28.8),
                         Text(
                           card.title,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 24,
+                            fontSize: 21.6,
                             fontWeight: FontWeight.w900,
                             color: Color(0xFF424242),
                             height: 1.2,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14.4),
                         Text(
                           card.body,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 14.4,
                             color: Color(0xFF757575),
                             height: 1.6,
                           ),
@@ -139,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // Dot indicators
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: 14.4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(_cards.length, (i) {
@@ -147,11 +147,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: active ? 20 : 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    height: 7.2,
+                    margin: const EdgeInsets.symmetric(horizontal: 2.7),
                     decoration: BoxDecoration(
                       color: active ? const Color(0xFFB39DDB) : const Color(0xFFE0E0E0),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(3.2),
                     ),
                   );
                 }),
@@ -160,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // Next / Start button
             Padding(
-              padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+              padding: const EdgeInsets.fromLTRB(28.8, 0, 28.8, 28.8),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -173,15 +173,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFB39DDB),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14.4),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(13),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
                     isLastPage ? 'Start My Life 🇬🇭' : 'Next',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                    style: const TextStyle(fontSize: 14.4, fontWeight: FontWeight.w900),
                   ),
                 ),
               ),
@@ -194,8 +194,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _flagDot(Color color) {
     return Container(
-      width: 10,
-      height: 10,
+      width: 9,
+      height: 9,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }

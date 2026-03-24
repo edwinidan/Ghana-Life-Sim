@@ -49,7 +49,7 @@ class _SocialScreenState extends State<SocialScreen> {
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
         backgroundColor: const Color(0xFF5E35B1),
       ),
     );
@@ -62,12 +62,12 @@ class _SocialScreenState extends State<SocialScreen> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(21.6)),
       ),
       backgroundColor: Colors.white,
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(25.2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,18 +75,18 @@ class _SocialScreenState extends State<SocialScreen> {
               const Text(
                 'Someone Caught Your Eye 💕',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF424242),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14.4),
               _infoRow('Name', name),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
               _infoRow('Job', c.partnerJob),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
               _infoRow('Vibe', c.partnerPersonality),
-              const SizedBox(height: 28),
+              const SizedBox(height: 25.2),
               Row(
                 children: [
                   Expanded(
@@ -105,7 +105,7 @@ class _SocialScreenState extends State<SocialScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10.8),
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
@@ -118,9 +118,9 @@ class _SocialScreenState extends State<SocialScreen> {
                         Navigator.pop(ctx);
                       },
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12.6),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(11.3),
                         ),
                         side: const BorderSide(color: Color(0xFFE0E0E0)),
                       ),
@@ -135,7 +135,7 @@ class _SocialScreenState extends State<SocialScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
             ],
           ),
         );
@@ -148,7 +148,7 @@ class _SocialScreenState extends State<SocialScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.2)),
         title: const Text('Are you sure?', style: TextStyle(fontWeight: FontWeight.w900)),
         content: const Text(
           'Divorce is final. The lawyer will eat. Your happiness will not be the same.',
@@ -181,7 +181,7 @@ class _SocialScreenState extends State<SocialScreen> {
         Text(
           '$label: ',
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 12.6,
             fontWeight: FontWeight.w700,
             color: Color(0xFF757575),
           ),
@@ -189,7 +189,7 @@ class _SocialScreenState extends State<SocialScreen> {
         Text(
           value,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 12.6,
             fontWeight: FontWeight.w600,
             color: Color(0xFF424242),
           ),
@@ -202,10 +202,10 @@ class _SocialScreenState extends State<SocialScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 12.6),
         decoration: BoxDecoration(
           color: const Color(0xFFF8BBD0),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(11.3),
         ),
         child: Center(
           child: Text(
@@ -213,7 +213,7 @@ class _SocialScreenState extends State<SocialScreen> {
             style: const TextStyle(
               fontWeight: FontWeight.w800,
               color: Color(0xFFC2185B),
-              fontSize: 15,
+              fontSize: 13.5,
             ),
           ),
         ),
@@ -225,8 +225,8 @@ class _SocialScreenState extends State<SocialScreen> {
     return OutlinedButton(
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(vertical: 10.8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
         side: const BorderSide(color: Color(0xFFE53935)),
       ),
       child: Text(
@@ -241,10 +241,10 @@ class _SocialScreenState extends State<SocialScreen> {
 
   Widget _card({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16.2),
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
@@ -269,7 +269,7 @@ class _SocialScreenState extends State<SocialScreen> {
               const Text(
                 'Relationship Status',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 11.7,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF9E9E9E),
                   letterSpacing: 1,
@@ -277,17 +277,17 @@ class _SocialScreenState extends State<SocialScreen> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.6),
                 decoration: BoxDecoration(
                   color: _statusColor(c.relationshipStatus).withAlpha(30),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6.5),
                 ),
                 child: Text(
                   c.relationshipStatus,
                   style: TextStyle(
                     color: _statusColor(c.relationshipStatus),
                     fontWeight: FontWeight.w800,
-                    fontSize: 13,
+                    fontSize: 11.7,
                   ),
                 ),
               ),
@@ -296,24 +296,24 @@ class _SocialScreenState extends State<SocialScreen> {
           if (c.relationshipStatus == 'Dating' ||
               c.relationshipStatus == 'Engaged' ||
               c.relationshipStatus == 'Married') ...[
-            const SizedBox(height: 16),
-            const Divider(height: 1, color: Color(0xFFF5F5F5)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14.4),
+            const Divider(height: 0.9, color: Color(0xFFF5F5F5)),
+            const SizedBox(height: 14.4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 39.6,
+                  height: 39.6,
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8BBD0).withAlpha(80),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(11.3),
                   ),
                   child: const Center(
-                    child: Text('💕', style: TextStyle(fontSize: 22)),
+                    child: Text('💕', style: TextStyle(fontSize: 19.8)),
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12.6),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,32 +321,32 @@ class _SocialScreenState extends State<SocialScreen> {
                       Text(
                         c.partnerName,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14.4,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF424242),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1.8),
                       Text(
                         c.partnerJob,
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 11.7,
                           color: Color(0xFF9E9E9E),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 5.4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(horizontal: 7.2, vertical: 2.7),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEDE7F6),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(4.9),
                         ),
                         child: Text(
                           c.partnerPersonality,
                           style: const TextStyle(
                             color: Color(0xFF7E57C2),
-                            fontSize: 11,
+                            fontSize: 9.9,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -356,34 +356,34 @@ class _SocialScreenState extends State<SocialScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12.6),
             Row(
               children: [
                 const Text(
                   'Bond',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10.8,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF9E9E9E),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 9),
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(4.9),
                     child: LinearProgressIndicator(
                       value: c.relationshipScore / 100,
-                      minHeight: 8,
+                      minHeight: 7.2,
                       backgroundColor: const Color(0xFFF5F5F5),
                       color: _scoreColor(c.relationshipScore),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 9),
                 Text(
                   '${c.relationshipScore}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10.8,
                     fontWeight: FontWeight.w800,
                     color: _scoreColor(c.relationshipScore),
                   ),
@@ -391,22 +391,22 @@ class _SocialScreenState extends State<SocialScreen> {
               ],
             ),
             if (c.relationshipStatus == 'Married') ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
               Text(
                 'Children: ${c.numberOfChildren}',
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 11.7,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF757575),
                 ),
               ),
             ],
             if (c.isCheating) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 7.2),
               Text(
                 '👀 You are seeing ${c.sidePartnerName} on the side. God is watching.',
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 10.8,
                   color: Color(0xFFE53935),
                   fontWeight: FontWeight.w600,
                 ),
@@ -429,13 +429,13 @@ class _SocialScreenState extends State<SocialScreen> {
           const Text(
             'Actions',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11.7,
               fontWeight: FontWeight.w900,
               color: Color(0xFF9E9E9E),
               letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14.4),
 
           // Single
           if (status == 'Single' && c.age >= 16) ...[
@@ -461,7 +461,7 @@ class _SocialScreenState extends State<SocialScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
             ],
             _redOutlinedButton(
               label: 'Cheat 👀',
@@ -472,7 +472,7 @@ class _SocialScreenState extends State<SocialScreen> {
                 _snack('You started seeing someone on the side. God is watching. 👀');
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             _redOutlinedButton(
               label: 'Break Up 💔',
               onTap: () {
@@ -495,7 +495,7 @@ class _SocialScreenState extends State<SocialScreen> {
                 _snack('You are married! The jollof was excellent. 💒');
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             _redOutlinedButton(
               label: 'Call Off Engagement',
               onTap: () {
@@ -519,7 +519,7 @@ class _SocialScreenState extends State<SocialScreen> {
                   _snack('A new life has arrived. The house will never be quiet again. 👶');
                 },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
             ],
             _redOutlinedButton(
               label: 'Cheat 👀',
@@ -530,7 +530,7 @@ class _SocialScreenState extends State<SocialScreen> {
                 _snack('You started seeing someone on the side. God is watching. 👀');
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             _redOutlinedButton(
               label: 'Divorce',
               onTap: _showDivorceDialog,
@@ -551,7 +551,7 @@ class _SocialScreenState extends State<SocialScreen> {
               'Take your time. There is no rush.',
               style: TextStyle(
                 color: Color(0xFF9E9E9E),
-                fontSize: 14,
+                fontSize: 12.6,
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -570,15 +570,15 @@ class _SocialScreenState extends State<SocialScreen> {
           const Text(
             'Social Stats',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11.7,
               fontWeight: FontWeight.w900,
               color: Color(0xFF9E9E9E),
               letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12.6),
           _statRow('Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 9),
           _statRow('Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFF06292)),
         ],
       ),
@@ -588,12 +588,12 @@ class _SocialScreenState extends State<SocialScreen> {
   Widget _statRow(String label, IconData icon, int value, Color color) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 8),
+        Icon(icon, size: 14.4, color: color),
+        const SizedBox(width: 7.2),
         Text(
           label,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: 11.7,
             fontWeight: FontWeight.w600,
             color: Color(0xFF757575),
           ),
@@ -602,7 +602,7 @@ class _SocialScreenState extends State<SocialScreen> {
         Text(
           '$value',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 11.7,
             fontWeight: FontWeight.w800,
             color: color,
           ),
@@ -624,7 +624,7 @@ class _SocialScreenState extends State<SocialScreen> {
         title: const Text(
           'Social Life 💕',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w900,
             color: Color(0xFF424242),
             letterSpacing: -0.3,
@@ -632,16 +632,16 @@ class _SocialScreenState extends State<SocialScreen> {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: const Color(0x1AB39DDB)),
+          child: Container(height: 0.9, color: const Color(0x1AB39DDB)),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 108),
         children: [
           _buildStatusSection(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14.4),
           _buildActionsSection(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14.4),
           _buildStatsSection(),
         ],
       ),

@@ -29,7 +29,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
         content: Text(message),
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
       ),
     );
   }
@@ -70,26 +70,26 @@ class _BusinessScreenState extends State<BusinessScreen> {
         const Text(
           'MY BUSINESSES',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 11.7,
             fontWeight: FontWeight.w900,
             color: Color(0xFF9E9E9E),
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10.8),
         if (businesses.isEmpty)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(11.3),
               border: Border.all(color: Colors.black.withOpacity(0.05)),
             ),
             child: const Text(
               "You don't own any businesses yet. Start one below.",
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 color: Color(0xFF9E9E9E),
                 fontStyle: FontStyle.italic,
               ),
@@ -97,18 +97,18 @@ class _BusinessScreenState extends State<BusinessScreen> {
           )
         else ...[
           ...List.generate(businesses.length, (i) => _buildBusinessCard(i)),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3.6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14.4, vertical: 10.8),
             decoration: BoxDecoration(
               color: const Color(0xFFE8F5E9),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8.1),
             ),
             child: Text(
               'Total income: GHS ${_fmt(c.totalBusinessIncome)}/month',
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12.6,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF2E7D32),
               ),
@@ -137,12 +137,12 @@ class _BusinessScreenState extends State<BusinessScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 12.6),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14.4),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(11.3),
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
@@ -158,13 +158,13 @@ class _BusinessScreenState extends State<BusinessScreen> {
             Row(
               children: [
                 Text(_emojiForType(type),
-                    style: const TextStyle(fontSize: 24)),
-                const SizedBox(width: 10),
+                    style: const TextStyle(fontSize: 21.6)),
+                const SizedBox(width: 9),
                 Expanded(
                   child: Text(
                     name,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF424242),
                     ),
@@ -172,79 +172,79 @@ class _BusinessScreenState extends State<BusinessScreen> {
                 ),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      const EdgeInsets.symmetric(horizontal: 7.2, vertical: 2.7),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(4.9),
                   ),
                   child: Text(
                     type,
                     style: const TextStyle(
-                        fontSize: 10, color: Color(0xFF9E9E9E)),
+                        fontSize: 9, color: Color(0xFF9E9E9E)),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             Row(
               children: [
                 const Text(
                   'Health  ',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF757575)),
+                  style: TextStyle(fontSize: 10.8, color: Color(0xFF757575)),
                 ),
                 Expanded(
                   child: Stack(
                     children: [
                       Container(
-                        height: 8,
+                        height: 7.2,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(6.5),
                         ),
                       ),
                       FractionallySizedBox(
                         widthFactor: health / 100,
                         child: Container(
-                          height: 8,
+                          height: 7.2,
                           decoration: BoxDecoration(
                             color: healthColor,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6.5),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 7.2),
                 Text(
                   '$health%',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10.8,
                     fontWeight: FontWeight.w700,
                     color: healthColor,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7.2),
             Text(
               'Income: GHS ${_fmt(income)}/month',
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 color: Color(0xFF009688),
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 7.2),
                       side: const BorderSide(color: Color(0xFFB2DFDB)),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(6.5)),
                     ),
                     onPressed: () {
                       if (widget.character.money < 3) {
@@ -259,18 +259,18 @@ class _BusinessScreenState extends State<BusinessScreen> {
                     child: const Text(
                       'Invest Small 💰 (-3)',
                       style:
-                          TextStyle(fontSize: 12, color: Color(0xFF009688)),
+                          TextStyle(fontSize: 10.8, color: Color(0xFF009688)),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 7.2),
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 7.2),
                       side: const BorderSide(color: Color(0xFFB39DDB)),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(6.5)),
                     ),
                     onPressed: () {
                       if (widget.character.money < 8) {
@@ -285,26 +285,26 @@ class _BusinessScreenState extends State<BusinessScreen> {
                     child: const Text(
                       'Invest Big 💰💰 (-8)',
                       style:
-                          TextStyle(fontSize: 12, color: Color(0xFF7E57C2)),
+                          TextStyle(fontSize: 10.8, color: Color(0xFF7E57C2)),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7.2),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 7.2),
                   side: BorderSide(color: Colors.red.shade300),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(6.5)),
                 ),
                 onPressed: () => _confirmClose(index, name),
                 child: Text(
                   'Close Business',
-                  style: TextStyle(fontSize: 12, color: Colors.red.shade400),
+                  style: TextStyle(fontSize: 10.8, color: Colors.red.shade400),
                 ),
               ),
             ),
@@ -319,7 +319,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         title: const Text('Close Business?'),
         content: Text(
           'Are you sure you want to close $name? You\'ll get a small refund of 5 money units but your hustle ends here.',
@@ -335,7 +335,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(6.5)),
             ),
             onPressed: () {
               Navigator.of(ctx).pop();
@@ -362,25 +362,25 @@ class _BusinessScreenState extends State<BusinessScreen> {
         const Text(
           'START A BUSINESS',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 11.7,
             fontWeight: FontWeight.w900,
             color: Color(0xFF9E9E9E),
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10.8),
         if (available.isEmpty)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14.4),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(9.7),
             ),
             child: const Text(
               "You don't qualify for any businesses yet. Build your stats and money.",
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 color: Color(0xFF9E9E9E),
                 fontStyle: FontStyle.italic,
               ),
@@ -394,12 +394,12 @@ class _BusinessScreenState extends State<BusinessScreen> {
 
   Widget _buildBusinessTypeCard(BusinessType type) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 12.6),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14.4),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(11.3),
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
@@ -414,54 +414,54 @@ class _BusinessScreenState extends State<BusinessScreen> {
           children: [
             Row(
               children: [
-                Text(type.emoji, style: const TextStyle(fontSize: 28)),
-                const SizedBox(width: 10),
+                Text(type.emoji, style: const TextStyle(fontSize: 25.2)),
+                const SizedBox(width: 9),
                 Text(
                   type.name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14.4,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF424242),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7.2),
             Text(
               type.description,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 11.7,
                 color: Color(0xFF757575),
                 fontStyle: FontStyle.italic,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             Row(
               children: [
                 const Icon(Icons.payments_outlined,
-                    size: 14, color: Color(0xFF9E9E9E)),
-                const SizedBox(width: 4),
+                    size: 12.6, color: Color(0xFF9E9E9E)),
+                const SizedBox(width: 3.6),
                 Text(
                   'Startup: ${type.startupCost} money units',
                   style: const TextStyle(
-                      fontSize: 12, color: Color(0xFF9E9E9E)),
+                      fontSize: 10.8, color: Color(0xFF9E9E9E)),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14.4),
                 const Icon(Icons.trending_up,
-                    size: 14, color: Color(0xFF009688)),
-                const SizedBox(width: 4),
+                    size: 12.6, color: Color(0xFF009688)),
+                const SizedBox(width: 3.6),
                 Text(
                   'GHS ${_fmt(type.baseMonthlyIncome)}/mo',
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 10.8,
                     color: Color(0xFF009688),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -469,9 +469,9 @@ class _BusinessScreenState extends State<BusinessScreen> {
                   backgroundColor: const Color(0xFFB2DFDB),
                   foregroundColor: const Color(0xFF00695C),
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 10.8),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(8.1)),
                 ),
                 onPressed: () => _showStartBusinessDialog(type),
                 child: const Text(
@@ -492,24 +492,24 @@ class _BusinessScreenState extends State<BusinessScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         title: Text('Name Your ${type.name} ${type.emoji}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Give your business a name the whole neighbourhood will remember.',
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 11.7, color: Colors.grey.shade600),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10.8),
             TextField(
               controller: controller,
               decoration: InputDecoration(
                 hintText: "e.g. Kofi's ${type.name}",
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(8.1)),
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 10),
+                    horizontal: 10.8, vertical: 9),
               ),
               textCapitalization: TextCapitalization.words,
             ),
@@ -526,7 +526,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
               foregroundColor: const Color(0xFF00695C),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(6.5)),
             ),
             onPressed: () {
               final name = controller.text.trim();
@@ -558,7 +558,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
           'My Businesses 💼',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 18,
+            fontSize: 16.2,
             color: Color(0xFF424242),
           ),
         ),
@@ -567,18 +567,18 @@ class _BusinessScreenState extends State<BusinessScreen> {
         iconTheme: const IconThemeData(color: Color(0xFFB39DDB)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: const Color(0x33B39DDB)),
+          child: Container(height: 0.9, color: const Color(0x33B39DDB)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildMyBusinesses(),
-            const SizedBox(height: 28),
+            const SizedBox(height: 25.2),
             _buildStartBusiness(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 36),
           ],
         ),
       ),

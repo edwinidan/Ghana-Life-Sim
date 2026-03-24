@@ -41,7 +41,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
           content: const Text('Enter your name first', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
         ),
       );
       return;
@@ -83,7 +83,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                 children: [
                   // Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 21.6, vertical: 14.4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -96,7 +96,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                           child: const Text(
                             'GHANA LIFE',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 21.6,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
                               letterSpacing: -0.5,
@@ -104,8 +104,8 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                           ),
                         ),
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: 36,
+                          height: 36,
                           decoration: const BoxDecoration(
                             color: Color(0xFFE3E2E7),
                             shape: BoxShape.circle,
@@ -118,7 +118,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
 
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 120),
+                      padding: const EdgeInsets.only(left: 21.6, right: 21.6, top: 36, bottom: 108),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -127,40 +127,40 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                             'Begin Your Story',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 40,
+                              fontSize: 36,
                               height: 1.1,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFF1A1B1F),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 7.2),
                           const Text(
                             'Create your unique identity',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16.2,
                               color: Color(0xFF414755),
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 36),
 
                           const Padding(
-                            padding: EdgeInsets.only(left: 16),
+                            padding: EdgeInsets.only(left: 14.4),
                             child: Text(
                               "What's your name?",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 14.4,
                                 color: Color(0xFF1A1B1F),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10.8),
                           // Name Input
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(9.7),
                               border: Border.all(color: const Color(0x33C1C6D7)),
                               boxShadow: [
                                 BoxShadow(
@@ -174,7 +174,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                               controller: _nameController,
                               cursorColor: const Color(0xFF1A1B1F),
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 16.2,
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xFF1A1B1F),
                               ),
@@ -182,25 +182,25 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                                 hintText: 'Enter name...',
                                 hintStyle: TextStyle(color: Colors.black38, fontWeight: FontWeight.w400),
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.all(20),
+                                contentPadding: EdgeInsets.all(18),
                                 suffixIcon: Icon(Icons.edit, color: Color(0xFF0070EB)),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 28.8),
 
                           const Padding(
-                            padding: EdgeInsets.only(left: 16),
+                            padding: EdgeInsets.only(left: 14.4),
                             child: Text(
                               "Choose your essence",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 14.4,
                                 color: Color(0xFF1A1B1F),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14.4),
                           // Gender Selection Grid
                           Row(
                             children: [
@@ -212,7 +212,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                                   Colors.blue.shade500!,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 14.4),
                               Expanded(
                                 child: _buildGenderCard(
                                   'Female',
@@ -223,14 +223,14 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 28.8),
 
                           // Attributes Preview
                           Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(18),
                             decoration: BoxDecoration(
                               color: const Color(0xFFF4F3F8),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(13),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.05),
@@ -242,15 +242,15 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                             child: Row(
                               children: [
                                 Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 36,
+                                  height: 36,
                                   decoration: const BoxDecoration(
                                     color: Color(0xFFF6D9FF),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(Icons.psychology, color: Color(0xFF7201A2)),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 10.8),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +258,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                                       Text(
                                         'INITIAL STATS',
                                         style: TextStyle(
-                                          fontSize: 10,
+                                          fontSize: 9,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1.5,
                                           color: Color(0xFF414755),
@@ -267,7 +267,7 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                                       Text(
                                         'Randomizing Traits...',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14.4,
                                           fontWeight: FontWeight.bold,
                                           color: Color(0xFF1A1B1F),
                                         ),
@@ -276,8 +276,8 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                                   ),
                                 ),
                                 Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 36,
+                                  height: 36,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
                                     shape: BoxShape.circle,
@@ -300,15 +300,15 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(21.6),
               child: InkWell(
                 onTap: _startGame,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(13),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(13),
                     gradient: LinearGradient(
                       colors: [Colors.teal.shade500!, Colors.teal.shade700!],
                     ),
@@ -327,11 +327,11 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
                         'Begin Your Life',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: 10.8),
                       Icon(Icons.rocket_launch, color: Colors.white),
                     ],
                   ),
@@ -346,8 +346,8 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
 
   Widget _buildBlurredCircle(Color color) {
     return Container(
-      width: 256,
-      height: 256,
+      width: 230.4,
+      height: 230.4,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
@@ -368,10 +368,10 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
       onTap: () => setState(() => _selectedGender = gender),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(21.6),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(13),
           border: Border.all(
             color: isSelected ? const Color(0xFF0058BC) : const Color(0x1AC1C6D7),
             width: isSelected ? 2 : 1,
@@ -388,21 +388,21 @@ class _CharacterCreationScreenState extends State<CharacterCreationScreen>
         child: Column(
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 57.6,
+              height: 57.6,
               decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-              child: Icon(icon, size: 36, color: iconColor),
+              child: Icon(icon, size: 32.4, color: iconColor),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14.4),
             Text(
               gender,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1B1F)),
+              style: const TextStyle(fontSize: 16.2, fontWeight: FontWeight.bold, color: Color(0xFF1A1B1F)),
             ),
             if (isSelected) ...[
-              const SizedBox(height: 12),
-              const Icon(Icons.check_circle, color: Color(0xFF0058BC), size: 24),
+              const SizedBox(height: 10.8),
+              const Icon(Icons.check_circle, color: Color(0xFF0058BC), size: 21.6),
             ] else ...[
-              const SizedBox(height: 36), // 12 + 24 to match height
+              const SizedBox(height: 32.4), // 12 + 24 to match height
             ]
           ],
         ),
