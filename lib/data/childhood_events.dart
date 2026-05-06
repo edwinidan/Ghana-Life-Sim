@@ -158,8 +158,7 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Say he has no social life',
         statChanges: {'reputation': 5, 'discipline': -5, 'streetSense': 5},
-        outcome:
-            'Your mother slapped your mouth for talking back. Bad idea.',
+        outcome: 'Your mother slapped your mouth for talking back. Bad idea.',
       ),
       EventChoice(
         text: 'Promise to study with him',
@@ -433,8 +432,7 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Hide the meat and pretend finished',
         statChanges: {'streetSense': 8, 'discipline': -5, 'smarts': 5},
-        outcome:
-            'You performed a magic trick with the meat. Nobody noticed.',
+        outcome: 'You performed a magic trick with the meat. Nobody noticed.',
       ),
     ],
   ),
@@ -565,8 +563,7 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Hide your face in embarrassment',
         statChanges: {'happiness': -5, 'reputation': -3, 'streetSense': 2},
-        outcome:
-            'You power-walked to the stage, grab the book, and run off.',
+        outcome: 'You power-walked to the stage, grab the book, and run off.',
       ),
       EventChoice(
         text: 'Smile and wave at them proudly',
@@ -680,8 +677,7 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Eat quickly while looking away',
         statChanges: {'health': 5, 'happiness': -5, 'connections': -8},
-        outcome:
-            'You ate it all. Your stomach is full but the guilt is heavy.',
+        outcome: 'You ate it all. Your stomach is full but the guilt is heavy.',
       ),
     ],
   ),
@@ -785,14 +781,12 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Hold your breath and stay strong',
         statChanges: {'discipline': 8, 'connections': 5, 'health': 2},
-        outcome:
-            'You stayed by the bed. Your aunt was very happy to see you.',
+        outcome: 'You stayed by the bed. Your aunt was very happy to see you.',
       ),
       EventChoice(
         text: 'Complain and wait outside',
         statChanges: {'happiness': 5, 'connections': -5, 'discipline': -5},
-        outcome:
-            'You waited outside playing in the dirt. Much better.',
+        outcome: 'You waited outside playing in the dirt. Much better.',
       ),
     ],
   ),
@@ -879,8 +873,7 @@ final List<LifeEvent> childhoodEvents = [
       EventChoice(
         text: 'Sit there and face the consequences',
         statChanges: {'discipline': 8, 'reputation': -5, 'happiness': -8},
-        outcome:
-            'You faced the music. The music was loud and involved a belt.',
+        outcome: 'You faced the music. The music was loud and involved a belt.',
       ),
     ],
   ),
@@ -933,4 +926,3 @@ final List<LifeEvent> childhoodEvents = [
     ],
   ),
 ];
-
