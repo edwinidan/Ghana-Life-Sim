@@ -4,12 +4,13 @@ import '../data/businesses.dart';
 
 class BusinessService {
   static final _random = Random();
+  static const int startupCostUnit = 1000;
 
   /// Returns business types the character can afford and qualifies for.
   /// Does NOT filter out types already owned — duplicates are allowed.
   static List<BusinessType> getAvailableBusinessTypes(Character character) {
     return allBusinessTypes.where((type) {
-      if (type.startupCost > character.money) return false;
+      if (startupCashCost(type) > character.cash) return false;
       if (type.minAge > character.age) return false;
       for (final entry in type.statRequirements.entries) {
         final statValue = _getStatValue(character, entry.key);
@@ -21,8 +22,12 @@ class BusinessService {
 
   /// Start a new business. Deducts startup cost, adds to all lists, logs.
   static void startBusiness(
-      Character character, BusinessType type, String businessName) {
-    character.money = (character.money - type.startupCost).clamp(0, 100);
+    Character character,
+    BusinessType type,
+    String businessName,
+  ) {
+    character.adjustCash(-startupCashCost(type));
+    character.money = (character.money - 3).clamp(0, 100);
     character.businessNames.add(businessName);
     character.businessTypes.add(type.name);
     character.businessHealthList.add(70);
@@ -45,8 +50,11 @@ class BusinessService {
       final baseIncome = character.businessIncomeList[i];
 
       // Income gain: (health/100) * baseIncome * 12 / 1000, capped at +20
-      final incomeGain =
-          ((health / 100) * baseIncome * 12 / 1000).floor().clamp(0, 20);
+      final incomeGain = ((health / 100) * baseIncome * 12 / 1000)
+          .floor()
+          .clamp(0, 20);
+      final cashGain = ((health / 100) * baseIncome * 12).floor();
+      character.adjustCash(cashGain);
       character.adjustStat('money', incomeGain);
 
       // Health drift: -5 to +3
@@ -58,13 +66,16 @@ class BusinessService {
       if (newHealth <= 0) {
         final failedName = character.businessNames[i];
         final failedType = character.businessTypes[i];
+        final cleanupDebt = (baseIncome * 2).clamp(1000, 15000);
         character.businessNames.removeAt(i);
         character.businessTypes.removeAt(i);
         character.businessHealthList.removeAt(i);
         character.businessIncomeList.removeAt(i);
+        character.adjustDebt(cleanupDebt);
+        character.adjustStat('reputation', -8);
         character.lifeLog.insert(
           0,
-          'Age ${character.age}: Your $failedName ($failedType) has collapsed. The debts were too much. 😔',
+          'Age ${character.age}: Your $failedName ($failedType) has collapsed, leaving GHS $cleanupDebt in cleanup debt. 😔',
         );
       }
     }
@@ -76,20 +87,24 @@ class BusinessService {
   /// Invest in a business to boost its health.
   /// investmentLevel: 1 = small (cost 3, health +15), 2 = big (cost 8, health +30).
   static void investInBusiness(
-      Character character, int businessIndex, int investmentLevel) {
-    if (businessIndex < 0 ||
-        businessIndex >= character.businessNames.length) {
+    Character character,
+    int businessIndex,
+    int investmentLevel,
+  ) {
+    if (businessIndex < 0 || businessIndex >= character.businessNames.length) {
       return;
     }
 
-    final int cost = investmentLevel == 1 ? 3 : 8;
+    final int cost = investmentLevel == 1 ? 3000 : 8000;
     final int healthBoost = investmentLevel == 1 ? 15 : 30;
     final String size = investmentLevel == 1 ? 'small' : 'big';
 
-    character.money = (character.money - cost).clamp(0, 100);
+    character.adjustCash(-cost);
     character.businessHealthList[businessIndex] =
         (character.businessHealthList[businessIndex] + healthBoost).clamp(
-            0, 100);
+          0,
+          100,
+        );
 
     final name = character.businessNames[businessIndex];
     final typeEmoji = _emojiForType(character.businessTypes[businessIndex]);
@@ -100,10 +115,9 @@ class BusinessService {
     character.save();
   }
 
-  /// Close a business voluntarily. Partial refund of 5 money units.
+  /// Close a business voluntarily. Partial refund of GHS 5,000.
   static void closeBusiness(Character character, int businessIndex) {
-    if (businessIndex < 0 ||
-        businessIndex >= character.businessNames.length) {
+    if (businessIndex < 0 || businessIndex >= character.businessNames.length) {
       return;
     }
 
@@ -113,7 +127,7 @@ class BusinessService {
     character.businessHealthList.removeAt(businessIndex);
     character.businessIncomeList.removeAt(businessIndex);
 
-    character.money = (character.money + 5).clamp(0, 100);
+    character.adjustCash(5000);
     _syncTotalIncome(character);
     character.lifeLog.insert(
       0,
@@ -128,6 +142,9 @@ class BusinessService {
       (sum, income) => sum + income,
     );
   }
+
+  static int startupCashCost(BusinessType type) =>
+      type.startupCost * startupCostUnit;
 
   static int _getStatValue(Character character, String stat) {
     switch (stat) {

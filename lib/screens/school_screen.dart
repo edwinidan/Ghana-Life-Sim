@@ -62,7 +62,10 @@ class SchoolScreen extends StatelessWidget {
           const SizedBox(height: 10.8),
 
           if (character.isEnrolled)
-            _buildInfoCard('Focus on your studies 📖', 'You are already enrolled. Come back after you graduate.')
+            _buildInfoCard(
+              'Focus on your studies 📖',
+              'You are already enrolled. Come back after you graduate.',
+            )
           else if (availablePrograms.isEmpty)
             _buildInfoCard(
               'No programs available',
@@ -78,7 +81,8 @@ class SchoolScreen extends StatelessWidget {
   }
 
   Widget _buildEnrolledCard(EducationProgram program) {
-    final progress = 1.0 - (character.yearsLeftInSchool / program.durationYears);
+    final progress =
+        1.0 - (character.yearsLeftInSchool / program.durationYears);
 
     return Container(
       padding: const EdgeInsets.all(14.4),
@@ -100,7 +104,10 @@ class SchoolScreen extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7.2, vertical: 3.6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 7.2,
+                  vertical: 3.6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFB2DFDB),
                   borderRadius: BorderRadius.circular(6.5),
@@ -141,7 +148,9 @@ class SchoolScreen extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.white.withOpacity(0.6),
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF009688)),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF009688),
+              ),
               minHeight: 7.2,
             ),
           ),
@@ -204,9 +213,19 @@ class SchoolScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.6, color: Color(0xFF424242))),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12.6,
+              color: Color(0xFF424242),
+            ),
+          ),
           const SizedBox(height: 3.6),
-          Text(body, style: const TextStyle(fontSize: 11.7, color: Color(0xFF9E9E9E))),
+          Text(
+            body,
+            style: const TextStyle(fontSize: 11.7, color: Color(0xFF9E9E9E)),
+          ),
         ],
       ),
     );
@@ -247,7 +266,9 @@ class SchoolScreen extends StatelessWidget {
                 const SizedBox(width: 14.4),
                 _buildDetail(
                   '💰 Cost/year',
-                  program.costPerYear == 0 ? 'Free' : '${program.costPerYear} money',
+                  program.costPerYear == 0
+                      ? 'Free'
+                      : 'GHS ${_formatCash(SchoolService.programYearlyCashCost(program))}',
                 ),
               ],
             ),
@@ -268,10 +289,14 @@ class SchoolScreen extends StatelessWidget {
                   onCharacterUpdated();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Enrolled in ${program.name}! Good luck. 📖'),
+                      content: Text(
+                        'Enrolled in ${program.name}! Good luck. 📖',
+                      ),
                       backgroundColor: const Color(0xFF5E35B1),
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.1),
+                      ),
                     ),
                   );
                 },
@@ -280,7 +305,9 @@ class SchoolScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12.6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9.7),
+                  ),
                 ),
                 child: const Text(
                   'Enroll',
@@ -304,9 +331,18 @@ class SchoolScreen extends StatelessWidget {
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 10.8, fontWeight: FontWeight.w700, color: Color(0xFF616161)),
+          style: const TextStyle(
+            fontSize: 10.8,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF616161),
+          ),
         ),
       ],
     );
   }
+
+  String _formatCash(int n) => n.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
 }

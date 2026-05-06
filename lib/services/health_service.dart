@@ -43,6 +43,8 @@ class HealthService {
     score += character.health * 0.10;
     score += character.happiness * 0.20;
     score += character.money * 0.15;
+    score += (character.cash / 10000).clamp(0, 10);
+    score -= (character.debt / 10000).clamp(0, 15);
     score += character.reputation * 0.15;
     score += character.smarts * 0.10;
 

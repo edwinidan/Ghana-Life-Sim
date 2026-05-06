@@ -28,17 +28,24 @@ class LifeScreen extends StatefulWidget {
 
 class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
+  final Random _rng = Random();
+  final List<LifeEvent> _pendingEvents = [];
   int _selectedTab = 4; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
   String _previousLifeStage = '';
 
   static const Map<String, String> _statDescriptions = {
-    'health':      'Your physical wellbeing. Reaches 0 and it\'s over. Protect it. 💪',
-    'happiness':   'How content you are. Affects relationships and life rating. 😊',
-    'smarts':      'Your intelligence. Needed for education and tech careers. 🧠',
-    'looks':       'Your appearance. Affects romance and entertainment careers. ✨',
-    'money':       'Your financial power. Needed for housing, business, and marriage. 💰',
-    'reputation':  'How Ghana sees you. Affects connections and opportunities. 🌟',
-    'discipline':  'Your work ethic. Needed for promotions and civil service. 📋',
+    'health':
+        'Your physical wellbeing. Reaches 0 and it\'s over. Protect it. 💪',
+    'happiness':
+        'How content you are. Affects relationships and life rating. 😊',
+    'smarts': 'Your intelligence. Needed for education and tech careers. 🧠',
+    'looks': 'Your appearance. Affects romance and entertainment careers. ✨',
+    'money':
+        'Your financial power. Needed for housing, business, and marriage. 💰',
+    'reputation':
+        'How Ghana sees you. Affects connections and opportunities. 🌟',
+    'discipline':
+        'Your work ethic. Needed for promotions and civil service. 📋',
     'streetSense': 'Your hustle instinct. Needed for trade and survival. 🛣️',
     'connections': 'Your network. Opens doors money alone cannot. 🤝',
   };
@@ -51,47 +58,201 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Color _lifeStageColor(String stage) {
     switch (stage) {
-      case 'Toddler':     return const Color(0xFFF8BBD0);
-      case 'Child':       return const Color(0xFFB2DFDB);
-      case 'Teenager':    return const Color(0xFFB39DDB);
-      case 'Young Adult': return const Color(0xFF90CAF9);
-      case 'Adult':       return const Color(0xFFA5D6A7);
-      case 'Middle Aged': return const Color(0xFFFFCC80);
-      case 'Senior':      return const Color(0xFFCFD8DC);
-      default:            return const Color(0xFFB39DDB);
+      case 'Toddler':
+        return const Color(0xFFF8BBD0);
+      case 'Child':
+        return const Color(0xFFB2DFDB);
+      case 'Teenager':
+        return const Color(0xFFB39DDB);
+      case 'Young Adult':
+        return const Color(0xFF90CAF9);
+      case 'Adult':
+        return const Color(0xFFA5D6A7);
+      case 'Middle Aged':
+        return const Color(0xFFFFCC80);
+      case 'Senior':
+        return const Color(0xFFCFD8DC);
+      default:
+        return const Color(0xFFB39DDB);
     }
   }
 
   String _avatarEmoji(String gender, String lifeStage) {
     if (gender == 'Male') {
       switch (lifeStage) {
-        case 'Toddler':     return '👶';
-        case 'Child':       return '🧒';
-        case 'Teenager':    return '👦';
-        case 'Young Adult': return '🧑';
-        case 'Adult':       return '👨';
-        case 'Middle Aged': return '👨‍🦳';
-        case 'Senior':      return '👴';
-        default:            return '🧑';
+        case 'Toddler':
+          return '👶';
+        case 'Child':
+          return '🧒';
+        case 'Teenager':
+          return '👦';
+        case 'Young Adult':
+          return '🧑';
+        case 'Adult':
+          return '👨';
+        case 'Middle Aged':
+          return '👨‍🦳';
+        case 'Senior':
+          return '👴';
+        default:
+          return '🧑';
       }
     } else {
       switch (lifeStage) {
-        case 'Toddler':     return '👶';
-        case 'Child':       return '🧒';
-        case 'Teenager':    return '👧';
-        case 'Young Adult': return '🧑';
-        case 'Adult':       return '👩';
-        case 'Middle Aged': return '👩‍🦳';
-        case 'Senior':      return '👵';
-        default:            return '🧑';
+        case 'Toddler':
+          return '👶';
+        case 'Child':
+          return '🧒';
+        case 'Teenager':
+          return '👧';
+        case 'Young Adult':
+          return '🧑';
+        case 'Adult':
+          return '👩';
+        case 'Middle Aged':
+          return '👩‍🦳';
+        case 'Senior':
+          return '👵';
+        default:
+          return '🧑';
       }
     }
+  }
+
+  int _getStatValue(String stat) {
+    final c = widget.character;
+    switch (stat) {
+      case 'health':
+        return c.health;
+      case 'happiness':
+        return c.happiness;
+      case 'smarts':
+        return c.smarts;
+      case 'looks':
+        return c.looks;
+      case 'money':
+        return c.money;
+      case 'reputation':
+        return c.reputation;
+      case 'discipline':
+        return c.discipline;
+      case 'streetSense':
+        return c.streetSense;
+      case 'connections':
+        return c.connections;
+      case 'relationshipScore':
+        return c.relationshipScore;
+      default:
+        return 0;
+    }
+  }
+
+  bool _isEventValid(LifeEvent event) {
+    final c = widget.character;
+    final ageOk = c.age >= event.minAge && c.age <= event.maxAge;
+    final careerOk =
+        event.requiredCareer == null || event.requiredCareer == c.careerPath;
+    final relationshipOk =
+        event.requiredRelationshipStatus == null ||
+        event.requiredRelationshipStatus == c.relationshipStatus;
+    final housingOk =
+        event.requiredHousingStatus == null ||
+        event.requiredHousingStatus == c.housingStatus;
+    final businessOk =
+        event.requiresBusiness == null ||
+        event.requiresBusiness == c.businessNames.isNotEmpty;
+    final statsOk = event.statRequirements.entries.every(
+      (entry) => _getStatValue(entry.key) >= entry.value,
+    );
+    final flagsOk =
+        event.requiredFlags.every(c.hasFlag) &&
+        event.blockedFlags.every((flag) => !c.hasFlag(flag));
+
+    return ageOk &&
+        careerOk &&
+        relationshipOk &&
+        housingOk &&
+        businessOk &&
+        statsOk &&
+        flagsOk;
+  }
+
+  int _eventWeight(LifeEvent event) {
+    final c = widget.character;
+    var weight = event.baseWeight.clamp(1, 100);
+
+    if (c.health < 35 && event.title.toLowerCase().contains('health')) {
+      weight += 12;
+    }
+    if (c.money < 25 && event.title.toLowerCase().contains('money')) {
+      weight += 8;
+    }
+    if (c.relationshipStatus != 'Single' &&
+        event.requiredRelationshipStatus == c.relationshipStatus) {
+      weight += 10;
+    }
+    if (c.careerPath != 'None' && event.requiredCareer == c.careerPath) {
+      weight += 10;
+    }
+    if (c.businessNames.isNotEmpty && event.requiresBusiness == true) {
+      weight += 10;
+    }
+    if (c.lifeLog.take(8).any((log) => log.contains(event.title))) {
+      weight = (weight / 3).round();
+    }
+
+    return weight.clamp(1, 150);
+  }
+
+  List<LifeEvent> _pickYearEvents(List<LifeEvent> validEvents) {
+    if (validEvents.isEmpty) return [];
+
+    final count = _eventsThisYear().clamp(1, validEvents.length);
+    final pool = List<LifeEvent>.from(validEvents);
+    final selected = <LifeEvent>[];
+
+    for (var i = 0; i < count; i++) {
+      final totalWeight = pool.fold<int>(
+        0,
+        (sum, event) => sum + _eventWeight(event),
+      );
+      var roll = _rng.nextInt(totalWeight);
+      for (final event in pool) {
+        roll -= _eventWeight(event);
+        if (roll < 0) {
+          selected.add(event);
+          pool.remove(event);
+          break;
+        }
+      }
+      if (pool.isEmpty) break;
+    }
+
+    return selected;
+  }
+
+  int _eventsThisYear() {
+    final age = widget.character.age;
+    if (age < 13) return 1;
+    if (age >= 61 && _rng.nextDouble() < 0.35) return 3;
+    if (age >= 13 && _rng.nextDouble() < 0.45) return 2;
+    return 1;
+  }
+
+  void _showNextEventDialog() {
+    if (_pendingEvents.isEmpty || widget.character.isDead) return;
+    _currentEvent = _pendingEvents.removeAt(0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _currentEvent != null) {
+        _showEventDialog(_currentEvent!);
+      }
+    });
   }
 
   void _ageUp() {
     setState(() {
       widget.character.age++;
-      SaveService.saveGame(widget.character);
+      widget.character.ageChildren();
 
       // Life stage transition check
       final newStage = widget.character.lifeStage;
@@ -117,16 +278,21 @@ class _LifeScreenState extends State<LifeScreen> {
       // No decay under 40
 
       // Random serious health event chance increasing with age
-      final healthRng = Random();
-      if (widget.character.age >= 80 && healthRng.nextDouble() < 0.20) {
+      if (widget.character.age >= 80 && _rng.nextDouble() < 0.20) {
         widget.character.adjustStat('health', -12);
-        widget.character.lifeLog.add('Age ${widget.character.age}: Your body reminded you that 80 is not a joke. 😔');
-      } else if (widget.character.age >= 65 && healthRng.nextDouble() < 0.10) {
+        widget.character.lifeLog.add(
+          'Age ${widget.character.age}: Your body reminded you that 80 is not a joke. 😔',
+        );
+      } else if (widget.character.age >= 65 && _rng.nextDouble() < 0.10) {
         widget.character.adjustStat('health', -8);
-        widget.character.lifeLog.add('Age ${widget.character.age}: A health scare hit you hard this year. 😟');
-      } else if (widget.character.age >= 50 && healthRng.nextDouble() < 0.05) {
+        widget.character.lifeLog.add(
+          'Age ${widget.character.age}: A health scare hit you hard this year. 😟',
+        );
+      } else if (widget.character.age >= 50 && _rng.nextDouble() < 0.05) {
         widget.character.adjustStat('health', -5);
-        widget.character.lifeLog.add('Age ${widget.character.age}: Your body is sending you warning signals. 😬');
+        widget.character.lifeLog.add(
+          'Age ${widget.character.age}: Your body is sending you warning signals. 😬',
+        );
       }
 
       // School: progress if enrolled
@@ -138,12 +304,38 @@ class _LifeScreenState extends State<LifeScreen> {
       if (CareerService.checkPromotion(widget.character)) {
         CareerService.applyPromotion(widget.character);
       }
-      if (widget.character.monthlyIncome > 0) {
-        int incomeGain = (widget.character.monthlyIncome / 1000).floor().clamp(
-          1,
-          15,
-        );
+      final jobAndGigIncome =
+          widget.character.monthlyIncome + widget.character.sideGigIncome;
+      if (jobAndGigIncome > 0) {
+        final yearlyIncome = jobAndGigIncome * 12;
+        widget.character.adjustCash(yearlyIncome);
+        int incomeGain = (jobAndGigIncome / 1000).floor().clamp(1, 15);
         widget.character.adjustStat('money', incomeGain);
+      }
+
+      if (widget.character.debt > 0) {
+        final interest = (widget.character.debt * 0.08).ceil().clamp(
+          1,
+          1000000,
+        );
+        widget.character.adjustDebt(interest);
+        widget.character.adjustStat('happiness', -2);
+        widget.character.adjustStat('money', -1);
+      }
+      if (widget.character.debt > 0) {
+        widget.character.addFlag('in_debt');
+      } else {
+        widget.character.removeFlag('in_debt');
+      }
+      if (widget.character.cash < 1000) {
+        widget.character.addFlag('low_cash');
+      } else {
+        widget.character.removeFlag('low_cash');
+      }
+      if (widget.character.numberOfChildren > 0) {
+        widget.character.addFlag('has_children');
+      } else {
+        widget.character.removeFlag('has_children');
       }
 
       // Relationship progression
@@ -162,39 +354,49 @@ class _LifeScreenState extends State<LifeScreen> {
       // Housing expense
       HousingService.progressHousing(widget.character);
 
+      if (widget.character.numberOfChildren > 0) {
+        final childCost = widget.character.numberOfChildren * 1200;
+        if (widget.character.cash >= childCost) {
+          widget.character.adjustCash(-childCost);
+        } else {
+          final shortfall = childCost - widget.character.cash;
+          widget.character.cash = 0;
+          widget.character.adjustDebt(shortfall);
+          widget.character.adjustStat('happiness', -3);
+          widget.character.lifeLog.insert(
+            0,
+            'Age ${widget.character.age}: Child expenses ran over budget, adding GHS $shortfall to debt. Parenting is not small work. 👶',
+          );
+        }
+      }
+
       // Business progression
       BusinessService.progressBusinesses(widget.character);
 
-      final validEvents = allEvents.where((e) {
-        final ageOk =
-            widget.character.age >= e.minAge &&
-            widget.character.age <= e.maxAge;
-        final careerOk =
-            e.requiredCareer == null ||
-            e.requiredCareer == widget.character.careerPath;
-        final relationshipOk =
-            e.requiredRelationshipStatus == null ||
-            e.requiredRelationshipStatus == widget.character.relationshipStatus;
-        final housingOk =
-            e.requiredHousingStatus == null ||
-            e.requiredHousingStatus == widget.character.housingStatus;
-        final businessOk =
-            e.requiresBusiness == null ||
-            e.requiresBusiness == widget.character.businessNames.isNotEmpty;
-        return ageOk && careerOk && relationshipOk && housingOk && businessOk;
-      }).toList();
+      if (widget.character.debt > 0) {
+        widget.character.addFlag('in_debt');
+      } else {
+        widget.character.removeFlag('in_debt');
+      }
+      if (widget.character.cash < 1000) {
+        widget.character.addFlag('low_cash');
+      } else {
+        widget.character.removeFlag('low_cash');
+      }
 
-      if (validEvents.isNotEmpty) {
-        _currentEvent = validEvents[Random().nextInt(validEvents.length)];
-        // Show event dialog
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showEventDialog(_currentEvent!);
-        });
+      final validEvents = allEvents.where(_isEventValid).toList();
+
+      if (validEvents.isNotEmpty && !widget.character.isDead) {
+        _pendingEvents
+          ..clear()
+          ..addAll(_pickYearEvents(validEvents));
+        _showNextEventDialog();
       }
 
       if (widget.character.isDead) {
         _navToDeath();
       }
+      SaveService.saveGame(widget.character);
     });
   }
 
@@ -209,15 +411,39 @@ class _LifeScreenState extends State<LifeScreen> {
           widget.character.activeIllnesses.add(choice.illnessToAdd!);
         }
       }
+      if (choice.careerToSet != null) {
+        CareerService.enterCareer(widget.character, choice.careerToSet!);
+      }
+      if (choice.relationshipStatusToSet != null) {
+        widget.character.relationshipStatus = choice.relationshipStatusToSet!;
+      }
+      if (choice.housingStatusToSet != null) {
+        widget.character.housingStatus = choice.housingStatusToSet!;
+      }
+      if (choice.flagToAdd != null) {
+        widget.character.addFlag(choice.flagToAdd!);
+      }
+      if (choice.flagToRemove != null) {
+        widget.character.removeFlag(choice.flagToRemove!);
+      }
+      if (choice.cashChange != 0) {
+        widget.character.adjustCash(choice.cashChange);
+      }
+      if (choice.debtChange != 0) {
+        widget.character.adjustDebt(choice.debtChange);
+      }
       // push to log
       widget.character.lifeLog.insert(
         0,
         'Age ${widget.character.age}: ${_currentEvent!.title} — ${choice.outcome}',
       );
       _currentEvent = null;
+      SaveService.saveGame(widget.character);
 
       if (widget.character.isDead) {
         _navToDeath();
+      } else {
+        _showNextEventDialog();
       }
     });
   }
@@ -242,7 +468,9 @@ class _LifeScreenState extends State<LifeScreen> {
 
   void _navToDeath() {
     if (widget.character.causeOfDeath.isEmpty) {
-      widget.character.causeOfDeath = HealthService.determineCauseOfDeath(widget.character);
+      widget.character.causeOfDeath = HealthService.determineCauseOfDeath(
+        widget.character,
+      );
       SaveService.saveGame(widget.character);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -374,11 +602,7 @@ class _LifeScreenState extends State<LifeScreen> {
           _buildHeader(),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                left: 18,
-                right: 18,
-                bottom: 108,
-              ),
+              padding: const EdgeInsets.only(left: 18, right: 18, bottom: 108),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -428,11 +652,12 @@ class _LifeScreenState extends State<LifeScreen> {
     final housingEmoji = c.housingStatus == 'Homeowner'
         ? '🏡'
         : c.housingStatus == 'Renting'
-            ? '🏠'
-            : '🏘️';
+        ? '🏠'
+        : '🏘️';
     String label = '$housingEmoji ${c.housingStatus}';
     if (c.businessNames.isNotEmpty) {
-      label += ' • ${c.businessNames.length} business${c.businessNames.length > 1 ? 'es' : ''}';
+      label +=
+          ' • ${c.businessNames.length} business${c.businessNames.length > 1 ? 'es' : ''}';
     }
     return label;
   }
@@ -456,40 +681,58 @@ class _LifeScreenState extends State<LifeScreen> {
 
   void _showLifeStageModal(String stageName) {
     final stageEmojis = {
-      'Toddler':     '👶',
-      'Child':       '🧒',
-      'Teenager':    '🧑',
+      'Toddler': '👶',
+      'Child': '🧒',
+      'Teenager': '🧑',
       'Young Adult': '🧑‍🎓',
-      'Adult':       '👨',
+      'Adult': '👨',
       'Middle Aged': '👨‍🦳',
-      'Senior':      '👴',
+      'Senior': '👴',
     };
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19.4)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(19.4),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(28.8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(stageEmojis[stageName] ?? '🧑', style: const TextStyle(fontSize: 57.6)),
+              Text(
+                stageEmojis[stageName] ?? '🧑',
+                style: const TextStyle(fontSize: 57.6),
+              ),
               const SizedBox(height: 14.4),
               Text(
                 'NEW LIFE STAGE',
-                style: TextStyle(fontSize: 9.9, color: Colors.grey[500], letterSpacing: 2, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 9.9,
+                  color: Colors.grey[500],
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 7.2),
               Text(
                 stageName,
-                style: TextStyle(fontSize: 25.2, fontWeight: FontWeight.w900, color: _lifeStageColor(stageName)),
+                style: TextStyle(
+                  fontSize: 25.2,
+                  fontWeight: FontWeight.w900,
+                  color: _lifeStageColor(stageName),
+                ),
               ),
               const SizedBox(height: 7.2),
               Text(
                 _getStageDescription(stageName),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.6, color: Colors.grey[600], height: 1.5),
+                style: TextStyle(
+                  fontSize: 12.6,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 21.6),
               SizedBox(
@@ -499,11 +742,19 @@ class _LifeScreenState extends State<LifeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _lifeStageColor(stageName),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(9.7),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12.6),
                     elevation: 0,
                   ),
-                  child: const Text("Let's Go", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.4)),
+                  child: const Text(
+                    "Let's Go",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.4,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -515,17 +766,30 @@ class _LifeScreenState extends State<LifeScreen> {
 
   String _getStageDescription(String stage) {
     switch (stage) {
-      case 'Child':       return 'School, chores, and discovering the world. 🌍';
-      case 'Teenager':    return 'Exams, crushes, and questionable decisions. 😅';
-      case 'Young Adult': return 'University, first jobs, and figuring life out. 🎓';
-      case 'Adult':       return 'Career, relationships, and real responsibilities. 💼';
-      case 'Middle Aged': return 'You\'ve seen things. Now you manage things. 🧠';
-      case 'Senior':      return 'Legacy time. What will they say about you? 🕊️';
-      default:            return 'A new chapter begins. 📖';
+      case 'Child':
+        return 'School, chores, and discovering the world. 🌍';
+      case 'Teenager':
+        return 'Exams, crushes, and questionable decisions. 😅';
+      case 'Young Adult':
+        return 'University, first jobs, and figuring life out. 🎓';
+      case 'Adult':
+        return 'Career, relationships, and real responsibilities. 💼';
+      case 'Middle Aged':
+        return 'You\'ve seen things. Now you manage things. 🧠';
+      case 'Senior':
+        return 'Legacy time. What will they say about you? 🕊️';
+      default:
+        return 'A new chapter begins. 📖';
     }
   }
 
-  void _showStatTooltip(String statKey, String label, IconData icon, int value, Color color) {
+  void _showStatTooltip(
+    String statKey,
+    String label,
+    IconData icon,
+    int value,
+    Color color,
+  ) {
     final description = _statDescriptions[statKey] ?? '';
     showModalBottomSheet(
       context: context,
@@ -548,11 +812,19 @@ class _LifeScreenState extends State<LifeScreen> {
                 borderRadius: BorderRadius.circular(1.6),
               ),
             ),
-            Icon(icon, size: 43.2, color: color == Colors.white ? Colors.grey[400] : color),
+            Icon(
+              icon,
+              size: 43.2,
+              color: color == Colors.white ? Colors.grey[400] : color,
+            ),
             const SizedBox(height: 10.8),
             Text(
               label,
-              style: const TextStyle(fontSize: 19.8, fontWeight: FontWeight.w900, color: Color(0xFF424242)),
+              style: const TextStyle(
+                fontSize: 19.8,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF424242),
+              ),
             ),
             const SizedBox(height: 14.4),
             // Progress bar
@@ -568,7 +840,9 @@ class _LifeScreenState extends State<LifeScreen> {
                   widthFactor: value / 100,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: color == Colors.white ? const Color(0xFFB39DDB) : color,
+                      color: color == Colors.white
+                          ? const Color(0xFFB39DDB)
+                          : color,
                       borderRadius: BorderRadius.circular(6.5),
                     ),
                   ),
@@ -578,13 +852,21 @@ class _LifeScreenState extends State<LifeScreen> {
             const SizedBox(height: 7.2),
             Text(
               '$value / 100',
-              style: TextStyle(fontSize: 11.7, fontWeight: FontWeight.w700, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 11.7,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 10.8),
             Text(
               description,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12.6, color: Colors.grey[600], height: 1.5),
+              style: TextStyle(
+                fontSize: 12.6,
+                color: Colors.grey[600],
+                height: 1.5,
+              ),
             ),
           ],
         ),
@@ -594,7 +876,12 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.only(top: 45, left: 21.6, right: 21.6, bottom: 14.4),
+      padding: const EdgeInsets.only(
+        top: 45,
+        left: 21.6,
+        right: 21.6,
+        bottom: 14.4,
+      ),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0x33B39DDB))),
@@ -617,7 +904,10 @@ class _LifeScreenState extends State<LifeScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    _avatarEmoji(widget.character.gender, widget.character.lifeStage),
+                    _avatarEmoji(
+                      widget.character.gender,
+                      widget.character.lifeStage,
+                    ),
                     style: const TextStyle(fontSize: 23.4),
                   ),
                 ),
@@ -830,22 +1120,118 @@ class _LifeScreenState extends State<LifeScreen> {
             crossAxisSpacing: 24,
             mainAxisSpacing: 14,
             children: [
-              _buildStatBar('Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFFFF9C4),
-                statKey: 'happiness', onTap: () => _showStatTooltip('happiness', 'Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFFFF9C4))),
-              _buildStatBar('Health', Icons.favorite, c.health, const Color(0xFFF8BBD0),
-                statKey: 'health', onTap: () => _showStatTooltip('health', 'Health', Icons.favorite, c.health, const Color(0xFFF8BBD0))),
-              _buildStatBar('Smarts', Icons.psychology, c.smarts, const Color(0xFFB2DFDB),
-                statKey: 'smarts', onTap: () => _showStatTooltip('smarts', 'Smarts', Icons.psychology, c.smarts, const Color(0xFFB2DFDB))),
-              _buildStatBar('Looks', Icons.face, c.looks, Colors.white,
-                statKey: 'looks', onTap: () => _showStatTooltip('looks', 'Looks', Icons.face, c.looks, Colors.white)),
-              _buildStatBar('Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF),
-                statKey: 'reputation', onTap: () => _showStatTooltip('reputation', 'Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF))),
-              _buildStatBar('Connect', Icons.hub, c.connections, const Color(0xFF009688),
-                statKey: 'connections', onTap: () => _showStatTooltip('connections', 'Connections', Icons.hub, c.connections, const Color(0xFF009688))),
-              _buildStatBar('Streets', Icons.directions_run, c.streetSense, const Color(0xFFFF9800),
-                statKey: 'streetSense', onTap: () => _showStatTooltip('streetSense', 'Street Sense', Icons.directions_run, c.streetSense, const Color(0xFFFF9800))),
-              _buildStatBar('Discipline', Icons.timer, c.discipline, const Color(0xFF3F51B5),
-                statKey: 'discipline', onTap: () => _showStatTooltip('discipline', 'Discipline', Icons.timer, c.discipline, const Color(0xFF3F51B5))),
+              _buildStatBar(
+                'Happiness',
+                Icons.sentiment_satisfied,
+                c.happiness,
+                const Color(0xFFFFF9C4),
+                statKey: 'happiness',
+                onTap: () => _showStatTooltip(
+                  'happiness',
+                  'Happiness',
+                  Icons.sentiment_satisfied,
+                  c.happiness,
+                  const Color(0xFFFFF9C4),
+                ),
+              ),
+              _buildStatBar(
+                'Health',
+                Icons.favorite,
+                c.health,
+                const Color(0xFFF8BBD0),
+                statKey: 'health',
+                onTap: () => _showStatTooltip(
+                  'health',
+                  'Health',
+                  Icons.favorite,
+                  c.health,
+                  const Color(0xFFF8BBD0),
+                ),
+              ),
+              _buildStatBar(
+                'Smarts',
+                Icons.psychology,
+                c.smarts,
+                const Color(0xFFB2DFDB),
+                statKey: 'smarts',
+                onTap: () => _showStatTooltip(
+                  'smarts',
+                  'Smarts',
+                  Icons.psychology,
+                  c.smarts,
+                  const Color(0xFFB2DFDB),
+                ),
+              ),
+              _buildStatBar(
+                'Looks',
+                Icons.face,
+                c.looks,
+                Colors.white,
+                statKey: 'looks',
+                onTap: () => _showStatTooltip(
+                  'looks',
+                  'Looks',
+                  Icons.face,
+                  c.looks,
+                  Colors.white,
+                ),
+              ),
+              _buildStatBar(
+                'Reputation',
+                Icons.star,
+                c.reputation,
+                const Color(0xFF7C4DFF),
+                statKey: 'reputation',
+                onTap: () => _showStatTooltip(
+                  'reputation',
+                  'Reputation',
+                  Icons.star,
+                  c.reputation,
+                  const Color(0xFF7C4DFF),
+                ),
+              ),
+              _buildStatBar(
+                'Connect',
+                Icons.hub,
+                c.connections,
+                const Color(0xFF009688),
+                statKey: 'connections',
+                onTap: () => _showStatTooltip(
+                  'connections',
+                  'Connections',
+                  Icons.hub,
+                  c.connections,
+                  const Color(0xFF009688),
+                ),
+              ),
+              _buildStatBar(
+                'Streets',
+                Icons.directions_run,
+                c.streetSense,
+                const Color(0xFFFF9800),
+                statKey: 'streetSense',
+                onTap: () => _showStatTooltip(
+                  'streetSense',
+                  'Street Sense',
+                  Icons.directions_run,
+                  c.streetSense,
+                  const Color(0xFFFF9800),
+                ),
+              ),
+              _buildStatBar(
+                'Discipline',
+                Icons.timer,
+                c.discipline,
+                const Color(0xFF3F51B5),
+                statKey: 'discipline',
+                onTap: () => _showStatTooltip(
+                  'discipline',
+                  'Discipline',
+                  Icons.timer,
+                  c.discipline,
+                  const Color(0xFF3F51B5),
+                ),
+              ),
             ],
           ),
           if (c.careerPath != 'None') ...[
@@ -968,65 +1354,78 @@ class _LifeScreenState extends State<LifeScreen> {
     );
   }
 
-  Widget _buildStatBar(String label, IconData icon, int value, Color color, {String statKey = '', VoidCallback? onTap}) {
+  Widget _buildStatBar(
+    String label,
+    IconData icon,
+    int value,
+    Color color, {
+    String statKey = '',
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 12.6, color: color),
-                const SizedBox(width: 5.4),
-                Text(
-                  label.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, size: 12.6, color: color),
+                  const SizedBox(width: 5.4),
+                  Text(
+                    label.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
                   ),
+                ],
+              ),
+              Text(
+                '$value%',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w900,
                 ),
-              ],
-            ),
-            Text(
-              '$value%',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w900,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 5.4),
-        Container(
-          height: 9,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(8.1),
+            ],
           ),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: (value / 100) * (MediaQuery.of(context).size.width / 2.8),
-              height: 9,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8.1),
+          const SizedBox(height: 5.4),
+          Container(
+            height: 9,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8.1),
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width:
+                    (value / 100) * (MediaQuery.of(context).size.width / 2.8),
+                height: 9,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(8.1),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
       ),
     );
   }
 
   Widget _buildFundsCard(Character c) {
+    String fmt(int n) => n.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -1073,7 +1472,7 @@ class _LifeScreenState extends State<LifeScreen> {
                     ),
                   ),
                   Text(
-                    '\$${c.money}',
+                    'GHS ${fmt(c.cash)}',
                     style: const TextStyle(
                       fontSize: 25.2,
                       fontWeight: FontWeight.w900,
@@ -1082,6 +1481,24 @@ class _LifeScreenState extends State<LifeScreen> {
                       height: 1.1,
                     ),
                   ),
+                  if (c.debt > 0)
+                    Text(
+                      'Debt: GHS ${fmt(c.debt)}',
+                      style: const TextStyle(
+                        fontSize: 10.8,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFE53935),
+                      ),
+                    )
+                  else
+                    Text(
+                      'Financial stability: ${c.money}/100',
+                      style: const TextStyle(
+                        fontSize: 10.8,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF757575),
+                      ),
+                    ),
                 ],
               ),
             ],
@@ -1333,7 +1750,11 @@ class _LifeScreenState extends State<LifeScreen> {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFFBDBDBD), size: 16.2),
+            const Icon(
+              Icons.chevron_right,
+              color: Color(0xFFBDBDBD),
+              size: 16.2,
+            ),
           ],
         ),
       ),
@@ -1342,7 +1763,12 @@ class _LifeScreenState extends State<LifeScreen> {
 
   Widget _buildBottomNav() {
     return Container(
-      padding: const EdgeInsets.only(top: 18, bottom: 28.8, left: 14.4, right: 14.4),
+      padding: const EdgeInsets.only(
+        top: 18,
+        bottom: 28.8,
+        left: 14.4,
+        right: 14.4,
+      ),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(21.6)),

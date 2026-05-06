@@ -9,6 +9,7 @@ import 'career_events.dart';
 import 'relationship_events.dart';
 import 'doing_events.dart';
 import 'health_events.dart';
+import 'consequence_events.dart';
 import '../models/event.dart';
 
 final List<LifeEvent> allEvents = [
@@ -24,6 +25,7 @@ final List<LifeEvent> allEvents = [
   ...relationshipEvents,
   ...doingEvents,
   ...healthEvents,
+  ...consequenceEvents,
   LifeEvent(
     title: 'Struck by Lightning ⚡',
     description:

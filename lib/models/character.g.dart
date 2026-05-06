@@ -59,13 +59,23 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..businessIncomeList = (fields[38] as List).cast<int>()
       ..totalBusinessIncome = fields[39] as int
       ..causeOfDeath = fields[40] as String
-      ..activeIllnesses = (fields[41] as List).cast<String>();
+      ..activeIllnesses = (fields[41] as List).cast<String>()
+      ..cash = fields[42] == null ? 1000 : fields[42] as int
+      ..debt = fields[43] == null ? 0 : fields[43] as int
+      ..flags = fields[44] == null ? [] : (fields[44] as List).cast<String>()
+      ..childNames =
+          fields[45] == null ? [] : (fields[45] as List).cast<String>()
+      ..childGenders =
+          fields[46] == null ? [] : (fields[46] as List).cast<String>()
+      ..childAges = fields[47] == null ? [] : (fields[47] as List).cast<int>()
+      ..childBondScores =
+          fields[48] == null ? [] : (fields[48] as List).cast<int>();
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(42)
+      ..writeByte(49)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -149,7 +159,21 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(40)
       ..write(obj.causeOfDeath)
       ..writeByte(41)
-      ..write(obj.activeIllnesses);
+      ..write(obj.activeIllnesses)
+      ..writeByte(42)
+      ..write(obj.cash)
+      ..writeByte(43)
+      ..write(obj.debt)
+      ..writeByte(44)
+      ..write(obj.flags)
+      ..writeByte(45)
+      ..write(obj.childNames)
+      ..writeByte(46)
+      ..write(obj.childGenders)
+      ..writeByte(47)
+      ..write(obj.childAges)
+      ..writeByte(48)
+      ..write(obj.childBondScores);
   }
 
   @override

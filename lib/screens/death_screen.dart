@@ -23,13 +23,21 @@ class DeathScreen extends StatelessWidget {
               _buildHeader(),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14.4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14.4,
+                  ),
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       _buildDeathCard(),
                       const SizedBox(height: 14.4),
-                      _buildLifeRatingCard(lifeScore, rating, subtitle, context),
+                      _buildLifeRatingCard(
+                        lifeScore,
+                        rating,
+                        subtitle,
+                        context,
+                      ),
                       const SizedBox(height: 14.4),
                       _buildStatsGrid(context),
                       const SizedBox(height: 14.4),
@@ -57,7 +65,11 @@ class DeathScreen extends StatelessWidget {
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0x33B39DDB))),
         boxShadow: [
-          BoxShadow(color: Color(0x0DB39DDB), blurRadius: 20, offset: Offset(0, 4))
+          BoxShadow(
+            color: Color(0x0DB39DDB),
+            blurRadius: 20,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Center(
@@ -134,7 +146,10 @@ class DeathScreen extends StatelessWidget {
           ),
           const SizedBox(height: 7.2),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.8, vertical: 3.6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.8,
+              vertical: 3.6,
+            ),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16.2),
@@ -198,7 +213,12 @@ class DeathScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLifeRatingCard(int score, String rating, String subtitle, BuildContext context) {
+  Widget _buildLifeRatingCard(
+    int score,
+    String rating,
+    String subtitle,
+    BuildContext context,
+  ) {
     final Color ratingColor;
     switch (rating) {
       case 'Legendary':
@@ -302,12 +322,19 @@ class DeathScreen extends StatelessWidget {
   }
 
   Widget _buildStatsGrid(BuildContext context) {
+    String fmt(int n) => n.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
+
     final stats = [
       ('❤️', 'Health', character.health),
       ('😊', 'Happy', character.happiness),
       ('🧠', 'Smarts', character.smarts),
       ('✨', 'Looks', character.looks),
-      ('💰', 'Money', character.money),
+      ('💰', 'Cash', 'GHS ${fmt(character.cash)}'),
+      ('📉', 'Debt', 'GHS ${fmt(character.debt)}'),
+      ('💵', 'Money', '${character.money}'),
       ('⭐', 'Rep', character.reputation),
       ('💪', 'Discipline', character.discipline),
       ('🏃', 'Streets', character.streetSense),
@@ -348,14 +375,16 @@ class DeathScreen extends StatelessWidget {
             childAspectRatio: 2.2,
             crossAxisSpacing: 8,
             mainAxisSpacing: 12,
-            children: stats.map((s) => _buildStatCell(s.$1, s.$2, s.$3)).toList(),
+            children: stats
+                .map((s) => _buildStatCell(s.$1, s.$2, '${s.$3}'))
+                .toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCell(String emoji, String label, int value) {
+  Widget _buildStatCell(String emoji, String label, String value) {
     return Row(
       children: [
         Text(emoji, style: const TextStyle(fontSize: 16.2)),
@@ -375,9 +404,9 @@ class DeathScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                '$value',
+                value,
                 style: const TextStyle(
-                  fontSize: 14.4,
+                  fontSize: 13.2,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF424242),
                 ),
@@ -419,27 +448,35 @@ class DeathScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10.8),
-          ...character.lifeLog.take(20).map(
-            (entry) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3.6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('•  ', style: TextStyle(color: Color(0xFFB39DDB), fontSize: 10.8)),
-                  Expanded(
-                    child: Text(
-                      entry,
-                      style: const TextStyle(
-                        fontSize: 10.8,
-                        color: Color(0xFF616161),
-                        height: 1.4,
+          ...character.lifeLog
+              .take(20)
+              .map(
+                (entry) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3.6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '•  ',
+                        style: TextStyle(
+                          color: Color(0xFFB39DDB),
+                          fontSize: 10.8,
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: Text(
+                          entry,
+                          style: const TextStyle(
+                            fontSize: 10.8,
+                            color: Color(0xFF616161),
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
         ],
       ),
     );
@@ -447,7 +484,12 @@ class DeathScreen extends StatelessWidget {
 
   Widget _buildBottomActions(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 21.6, bottom: 36, left: 28.8, right: 28.8),
+      padding: const EdgeInsets.only(
+        top: 21.6,
+        bottom: 36,
+        left: 28.8,
+        right: 28.8,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -471,7 +513,9 @@ class DeathScreen extends StatelessWidget {
                 if (context.mounted) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const CharacterCreationScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const CharacterCreationScreen(),
+                    ),
                   );
                 }
               },

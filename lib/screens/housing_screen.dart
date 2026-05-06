@@ -17,6 +17,11 @@ class HousingScreen extends StatefulWidget {
 }
 
 class _HousingScreenState extends State<HousingScreen> {
+  String _fmt(int n) => n.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
+
   void _refresh() {
     setState(() {});
     widget.onCharacterUpdated();
@@ -48,7 +53,7 @@ class _HousingScreenState extends State<HousingScreen> {
       cardColor = const Color(0xFFE0F2F1);
       emoji = '🏠';
       subtitle =
-          'Paying ${widget.character.rentExpensePerYear} money units/year in rent. The landlord is always watching.';
+          'Paying GHS ${_fmt(widget.character.rentExpensePerYear)}/year in rent. The landlord is always watching.';
     } else {
       cardColor = const Color(0xFFF5F5F5);
       emoji = '🏘️';
@@ -110,7 +115,7 @@ class _HousingScreenState extends State<HousingScreen> {
     if (canMoveOut) {
       return _actionButton(
         label: 'Move Out 🏠',
-        subtitle: 'Costs 5 money units (deposit)',
+        subtitle: 'Deposit: GHS ${_fmt(HousingService.moveOutDeposit)}',
         color: const Color(0xFFB39DDB),
         onTap: () {
           HousingService.moveOut(c);
@@ -121,13 +126,14 @@ class _HousingScreenState extends State<HousingScreen> {
     } else if (canBuyHome) {
       return _actionButton(
         label: 'Buy a Home 🏡',
-        subtitle: 'Costs 20 money units (down payment)',
+        subtitle: 'Down payment: GHS ${_fmt(HousingService.homeDownPayment)}',
         color: const Color(0xFFFFB300),
         onTap: () {
           HousingService.buyHome(c);
           _refresh();
           _showSnack(
-              'Congratulations! You are now a homeowner. Your mother is already planning her room.');
+            'Congratulations! You are now a homeowner. Your mother is already planning her room.',
+          );
         },
       );
     } else {
@@ -136,9 +142,9 @@ class _HousingScreenState extends State<HousingScreen> {
       if (c.housingStatus == 'With Parents') {
         if (c.age < 18) {
           reason = 'You need to be at least 18 to move out.';
-        } else if (c.money < 15) {
+        } else if (c.cash < HousingService.moveOutDeposit) {
           reason =
-              'You need at least 15 money units to cover the deposit. Keep saving.';
+              'You need GHS ${_fmt(HousingService.moveOutDeposit)} to cover the deposit. You have GHS ${_fmt(c.cash)}.';
         } else {
           reason = 'You are already living independently.';
         }
@@ -146,9 +152,9 @@ class _HousingScreenState extends State<HousingScreen> {
         if (c.age < 28) {
           reason =
               'You need to be at least 28 to buy a home. (Age ${c.age} now)';
-        } else if (c.money < 60) {
+        } else if (c.cash < HousingService.homeDownPayment) {
           reason =
-              'You need at least 60 money units for the down payment. (You have ${c.money})';
+              'You need GHS ${_fmt(HousingService.homeDownPayment)} for the down payment. You have GHS ${_fmt(c.cash)}.';
         } else {
           reason = 'Keep saving — homeownership is within reach.';
         }

@@ -148,8 +148,13 @@ class _SocialScreenState extends State<SocialScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.2)),
-        title: const Text('Are you sure?', style: TextStyle(fontWeight: FontWeight.w900)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.2),
+        ),
+        title: const Text(
+          'Are you sure?',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
         content: const Text(
           'Divorce is final. The lawyer will eat. Your happiness will not be the same.',
           style: TextStyle(height: 1.5),
@@ -157,7 +162,10 @@ class _SocialScreenState extends State<SocialScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF9E9E9E))),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Color(0xFF9E9E9E)),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -167,7 +175,10 @@ class _SocialScreenState extends State<SocialScreen> {
               widget.onCharacterUpdated();
               _snack('You are now divorced. The lawyer got rich. 📄');
             },
-            child: const Text('Divorce', style: TextStyle(color: Color(0xFFE53935))),
+            child: const Text(
+              'Divorce',
+              style: TextStyle(color: Color(0xFFE53935)),
+            ),
           ),
         ],
       ),
@@ -221,7 +232,10 @@ class _SocialScreenState extends State<SocialScreen> {
     );
   }
 
-  Widget _redOutlinedButton({required String label, required VoidCallback onTap}) {
+  Widget _redOutlinedButton({
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return OutlinedButton(
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
@@ -277,7 +291,10 @@ class _SocialScreenState extends State<SocialScreen> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 3.6,
+                ),
                 decoration: BoxDecoration(
                   color: _statusColor(c.relationshipStatus).withAlpha(30),
                   borderRadius: BorderRadius.circular(6.5),
@@ -337,7 +354,10 @@ class _SocialScreenState extends State<SocialScreen> {
                       ),
                       const SizedBox(height: 5.4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.2, vertical: 2.7),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7.2,
+                          vertical: 2.7,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEDE7F6),
                           borderRadius: BorderRadius.circular(4.9),
@@ -400,6 +420,34 @@ class _SocialScreenState extends State<SocialScreen> {
                   color: Color(0xFF757575),
                 ),
               ),
+              if (c.childNames.isNotEmpty) ...[
+                const SizedBox(height: 5.4),
+                Wrap(
+                  spacing: 5.4,
+                  runSpacing: 5.4,
+                  children: List.generate(c.childNames.length, (i) {
+                    final age = i < c.childAges.length ? c.childAges[i] : 0;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7.2,
+                        vertical: 2.7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF8E1),
+                        borderRadius: BorderRadius.circular(4.9),
+                      ),
+                      child: Text(
+                        '${c.childNames[i]}, $age',
+                        style: const TextStyle(
+                          color: Color(0xFF8D6E63),
+                          fontSize: 9.9,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
             ],
             if (c.isCheating) ...[
               const SizedBox(height: 7.2),
@@ -439,10 +487,7 @@ class _SocialScreenState extends State<SocialScreen> {
 
           // Single
           if (status == 'Single' && c.age >= 16) ...[
-            _pinkButton(
-              label: 'Meet Someone 💕',
-              onTap: _showMeetSomeoneSheet,
-            ),
+            _pinkButton(label: 'Meet Someone 💕', onTap: _showMeetSomeoneSheet),
           ],
 
           // Dating
@@ -469,14 +514,16 @@ class _SocialScreenState extends State<SocialScreen> {
                 RelationshipService.startCheating(c);
                 setState(() {});
                 widget.onCharacterUpdated();
-                _snack('You started seeing someone on the side. God is watching. 👀');
+                _snack(
+                  'You started seeing someone on the side. God is watching. 👀',
+                );
               },
             ),
             const SizedBox(height: 9),
             _redOutlinedButton(
               label: 'Break Up 💔',
               onTap: () {
-                RelationshipService.divorce(c);
+                RelationshipService.breakUp(c);
                 setState(() {});
                 widget.onCharacterUpdated();
                 _snack('You broke up. It hurts but you will survive. 💔');
@@ -499,10 +546,12 @@ class _SocialScreenState extends State<SocialScreen> {
             _redOutlinedButton(
               label: 'Call Off Engagement',
               onTap: () {
-                RelationshipService.divorce(c);
+                RelationshipService.callOffEngagement(c);
                 setState(() {});
                 widget.onCharacterUpdated();
-                _snack('The engagement is off. The family will be talking for months.');
+                _snack(
+                  'The engagement is off. The family will be talking for months.',
+                );
               },
             ),
           ],
@@ -516,7 +565,9 @@ class _SocialScreenState extends State<SocialScreen> {
                   RelationshipService.haveChild(c);
                   setState(() {});
                   widget.onCharacterUpdated();
-                  _snack('A new life has arrived. The house will never be quiet again. 👶');
+                  _snack(
+                    'A new life has arrived. The house will never be quiet again. 👶',
+                  );
                 },
               ),
               const SizedBox(height: 9),
@@ -527,14 +578,13 @@ class _SocialScreenState extends State<SocialScreen> {
                 RelationshipService.startCheating(c);
                 setState(() {});
                 widget.onCharacterUpdated();
-                _snack('You started seeing someone on the side. God is watching. 👀');
+                _snack(
+                  'You started seeing someone on the side. God is watching. 👀',
+                );
               },
             ),
             const SizedBox(height: 9),
-            _redOutlinedButton(
-              label: 'Divorce',
-              onTap: _showDivorceDialog,
-            ),
+            _redOutlinedButton(label: 'Divorce', onTap: _showDivorceDialog),
           ],
 
           // Divorced — option to look for someone new
@@ -577,9 +627,19 @@ class _SocialScreenState extends State<SocialScreen> {
             ),
           ),
           const SizedBox(height: 12.6),
-          _statRow('Reputation', Icons.star, c.reputation, const Color(0xFF7C4DFF)),
+          _statRow(
+            'Reputation',
+            Icons.star,
+            c.reputation,
+            const Color(0xFF7C4DFF),
+          ),
           const SizedBox(height: 9),
-          _statRow('Happiness', Icons.sentiment_satisfied, c.happiness, const Color(0xFFF06292)),
+          _statRow(
+            'Happiness',
+            Icons.sentiment_satisfied,
+            c.happiness,
+            const Color(0xFFF06292),
+          ),
         ],
       ),
     );

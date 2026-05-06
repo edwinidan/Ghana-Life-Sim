@@ -1,30 +1,21 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:ghana_life_sim/main.dart';
+import 'package:ghana_life_sim/models/character.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const GhanaLifeSimApp());
+  test('character tracks cash, debt, flags, and children', () {
+    final character = Character(name: 'Akosua', gender: 'Female');
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    character.adjustCash(500);
+    character.adjustDebt(1200);
+    character.addFlag('in_debt');
+    character.addChild(name: 'Ama', gender: 'girl');
+    character.ageChildren();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(character.cash, greaterThanOrEqualTo(500));
+    expect(character.debt, 1200);
+    expect(character.hasFlag('in_debt'), isTrue);
+    expect(character.numberOfChildren, 1);
+    expect(character.childNames, contains('Ama'));
+    expect(character.childAges.first, 1);
   });
 }

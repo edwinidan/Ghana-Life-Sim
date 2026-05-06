@@ -4,7 +4,6 @@ import 'screens/character_creation_screen.dart';
 import 'screens/life_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/save_service.dart';
-import 'models/character.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

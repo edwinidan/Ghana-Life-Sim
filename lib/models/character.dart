@@ -100,6 +100,21 @@ class Character extends HiveObject {
   @HiveField(41)
   List<String> activeIllnesses; // current illnesses affecting the character
 
+  @HiveField(42, defaultValue: 1000)
+  int cash; // actual spendable money in GHS
+  @HiveField(43, defaultValue: 0)
+  int debt; // outstanding debt in GHS
+  @HiveField(44, defaultValue: [])
+  List<String> flags; // long-term consequences and story states
+  @HiveField(45, defaultValue: [])
+  List<String> childNames;
+  @HiveField(46, defaultValue: [])
+  List<String> childGenders;
+  @HiveField(47, defaultValue: [])
+  List<int> childAges;
+  @HiveField(48, defaultValue: [])
+  List<int> childBondScores;
+
   Character({required this.name, required this.gender})
     : age = 0,
       isAlive = true,
@@ -132,6 +147,13 @@ class Character extends HiveObject {
       totalBusinessIncome = 0,
       causeOfDeath = '',
       activeIllnesses = [],
+      cash = _randomStat(400, 2500),
+      debt = 0,
+      flags = [],
+      childNames = [],
+      childGenders = [],
+      childAges = [],
+      childBondScores = [],
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -183,6 +205,46 @@ class Character extends HiveObject {
         numberOfChildren = (numberOfChildren + amount).clamp(0, 99);
         break;
     }
+  }
+
+  void adjustCash(int amount) {
+    cash = (cash + amount).clamp(0, 1000000000);
+  }
+
+  void adjustDebt(int amount) {
+    debt = (debt + amount).clamp(0, 1000000000);
+  }
+
+  void addFlag(String flag) {
+    if (!flags.contains(flag)) flags.add(flag);
+  }
+
+  void removeFlag(String flag) {
+    flags.remove(flag);
+  }
+
+  bool hasFlag(String flag) => flags.contains(flag);
+
+  void addChild({
+    required String name,
+    required String gender,
+    int bondScore = 60,
+  }) {
+    final previousCount = numberOfChildren;
+    childNames.add(name);
+    childGenders.add(gender);
+    childAges.add(0);
+    childBondScores.add(bondScore.clamp(0, 100));
+    numberOfChildren = previousCount > childNames.length
+        ? previousCount + 1
+        : childNames.length;
+  }
+
+  void ageChildren() {
+    for (var i = 0; i < childAges.length; i++) {
+      childAges[i]++;
+    }
+    numberOfChildren = childNames.length;
   }
 
   bool get isDead => health <= 0 || age >= 90;

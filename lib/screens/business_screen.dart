@@ -35,9 +35,9 @@ class _BusinessScreenState extends State<BusinessScreen> {
   }
 
   String _fmt(int n) => n.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (m) => '${m[1]},',
-      );
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
 
   String _emojiForType(String typeName) {
     switch (typeName) {
@@ -100,7 +100,10 @@ class _BusinessScreenState extends State<BusinessScreen> {
           const SizedBox(height: 3.6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 14.4, vertical: 10.8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14.4,
+              vertical: 10.8,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFE8F5E9),
               borderRadius: BorderRadius.circular(8.1),
@@ -157,8 +160,10 @@ class _BusinessScreenState extends State<BusinessScreen> {
           children: [
             Row(
               children: [
-                Text(_emojiForType(type),
-                    style: const TextStyle(fontSize: 21.6)),
+                Text(
+                  _emojiForType(type),
+                  style: const TextStyle(fontSize: 21.6),
+                ),
                 const SizedBox(width: 9),
                 Expanded(
                   child: Text(
@@ -171,8 +176,10 @@ class _BusinessScreenState extends State<BusinessScreen> {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7.2, vertical: 2.7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7.2,
+                    vertical: 2.7,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(4.9),
@@ -180,7 +187,9 @@ class _BusinessScreenState extends State<BusinessScreen> {
                   child: Text(
                     type,
                     style: const TextStyle(
-                        fontSize: 9, color: Color(0xFF9E9E9E)),
+                      fontSize: 9,
+                      color: Color(0xFF9E9E9E),
+                    ),
                   ),
                 ),
               ],
@@ -244,22 +253,28 @@ class _BusinessScreenState extends State<BusinessScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 7.2),
                       side: const BorderSide(color: Color(0xFFB2DFDB)),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.5)),
+                        borderRadius: BorderRadius.circular(6.5),
+                      ),
                     ),
                     onPressed: () {
-                      if (widget.character.money < 3) {
-                        _showSnack('Not enough money. Need 3 units.');
+                      if (widget.character.cash < 3000) {
+                        _showSnack('Not enough cash. Need GHS 3,000.');
                         return;
                       }
                       BusinessService.investInBusiness(
-                          widget.character, index, 1);
+                        widget.character,
+                        index,
+                        1,
+                      );
                       _refresh();
                       _showSnack('Small investment made in $name. 💰');
                     },
                     child: const Text(
-                      'Invest Small 💰 (-3)',
-                      style:
-                          TextStyle(fontSize: 10.8, color: Color(0xFF009688)),
+                      'Invest Small 💰 (-GHS 3,000)',
+                      style: TextStyle(
+                        fontSize: 10.8,
+                        color: Color(0xFF009688),
+                      ),
                     ),
                   ),
                 ),
@@ -270,22 +285,28 @@ class _BusinessScreenState extends State<BusinessScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 7.2),
                       side: const BorderSide(color: Color(0xFFB39DDB)),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.5)),
+                        borderRadius: BorderRadius.circular(6.5),
+                      ),
                     ),
                     onPressed: () {
-                      if (widget.character.money < 8) {
-                        _showSnack('Not enough money. Need 8 units.');
+                      if (widget.character.cash < 8000) {
+                        _showSnack('Not enough cash. Need GHS 8,000.');
                         return;
                       }
                       BusinessService.investInBusiness(
-                          widget.character, index, 2);
+                        widget.character,
+                        index,
+                        2,
+                      );
                       _refresh();
                       _showSnack('Big investment in $name! 💰💰');
                     },
                     child: const Text(
-                      'Invest Big 💰💰 (-8)',
-                      style:
-                          TextStyle(fontSize: 10.8, color: Color(0xFF7E57C2)),
+                      'Invest Big 💰💰 (-GHS 8,000)',
+                      style: TextStyle(
+                        fontSize: 10.8,
+                        color: Color(0xFF7E57C2),
+                      ),
                     ),
                   ),
                 ),
@@ -299,7 +320,8 @@ class _BusinessScreenState extends State<BusinessScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 7.2),
                   side: BorderSide(color: Colors.red.shade300),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.5)),
+                    borderRadius: BorderRadius.circular(6.5),
+                  ),
                 ),
                 onPressed: () => _confirmClose(index, name),
                 child: Text(
@@ -318,11 +340,10 @@ class _BusinessScreenState extends State<BusinessScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         title: const Text('Close Business?'),
         content: Text(
-          'Are you sure you want to close $name? You\'ll get a small refund of 5 money units but your hustle ends here.',
+          'Are you sure you want to close $name? You\'ll get a small refund of GHS 5,000 but your hustle ends here.',
         ),
         actions: [
           TextButton(
@@ -335,7 +356,8 @@ class _BusinessScreenState extends State<BusinessScreen> {
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.5)),
+                borderRadius: BorderRadius.circular(6.5),
+              ),
             ),
             onPressed: () {
               Navigator.of(ctx).pop();
@@ -353,8 +375,9 @@ class _BusinessScreenState extends State<BusinessScreen> {
   // ── Start a Business ──────────────────────────────────────────────────────
 
   Widget _buildStartBusiness() {
-    final available =
-        BusinessService.getAvailableBusinessTypes(widget.character);
+    final available = BusinessService.getAvailableBusinessTypes(
+      widget.character,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +401,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
               borderRadius: BorderRadius.circular(9.7),
             ),
             child: const Text(
-              "You don't qualify for any businesses yet. Build your stats and money.",
+              "You don't qualify for any businesses yet. Build your stats and cash.",
               style: TextStyle(
                 fontSize: 11.7,
                 color: Color(0xFF9E9E9E),
@@ -439,17 +462,25 @@ class _BusinessScreenState extends State<BusinessScreen> {
             const SizedBox(height: 9),
             Row(
               children: [
-                const Icon(Icons.payments_outlined,
-                    size: 12.6, color: Color(0xFF9E9E9E)),
+                const Icon(
+                  Icons.payments_outlined,
+                  size: 12.6,
+                  color: Color(0xFF9E9E9E),
+                ),
                 const SizedBox(width: 3.6),
                 Text(
-                  'Startup: ${type.startupCost} money units',
+                  'Startup: GHS ${_fmt(BusinessService.startupCashCost(type))}',
                   style: const TextStyle(
-                      fontSize: 10.8, color: Color(0xFF9E9E9E)),
+                    fontSize: 10.8,
+                    color: Color(0xFF9E9E9E),
+                  ),
                 ),
                 const SizedBox(width: 14.4),
-                const Icon(Icons.trending_up,
-                    size: 12.6, color: Color(0xFF009688)),
+                const Icon(
+                  Icons.trending_up,
+                  size: 12.6,
+                  color: Color(0xFF009688),
+                ),
                 const SizedBox(width: 3.6),
                 Text(
                   'GHS ${_fmt(type.baseMonthlyIncome)}/mo',
@@ -471,7 +502,8 @@ class _BusinessScreenState extends State<BusinessScreen> {
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 10.8),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.1)),
+                    borderRadius: BorderRadius.circular(8.1),
+                  ),
                 ),
                 onPressed: () => _showStartBusinessDialog(type),
                 child: const Text(
@@ -491,8 +523,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         title: Text('Name Your ${type.name} ${type.emoji}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -507,9 +538,12 @@ class _BusinessScreenState extends State<BusinessScreen> {
               decoration: InputDecoration(
                 hintText: "e.g. Kofi's ${type.name}",
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.1)),
+                  borderRadius: BorderRadius.circular(8.1),
+                ),
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10.8, vertical: 9),
+                  horizontal: 10.8,
+                  vertical: 9,
+                ),
               ),
               textCapitalization: TextCapitalization.words,
             ),
@@ -526,7 +560,8 @@ class _BusinessScreenState extends State<BusinessScreen> {
               foregroundColor: const Color(0xFF00695C),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.5)),
+                borderRadius: BorderRadius.circular(6.5),
+              ),
             ),
             onPressed: () {
               final name = controller.text.trim();
@@ -538,7 +573,8 @@ class _BusinessScreenState extends State<BusinessScreen> {
               BusinessService.startBusiness(widget.character, type, name);
               _refresh();
               _showSnack(
-                  'Welcome to the business world! $name is now open. ${type.emoji}');
+                'Welcome to the business world! $name is now open. ${type.emoji}',
+              );
             },
             child: const Text('Open for Business!'),
           ),

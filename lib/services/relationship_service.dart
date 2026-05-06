@@ -70,7 +70,10 @@ class RelationshipService {
         return;
       }
     }
-    character.relationshipScore = (character.relationshipScore + drift).clamp(0, 100);
+    character.relationshipScore = (character.relationshipScore + drift).clamp(
+      0,
+      100,
+    );
     character.save();
   }
 
@@ -92,7 +95,19 @@ class RelationshipService {
   static void marry(Character character) {
     if (character.relationshipStatus != 'Engaged') return;
     character.relationshipStatus = 'Married';
-    character.money = (character.money - 8).clamp(0, 9999);
+    const weddingCost = 5000;
+    if (character.cash >= weddingCost) {
+      character.adjustCash(-weddingCost);
+    } else {
+      final shortfall = weddingCost - character.cash;
+      character.cash = 0;
+      character.adjustDebt(shortfall);
+      character.lifeLog.insert(
+        0,
+        'Age ${character.age}: The wedding cost more than planned, so GHS $shortfall became debt. The jollof still finished. 💒',
+      );
+    }
+    character.money = (character.money - 2).clamp(0, 9999);
     character.happiness = (character.happiness + 15).clamp(0, 100);
     character.lifeLog.insert(
       0,
@@ -115,7 +130,10 @@ class RelationshipService {
   static void getCaught(Character character) {
     final sideName = character.sidePartnerName;
     character.reputation = (character.reputation - 20).clamp(0, 100);
-    character.relationshipScore = (character.relationshipScore - 40).clamp(0, 100);
+    character.relationshipScore = (character.relationshipScore - 40).clamp(
+      0,
+      100,
+    );
     character.happiness = (character.happiness - 10).clamp(0, 100);
     character.isCheating = false;
     character.sidePartnerName = '';
@@ -126,10 +144,53 @@ class RelationshipService {
     character.save();
   }
 
+  static void breakUp(Character character) {
+    final exName = character.partnerName;
+    character.relationshipStatus = 'Single';
+    character.happiness = (character.happiness - 12).clamp(0, 100);
+    character.partnerName = '';
+    character.partnerJob = '';
+    character.partnerPersonality = '';
+    character.relationshipScore = 0;
+    character.isCheating = false;
+    character.sidePartnerName = '';
+    character.lifeLog.insert(
+      0,
+      'Age ${character.age}: You and $exName broke up. Painful, but not every love story reaches family introduction. 💔',
+    );
+    character.save();
+  }
+
+  static void callOffEngagement(Character character) {
+    final exName = character.partnerName;
+    character.relationshipStatus = 'Single';
+    character.happiness = (character.happiness - 16).clamp(0, 100);
+    character.reputation = (character.reputation - 8).clamp(0, 100);
+    character.partnerName = '';
+    character.partnerJob = '';
+    character.partnerPersonality = '';
+    character.relationshipScore = 0;
+    character.isCheating = false;
+    character.sidePartnerName = '';
+    character.lifeLog.insert(
+      0,
+      'Age ${character.age}: You called off the engagement with $exName. Both families are still discussing it. 💍',
+    );
+    character.save();
+  }
+
   static void divorce(Character character) {
     final exName = character.partnerName;
     character.relationshipStatus = 'Divorced';
-    character.money = (character.money - 5).clamp(0, 9999);
+    const legalCost = 3500;
+    if (character.cash >= legalCost) {
+      character.adjustCash(-legalCost);
+    } else {
+      final shortfall = legalCost - character.cash;
+      character.cash = 0;
+      character.adjustDebt(shortfall);
+    }
+    character.money = (character.money - 3).clamp(0, 9999);
     character.happiness = (character.happiness - 20).clamp(0, 100);
     character.reputation = (character.reputation - 5).clamp(0, 100);
     character.partnerName = '';
@@ -151,8 +212,15 @@ class RelationshipService {
         character.age > 45) {
       return;
     }
-    character.numberOfChildren += 1;
-    character.money = (character.money - 5).clamp(0, 9999);
+    const babyCost = 2500;
+    if (character.cash >= babyCost) {
+      character.adjustCash(-babyCost);
+    } else {
+      final shortfall = babyCost - character.cash;
+      character.cash = 0;
+      character.adjustDebt(shortfall);
+    }
+    character.money = (character.money - 2).clamp(0, 9999);
     character.happiness = (character.happiness + 10).clamp(0, 100);
     // Pick a child name based on gender (random)
     final childIsBoy = _random.nextBool();
@@ -160,6 +228,7 @@ class RelationshipService {
         ? ghanaianMaleNames[_random.nextInt(ghanaianMaleNames.length)]
         : ghanaianFemaleNames[_random.nextInt(ghanaianFemaleNames.length)];
     final childGender = childIsBoy ? 'boy' : 'girl';
+    character.addChild(name: childName, gender: childGender, bondScore: 65);
     character.lifeLog.insert(
       0,
       'Age ${character.age}: Your ${character.partnerName} gave birth to a baby $childGender. You named them $childName. Life will never be the same. 👶',
