@@ -645,6 +645,149 @@ class _SocialScreenState extends State<SocialScreen> {
     );
   }
 
+  Widget _buildFamilySection() {
+    c.ensureFamilySeeded();
+    final totalChildren = c.childNames.length;
+
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Family Circle',
+                style: TextStyle(
+                  fontSize: 11.7,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF9E9E9E),
+                  letterSpacing: 1,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${c.averageFamilyBond.round()}/100 avg',
+                style: const TextStyle(
+                  fontSize: 10.8,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF7E57C2),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12.6),
+          ...List.generate(c.familyNames.length, (i) {
+            final relation = i < c.familyRelations.length
+                ? c.familyRelations[i]
+                : 'Family';
+            final age = i < c.familyAges.length ? c.familyAges[i] : 0;
+            final bond = i < c.familyBondScores.length
+                ? c.familyBondScores[i]
+                : 50;
+            final alive = i < c.familyAlive.length ? c.familyAlive[i] : true;
+            return _familyRow(
+              name: c.familyNames[i],
+              detail: '$relation • Age $age${alive ? '' : ' • Passed'}',
+              bond: bond,
+              emoji: relation == 'Mother'
+                  ? '👩'
+                  : relation == 'Father'
+                  ? '👨'
+                  : '🧑',
+            );
+          }),
+          if (totalChildren > 0) ...[
+            const SizedBox(height: 9),
+            const Divider(height: 1, color: Color(0xFFF5F5F5)),
+            const SizedBox(height: 9),
+            ...List.generate(totalChildren, (i) {
+              final age = i < c.childAges.length ? c.childAges[i] : 0;
+              final bond = i < c.childBondScores.length
+                  ? c.childBondScores[i]
+                  : 50;
+              return _familyRow(
+                name: c.childNames[i],
+                detail: 'Child • Age $age',
+                bond: bond,
+                emoji: '👶',
+              );
+            }),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _familyRow({
+    required String name,
+    required String detail,
+    required int bond,
+    required String emoji,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.8),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEDE7F6),
+              borderRadius: BorderRadius.circular(10.8),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 16.2)),
+            ),
+          ),
+          const SizedBox(width: 10.8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 12.6,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF424242),
+                  ),
+                ),
+                const SizedBox(height: 1.8),
+                Text(
+                  detail,
+                  style: const TextStyle(
+                    fontSize: 10.8,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ),
+                const SizedBox(height: 5.4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.9),
+                  child: LinearProgressIndicator(
+                    value: bond / 100,
+                    minHeight: 6.3,
+                    backgroundColor: const Color(0xFFF5F5F5),
+                    color: _scoreColor(bond),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 9),
+          Text(
+            '$bond',
+            style: TextStyle(
+              fontSize: 10.8,
+              fontWeight: FontWeight.w900,
+              color: _scoreColor(bond),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _statRow(String label, IconData icon, int value, Color color) {
     return Row(
       children: [
@@ -701,6 +844,8 @@ class _SocialScreenState extends State<SocialScreen> {
           _buildStatusSection(),
           const SizedBox(height: 14.4),
           _buildActionsSection(),
+          const SizedBox(height: 14.4),
+          _buildFamilySection(),
           const SizedBox(height: 14.4),
           _buildStatsSection(),
         ],

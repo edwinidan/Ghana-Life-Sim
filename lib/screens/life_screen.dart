@@ -16,6 +16,7 @@ import '../services/save_service.dart';
 import '../services/housing_service.dart';
 import '../services/business_service.dart';
 import '../services/health_service.dart';
+import '../services/activity_service.dart';
 import 'life_log_screen.dart';
 
 class LifeScreen extends StatefulWidget {
@@ -251,8 +252,11 @@ class _LifeScreenState extends State<LifeScreen> {
 
   void _ageUp() {
     setState(() {
+      widget.character.ensureFamilySeeded();
       widget.character.age++;
       widget.character.ageChildren();
+      widget.character.ageFamily();
+      widget.character.resetActionEnergy();
 
       // Life stage transition check
       final newStage = widget.character.lifeStage;
@@ -610,6 +614,8 @@ class _LifeScreenState extends State<LifeScreen> {
                   _buildStatsCard(c),
                   const SizedBox(height: 14.4),
                   _buildFundsCard(c),
+                  const SizedBox(height: 14.4),
+                  _buildActivitiesSection(c),
                   const SizedBox(height: 14.4),
                   _buildDoingNavButtons(c),
                   const SizedBox(height: 14.4),
@@ -1658,6 +1664,188 @@ class _LifeScreenState extends State<LifeScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _performActivity(ActivityOption option) {
+    final result = ActivityService.performActivity(widget.character, option);
+    setState(() {});
+    SaveService.saveGame(widget.character);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result.message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: result.success
+            ? const Color(0xFF5E35B1)
+            : const Color(0xFFE53935),
+      ),
+    );
+  }
+
+  Widget _buildActivitiesSection(Character c) {
+    final activities = ActivityService.availableActivities(c);
+    final isTired = c.actionEnergy <= 0;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(color: const Color(0x0DB39DDB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ACTIVITIES',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF9E9E9E),
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 3.6),
+                    Text(
+                      'Use your yearly energy before aging up.',
+                      style: TextStyle(
+                        fontSize: 10.8,
+                        color: Color(0xFF757575),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.8,
+                  vertical: 5.4,
+                ),
+                decoration: BoxDecoration(
+                  color: isTired
+                      ? const Color(0xFFFFEBEE)
+                      : const Color(0xFFEDE7F6),
+                  borderRadius: BorderRadius.circular(9.7),
+                ),
+                child: Text(
+                  '${c.actionEnergy} left',
+                  style: TextStyle(
+                    fontSize: 10.8,
+                    fontWeight: FontWeight.w900,
+                    color: isTired
+                        ? const Color(0xFFE53935)
+                        : const Color(0xFF5E35B1),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14.4),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: activities.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.55,
+              crossAxisSpacing: 10.8,
+              mainAxisSpacing: 10.8,
+            ),
+            itemBuilder: (context, index) {
+              return _activityCard(activities[index], isTired);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _activityCard(ActivityOption option, bool isTired) {
+    final cannotAfford = widget.character.cash < option.cashCost;
+    final disabled = isTired || cannotAfford;
+
+    return GestureDetector(
+      onTap: disabled ? null : () => _performActivity(option),
+      child: Opacity(
+        opacity: disabled ? 0.55 : 1,
+        child: Container(
+          padding: const EdgeInsets.all(12.6),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFCFAFF),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(
+              color: disabled
+                  ? const Color(0xFFE0E0E0)
+                  : const Color(0x33B39DDB),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(option.emoji, style: const TextStyle(fontSize: 18)),
+                  const Spacer(),
+                  if (option.cashCost > 0)
+                    Text(
+                      'GHS ${option.cashCost}',
+                      style: TextStyle(
+                        fontSize: 8.8,
+                        fontWeight: FontWeight.w900,
+                        color: cannotAfford
+                            ? const Color(0xFFE53935)
+                            : const Color(0xFF009688),
+                      ),
+                    ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    option.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11.7,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF424242),
+                    ),
+                  ),
+                  const SizedBox(height: 2.7),
+                  Text(
+                    cannotAfford ? 'Not enough cash' : option.subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 9.9,
+                      height: 1.25,
+                      color: cannotAfford
+                          ? const Color(0xFFE53935)
+                          : const Color(0xFF757575),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

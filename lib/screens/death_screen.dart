@@ -13,6 +13,8 @@ class DeathScreen extends StatelessWidget {
     final int lifeScore = HealthService.calculateLifeScore(character);
     final String rating = HealthService.getLifeRating(lifeScore);
     final String subtitle = HealthService.getRatingSubtitle(rating);
+    final String ribbon = HealthService.getLegacyRibbon(character);
+    final String ribbonSubtitle = HealthService.getLegacyRibbonSubtitle(ribbon);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFCFAFF),
@@ -38,6 +40,8 @@ class DeathScreen extends StatelessWidget {
                         subtitle,
                         context,
                       ),
+                      const SizedBox(height: 14.4),
+                      _buildLegacyRibbonCard(ribbon, ribbonSubtitle),
                       const SizedBox(height: 14.4),
                       _buildStatsGrid(context),
                       const SizedBox(height: 14.4),
@@ -378,6 +382,77 @@ class DeathScreen extends StatelessWidget {
             children: stats
                 .map((s) => _buildStatCell(s.$1, s.$2, '${s.$3}'))
                 .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegacyRibbonCard(String ribbon, String subtitle) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(color: const Color(0x0DB39DDB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52.2,
+            height: 52.2,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF8E1),
+              borderRadius: BorderRadius.circular(14.4),
+              border: Border.all(color: const Color(0xFFFFD54F)),
+            ),
+            child: const Center(
+              child: Text('🏆', style: TextStyle(fontSize: 25.2)),
+            ),
+          ),
+          const SizedBox(width: 14.4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'LEGACY RIBBON',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF9E9E9E),
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 4.5),
+                Text(
+                  ribbon,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF424242),
+                  ),
+                ),
+                const SizedBox(height: 3.6),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 11.7,
+                    color: Color(0xFF757575),
+                    height: 1.4,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

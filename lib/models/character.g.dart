@@ -16,10 +16,7 @@ class CharacterAdapter extends TypeAdapter<Character> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Character(
-      name: fields[0] as String,
-      gender: fields[1] as String,
-    )
+    return Character(name: fields[0] as String, gender: fields[1] as String)
       ..age = fields[2] as int
       ..isAlive = fields[3] as bool
       ..health = fields[4] as int
@@ -63,19 +60,36 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..cash = fields[42] == null ? 1000 : fields[42] as int
       ..debt = fields[43] == null ? 0 : fields[43] as int
       ..flags = fields[44] == null ? [] : (fields[44] as List).cast<String>()
-      ..childNames =
-          fields[45] == null ? [] : (fields[45] as List).cast<String>()
-      ..childGenders =
-          fields[46] == null ? [] : (fields[46] as List).cast<String>()
+      ..childNames = fields[45] == null
+          ? []
+          : (fields[45] as List).cast<String>()
+      ..childGenders = fields[46] == null
+          ? []
+          : (fields[46] as List).cast<String>()
       ..childAges = fields[47] == null ? [] : (fields[47] as List).cast<int>()
-      ..childBondScores =
-          fields[48] == null ? [] : (fields[48] as List).cast<int>();
+      ..childBondScores = fields[48] == null
+          ? []
+          : (fields[48] as List).cast<int>()
+      ..familyNames = fields[49] == null
+          ? []
+          : (fields[49] as List).cast<String>()
+      ..familyRelations = fields[50] == null
+          ? []
+          : (fields[50] as List).cast<String>()
+      ..familyAges = fields[51] == null ? [] : (fields[51] as List).cast<int>()
+      ..familyBondScores = fields[52] == null
+          ? []
+          : (fields[52] as List).cast<int>()
+      ..familyAlive = fields[53] == null
+          ? []
+          : (fields[53] as List).cast<bool>()
+      ..actionEnergy = fields[54] == null ? 3 : fields[54] as int;
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(49)
+      ..writeByte(55)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -173,7 +187,19 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(47)
       ..write(obj.childAges)
       ..writeByte(48)
-      ..write(obj.childBondScores);
+      ..write(obj.childBondScores)
+      ..writeByte(49)
+      ..write(obj.familyNames)
+      ..writeByte(50)
+      ..write(obj.familyRelations)
+      ..writeByte(51)
+      ..write(obj.familyAges)
+      ..writeByte(52)
+      ..write(obj.familyBondScores)
+      ..writeByte(53)
+      ..write(obj.familyAlive)
+      ..writeByte(54)
+      ..write(obj.actionEnergy);
   }
 
   @override

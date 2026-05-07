@@ -18,7 +18,13 @@ class SaveService {
 
   static Future<Character?> loadGame() async {
     final box = Hive.box<Character>(_boxName);
-    return box.get(_saveKey);
+    final character = box.get(_saveKey);
+    character?.ensureFamilySeeded();
+    if (character != null && character.actionEnergy < 0) {
+      character.actionEnergy = 0;
+    }
+    await character?.save();
+    return character;
   }
 
   static bool hasSavedGame() {

@@ -114,6 +114,18 @@ class Character extends HiveObject {
   List<int> childAges;
   @HiveField(48, defaultValue: [])
   List<int> childBondScores;
+  @HiveField(49, defaultValue: [])
+  List<String> familyNames;
+  @HiveField(50, defaultValue: [])
+  List<String> familyRelations;
+  @HiveField(51, defaultValue: [])
+  List<int> familyAges;
+  @HiveField(52, defaultValue: [])
+  List<int> familyBondScores;
+  @HiveField(53, defaultValue: [])
+  List<bool> familyAlive;
+  @HiveField(54, defaultValue: 3)
+  int actionEnergy;
 
   Character({required this.name, required this.gender})
     : age = 0,
@@ -154,6 +166,12 @@ class Character extends HiveObject {
       childGenders = [],
       childAges = [],
       childBondScores = [],
+      familyNames = [],
+      familyRelations = [],
+      familyAges = [],
+      familyBondScores = [],
+      familyAlive = [],
+      actionEnergy = 3,
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -162,7 +180,9 @@ class Character extends HiveObject {
       reputation = _randomStat(20, 50),
       discipline = _randomStat(20, 70),
       streetSense = _randomStat(20, 60),
-      connections = _randomStat(10, 40);
+      connections = _randomStat(10, 40) {
+    ensureFamilySeeded();
+  }
 
   static int _randomStat(int min, int max) {
     return min + Random().nextInt(max - min);
@@ -240,11 +260,98 @@ class Character extends HiveObject {
         : childNames.length;
   }
 
+  void adjustChildBonds(int amount) {
+    for (var i = 0; i < childBondScores.length; i++) {
+      childBondScores[i] = (childBondScores[i] + amount).clamp(0, 100);
+    }
+  }
+
   void ageChildren() {
     for (var i = 0; i < childAges.length; i++) {
       childAges[i]++;
     }
     numberOfChildren = childNames.length;
+  }
+
+  void ensureFamilySeeded() {
+    if (familyNames.isNotEmpty) return;
+
+    final motherNames = ['Akosua', 'Ama', 'Efua', 'Abena', 'Adjoa'];
+    final fatherNames = ['Kwame', 'Kofi', 'Yaw', 'Kojo', 'Fiifi'];
+    final siblingNames = ['Nana', 'Yaw', 'Afia', 'Kweku', 'Esi'];
+
+    addFamilyMember(
+      name: motherNames[Random().nextInt(motherNames.length)],
+      relation: 'Mother',
+      age: age + _randomStat(23, 39),
+      bondScore: _randomStat(55, 85),
+    );
+    addFamilyMember(
+      name: fatherNames[Random().nextInt(fatherNames.length)],
+      relation: 'Father',
+      age: age + _randomStat(25, 43),
+      bondScore: _randomStat(45, 80),
+    );
+
+    if (Random().nextBool()) {
+      addFamilyMember(
+        name: siblingNames[Random().nextInt(siblingNames.length)],
+        relation: 'Sibling',
+        age: (age + _randomStat(-3, 5)).clamp(0, 99),
+        bondScore: _randomStat(45, 80),
+      );
+    }
+  }
+
+  void addFamilyMember({
+    required String name,
+    required String relation,
+    required int age,
+    int bondScore = 60,
+    bool alive = true,
+  }) {
+    familyNames.add(name);
+    familyRelations.add(relation);
+    familyAges.add(age.clamp(0, 120));
+    familyBondScores.add(bondScore.clamp(0, 100));
+    familyAlive.add(alive);
+  }
+
+  void adjustFamilyBonds(int amount) {
+    for (var i = 0; i < familyBondScores.length; i++) {
+      familyBondScores[i] = (familyBondScores[i] + amount).clamp(0, 100);
+    }
+  }
+
+  void ageFamily() {
+    for (var i = 0; i < familyAges.length; i++) {
+      if (i < familyAlive.length && familyAlive[i]) {
+        familyAges[i]++;
+      }
+    }
+  }
+
+  double get averageFamilyBond {
+    final bonds = [
+      ...familyBondScores,
+      ...childBondScores,
+      if (relationshipStatus == 'Dating' ||
+          relationshipStatus == 'Engaged' ||
+          relationshipStatus == 'Married')
+        relationshipScore,
+    ];
+    if (bonds.isEmpty) return 0;
+    return bonds.reduce((a, b) => a + b) / bonds.length;
+  }
+
+  void resetActionEnergy() {
+    actionEnergy = age < 6 ? 2 : 3;
+  }
+
+  bool consumeActionEnergy() {
+    if (actionEnergy <= 0) return false;
+    actionEnergy--;
+    return true;
   }
 
   bool get isDead => health <= 0 || age >= 90;

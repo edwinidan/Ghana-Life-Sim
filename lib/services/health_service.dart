@@ -91,4 +91,80 @@ class HealthService {
         return 'Ghana expected more. But we move. 😬';
     }
   }
+
+  /// BitLife-style final identity badge based on the strongest life pattern.
+  static String getLegacyRibbon(Character character) {
+    final hasScandal =
+        character.hasFlag('known_cheater') ||
+        character.hasFlag('family_disappointed') ||
+        character.hasFlag('distant_parent') ||
+        character.isCheating;
+    if (hasScandal) return 'Scandal Magnet';
+
+    if (character.streetSense >= 75 ||
+        character.careerPath == 'Hustle' ||
+        character.sideGigs.length >= 2 ||
+        character.hasFlag('risky_hustle_trouble')) {
+      return 'The Hustler';
+    }
+
+    if (character.numberOfChildren >= 3 ||
+        character.averageFamilyBond >= 72 ||
+        character.hasFlag('family_helper')) {
+      return 'Family Hero';
+    }
+
+    if (character.cash >= 100000 ||
+        (character.reputation >= 75 && character.businessNames.length >= 2)) {
+      return 'Big Person';
+    }
+
+    if (character.hasFlag('church_favorite') ||
+        (character.reputation >= 70 && character.connections >= 70)) {
+      return 'Church Favorite';
+    }
+
+    if (character.educationLevel == 'University' &&
+        character.happiness >= 70 &&
+        character.reputation >= 60) {
+      return 'Campus Legend';
+    }
+
+    final score = calculateLifeScore(character);
+    if (character.age >= 80 && score < 55) return 'Quiet Survivor';
+    if (character.smarts >= 75 && character.looks >= 65 && score < 40) {
+      return 'Wasted Talent';
+    }
+    if (score >= 75) return 'Local Legend';
+    if (score >= 55) return 'Respectable Citizen';
+    return 'Tough Life';
+  }
+
+  static String getLegacyRibbonSubtitle(String ribbon) {
+    switch (ribbon) {
+      case 'Scandal Magnet':
+        return 'Your drama had its own WhatsApp broadcast list.';
+      case 'The Hustler':
+        return 'You knew how to move, bargain, survive, and make something shake.';
+      case 'Family Hero':
+        return 'Your people remember you as someone who showed up.';
+      case 'Big Person':
+        return 'Money, status, and a name people recognized.';
+      case 'Church Favorite':
+        return 'The aunties approved, and that is not a small achievement.';
+      case 'Campus Legend':
+        return 'School life treated you well, and people still remember the name.';
+      case 'Quiet Survivor':
+        return 'No noise, no headlines, but you endured.';
+      case 'Wasted Talent':
+        return 'The potential was there. Life just did not cash it out.';
+      case 'Local Legend':
+        return 'A full life with stories worth repeating.';
+      case 'Respectable Citizen':
+        return 'You did enough for people to nod with respect.';
+      case 'Tough Life':
+      default:
+        return 'It was not easy, but you still had a story.';
+    }
+  }
 }
