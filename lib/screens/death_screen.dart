@@ -1,12 +1,42 @@
 import 'package:flutter/material.dart';
 import '../models/character.dart';
+import 'achievements_screen.dart';
 import 'character_creation_screen.dart';
 import '../services/save_service.dart';
 import '../services/health_service.dart';
+import '../services/life_goal_service.dart';
+import '../services/meta_progress_service.dart';
 
-class DeathScreen extends StatelessWidget {
+class DeathScreen extends StatefulWidget {
   final Character character;
   const DeathScreen({super.key, required this.character});
+
+  @override
+  State<DeathScreen> createState() => _DeathScreenState();
+}
+
+class _DeathScreenState extends State<DeathScreen> {
+  late final Future<LifeCompletionRewards> _rewardsFuture;
+
+  Character get character => widget.character;
+
+  @override
+  void initState() {
+    super.initState();
+    _rewardsFuture = _recordLifeRewards();
+  }
+
+  Future<LifeCompletionRewards> _recordLifeRewards() async {
+    if (character.deathRewardsRecorded) {
+      final snapshot = await MetaProgressService.loadSnapshot();
+      return LifeCompletionRewards.empty(snapshot);
+    }
+    LifeGoalService.updateGoalProgress(character);
+    final rewards = await MetaProgressService.recordLifeCompletion(character);
+    character.deathRewardsRecorded = true;
+    await SaveService.saveGame(character);
+    return rewards;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +72,8 @@ class DeathScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 14.4),
                       _buildLegacyRibbonCard(ribbon, ribbonSubtitle),
+                      const SizedBox(height: 14.4),
+                      _buildRewardsCard(),
                       const SizedBox(height: 14.4),
                       _buildStatsGrid(context),
                       const SizedBox(height: 14.4),
@@ -459,6 +491,150 @@ class DeathScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildRewardsCard() {
+    return FutureBuilder<LifeCompletionRewards>(
+      future: _rewardsFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return _smallInfoCard(
+            icon: Icons.sync,
+            title: 'Recording Legacy',
+            subtitle: 'Saving ribbons, achievements, and goals...',
+          );
+        }
+
+        final rewards = snapshot.data!;
+        final items = <String>[
+          ...rewards.newlyUnlockedRibbons.map((ribbon) => 'Ribbon: $ribbon'),
+          ...rewards.newlyUnlockedAchievements.map(_achievementTitle),
+          ...rewards.newlyCompletedGoals.map(_goalTitle),
+        ];
+
+        if (items.isEmpty) {
+          return _smallInfoCard(
+            icon: Icons.check_circle,
+            title: 'Legacy Saved',
+            subtitle:
+                'No new unlocks this time, but this life is recorded in your progress.',
+          );
+        }
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.2),
+            border: Border.all(color: const Color(0x0DB39DDB)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'NEW UNLOCKS',
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF9E9E9E),
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 10.8),
+              ...items.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 7.2),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.emoji_events,
+                        color: Color(0xFFFFB300),
+                        size: 16.2,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            color: Color(0xFF424242),
+                            fontSize: 12.6,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _smallInfoCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(color: const Color(0x0DB39DDB)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF7E57C2), size: 21.6),
+          const SizedBox(width: 10.8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12.6,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF424242),
+                  ),
+                ),
+                const SizedBox(height: 2.7),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 10.8,
+                    color: Color(0xFF757575),
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _achievementTitle(String id) {
+    final achievement = MetaProgressService.achievementById(id);
+    return 'Achievement: ${achievement?.title ?? id}';
+  }
+
+  String _goalTitle(String id) {
+    final goal = LifeGoalService.goalById(id);
+    return 'Goal: ${goal?.title ?? id}';
+  }
+
   Widget _buildStatCell(String emoji, String label, String value) {
     return Row(
       children: [
@@ -580,6 +756,32 @@ class DeathScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 13.5),
+                foregroundColor: const Color(0xFF7E57C2),
+                side: const BorderSide(color: Color(0xFFB39DDB)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+              ),
+              child: const Text(
+                'VIEW LEGACY PROGRESS',
+                style: TextStyle(
+                  fontSize: 12.6,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 9),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

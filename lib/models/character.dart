@@ -126,6 +126,12 @@ class Character extends HiveObject {
   List<bool> familyAlive;
   @HiveField(54, defaultValue: 3)
   int actionEnergy;
+  @HiveField(55, defaultValue: '')
+  String activeLifeGoalId;
+  @HiveField(56, defaultValue: [])
+  List<String> completedLifeGoalIds;
+  @HiveField(57, defaultValue: false)
+  bool deathRewardsRecorded;
 
   Character({required this.name, required this.gender})
     : age = 0,
@@ -172,6 +178,9 @@ class Character extends HiveObject {
       familyBondScores = [],
       familyAlive = [],
       actionEnergy = 3,
+      activeLifeGoalId = '',
+      completedLifeGoalIds = [],
+      deathRewardsRecorded = false,
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -352,6 +361,12 @@ class Character extends HiveObject {
     if (actionEnergy <= 0) return false;
     actionEnergy--;
     return true;
+  }
+
+  void completeLifeGoal(String goalId) {
+    if (!completedLifeGoalIds.contains(goalId)) {
+      completedLifeGoalIds.add(goalId);
+    }
   }
 
   bool get isDead => health <= 0 || age >= 90;

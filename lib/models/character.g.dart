@@ -83,13 +83,18 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..familyAlive = fields[53] == null
           ? []
           : (fields[53] as List).cast<bool>()
-      ..actionEnergy = fields[54] == null ? 3 : fields[54] as int;
+      ..actionEnergy = fields[54] == null ? 3 : fields[54] as int
+      ..activeLifeGoalId = fields[55] == null ? '' : fields[55] as String
+      ..completedLifeGoalIds = fields[56] == null
+          ? []
+          : (fields[56] as List).cast<String>()
+      ..deathRewardsRecorded = fields[57] == null ? false : fields[57] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(55)
+      ..writeByte(58)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -199,7 +204,13 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(53)
       ..write(obj.familyAlive)
       ..writeByte(54)
-      ..write(obj.actionEnergy);
+      ..write(obj.actionEnergy)
+      ..writeByte(55)
+      ..write(obj.activeLifeGoalId)
+      ..writeByte(56)
+      ..write(obj.completedLifeGoalIds)
+      ..writeByte(57)
+      ..write(obj.deathRewardsRecorded);
   }
 
   @override

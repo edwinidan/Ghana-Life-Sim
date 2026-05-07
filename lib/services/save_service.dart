@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/character.dart';
+import 'life_goal_service.dart';
 
 class SaveService {
   static const String _boxName = 'ghana_life_box';
@@ -22,6 +23,9 @@ class SaveService {
     character?.ensureFamilySeeded();
     if (character != null && character.actionEnergy < 0) {
       character.actionEnergy = 0;
+    }
+    if (character != null && !character.isDead) {
+      LifeGoalService.ensureActiveGoal(character);
     }
     await character?.save();
     return character;

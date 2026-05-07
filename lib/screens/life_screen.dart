@@ -17,6 +17,8 @@ import '../services/housing_service.dart';
 import '../services/business_service.dart';
 import '../services/health_service.dart';
 import '../services/activity_service.dart';
+import '../services/life_goal_service.dart';
+import 'achievements_screen.dart';
 import 'life_log_screen.dart';
 
 class LifeScreen extends StatefulWidget {
@@ -54,6 +56,8 @@ class _LifeScreenState extends State<LifeScreen> {
   @override
   void initState() {
     super.initState();
+    LifeGoalService.ensureActiveGoal(widget.character);
+    SaveService.saveGame(widget.character);
     _previousLifeStage = widget.character.lifeStage;
   }
 
@@ -388,6 +392,17 @@ class _LifeScreenState extends State<LifeScreen> {
         widget.character.removeFlag('low_cash');
       }
 
+      final goalBeforeUpdate = LifeGoalService.activeGoal(widget.character);
+      final completedGoal = LifeGoalService.updateGoalProgress(
+        widget.character,
+      );
+      if (completedGoal) {
+        widget.character.lifeLog.insert(
+          0,
+          'Age ${widget.character.age}: Life goal completed. ${goalBeforeUpdate?.title ?? 'A major goal'} is now part of your legacy.',
+        );
+      }
+
       final validEvents = allEvents.where(_isEventValid).toList();
 
       if (validEvents.isNotEmpty && !widget.character.isDead) {
@@ -614,6 +629,8 @@ class _LifeScreenState extends State<LifeScreen> {
                   _buildStatsCard(c),
                   const SizedBox(height: 14.4),
                   _buildFundsCard(c),
+                  const SizedBox(height: 14.4),
+                  _buildLifeGoalCard(c),
                   const SizedBox(height: 14.4),
                   _buildActivitiesSection(c),
                   const SizedBox(height: 14.4),
@@ -978,6 +995,27 @@ class _LifeScreenState extends State<LifeScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+                ),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  margin: const EdgeInsets.only(right: 7.2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(9.7),
+                    border: Border.all(color: const Color(0xFFFFECB3)),
+                  ),
+                  child: const Icon(
+                    Icons.emoji_events,
+                    color: Color(0xFFFFB300),
+                    size: 18,
                   ),
                 ),
               ),
@@ -1669,6 +1707,7 @@ class _LifeScreenState extends State<LifeScreen> {
 
   void _performActivity(ActivityOption option) {
     final result = ActivityService.performActivity(widget.character, option);
+    LifeGoalService.updateGoalProgress(widget.character);
     setState(() {});
     SaveService.saveGame(widget.character);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1678,6 +1717,111 @@ class _LifeScreenState extends State<LifeScreen> {
         backgroundColor: result.success
             ? const Color(0xFF5E35B1)
             : const Color(0xFFE53935),
+      ),
+    );
+  }
+
+  Widget _buildLifeGoalCard(Character c) {
+    final goal = LifeGoalService.ensureActiveGoal(c);
+    final current = goal.current(c);
+    final isComplete = goal.isComplete(c);
+    final progress = goal.target == 0 ? 0.0 : current / goal.target;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(
+          color: isComplete ? const Color(0xFFB2DFDB) : const Color(0x0DB39DDB),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 43.2,
+            height: 43.2,
+            decoration: BoxDecoration(
+              color: isComplete
+                  ? const Color(0xFFE0F2F1)
+                  : const Color(0xFFEDE7F6),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(
+              isComplete ? Icons.check_circle : Icons.flag,
+              color: isComplete
+                  ? const Color(0xFF009688)
+                  : const Color(0xFF7E57C2),
+              size: 21.6,
+            ),
+          ),
+          const SizedBox(width: 14.4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'ACTIVE LIFE GOAL',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF9E9E9E),
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 3.6),
+                Text(
+                  goal.title,
+                  style: const TextStyle(
+                    fontSize: 14.4,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF424242),
+                  ),
+                ),
+                const SizedBox(height: 3.6),
+                Text(
+                  goal.description,
+                  style: const TextStyle(
+                    fontSize: 10.8,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+                const SizedBox(height: 9),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.9),
+                  child: LinearProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    minHeight: 7.2,
+                    backgroundColor: const Color(0xFFF5F5F5),
+                    color: isComplete
+                        ? const Color(0xFF009688)
+                        : const Color(0xFFB39DDB),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10.8),
+          Text(
+            isComplete ? 'DONE' : goal.progressText(c),
+            style: TextStyle(
+              fontSize: 10.8,
+              fontWeight: FontWeight.w900,
+              color: isComplete
+                  ? const Color(0xFF009688)
+                  : const Color(0xFF7E57C2),
+            ),
+          ),
+        ],
       ),
     );
   }
