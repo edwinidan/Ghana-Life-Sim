@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ghana_life_sim/data/childhood_events.dart';
 import 'package:ghana_life_sim/models/character.dart';
 import 'package:ghana_life_sim/models/event.dart';
 import 'package:ghana_life_sim/services/activity_service.dart';
@@ -40,6 +41,21 @@ void main() {
     expect(() => character.ageChildren(), returnsNormally);
   });
 
+  test('early childhood has meaningful events for ages one through five', () {
+    for (var age = 1; age <= 5; age++) {
+      final matches = childhoodEvents
+          .where((event) => age >= event.minAge && age <= event.maxAge)
+          .toList();
+
+      expect(matches, isNotEmpty, reason: 'No childhood event for age $age');
+      expect(
+        matches.any((event) => event.choices.length >= 2),
+        isTrue,
+        reason: 'Age $age needs choice-driven events',
+      );
+    }
+  });
+
   test('event choices apply stat, cash, debt, flag, and status changes', () {
     final character = Character(name: 'Afia', gender: 'Female');
     character.cash = 1000;
@@ -56,6 +72,7 @@ void main() {
       flagToRemove: 'temporary_pressure',
       cashChange: -200,
       debtChange: 50,
+      familyBondChange: 4,
     );
 
     EventChoiceService.applyChoice(character, choice);
@@ -68,6 +85,7 @@ void main() {
     expect(character.housingStatus, 'Renting');
     expect(character.hasFlag('community_helper'), isTrue);
     expect(character.hasFlag('temporary_pressure'), isFalse);
+    expect(character.averageFamilyBond, greaterThan(0));
   });
 
   test('character tracks cash, debt, flags, and children', () {

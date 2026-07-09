@@ -34,7 +34,7 @@ class _LifeScreenState extends State<LifeScreen> {
   LifeEvent? _currentEvent;
   final Random _rng = Random();
   final List<LifeEvent> _pendingEvents = [];
-  int _selectedTab = 4; // 0=life, 1=job, 2=age(unused), 3=school, 4=doing
+  int _selectedTab = 0; // 0=dashboard, 1=career, 2=relationships, 3=assets
   String _previousLifeStage = '';
 
   static const Map<String, String> _statDescriptions = {
@@ -156,6 +156,11 @@ class _LifeScreenState extends State<LifeScreen> {
   bool _isEventValid(LifeEvent event) {
     final c = widget.character;
     final ageOk = c.age >= event.minAge && c.age <= event.maxAge;
+    final earlyAgeOk = c.age < 4
+        ? event.maxAge <= 6
+        : c.age < 6
+        ? event.minAge <= 5 && event.maxAge <= 12
+        : true;
     final careerOk =
         event.requiredCareer == null || event.requiredCareer == c.careerPath;
     final relationshipOk =
@@ -175,6 +180,7 @@ class _LifeScreenState extends State<LifeScreen> {
         event.blockedFlags.every((flag) => !c.hasFlag(flag));
 
     return ageOk &&
+        earlyAgeOk &&
         careerOk &&
         relationshipOk &&
         housingOk &&
@@ -235,6 +241,72 @@ class _LifeScreenState extends State<LifeScreen> {
     }
 
     return selected;
+  }
+
+  LifeEvent _fallbackEventForAge() {
+    final age = widget.character.age;
+    if (age < 4) {
+      return const LifeEvent(
+        title: 'A Quiet Family Year 🏠',
+        description:
+            'This year was small but not empty. You grew, watched faces, listened to voices, and learned who feels safe.',
+        choices: [
+          EventChoice(
+            text: 'Stay close to family',
+            statChanges: {'happiness': 3, 'health': 2},
+            familyBondChange: 3,
+            outcome:
+                'You stayed close to your people. The bond around you grew stronger.',
+          ),
+          EventChoice(
+            text: 'Explore everything you can reach',
+            statChanges: {'smarts': 3, 'streetSense': 2, 'health': -1},
+            outcome:
+                'You explored the house with tiny determination. Some lessons came from bumps.',
+          ),
+        ],
+      );
+    }
+    if (age < 13) {
+      return const LifeEvent(
+        title: 'Ordinary Childhood Day 🌤️',
+        description:
+            'No big ceremony, no disaster. Just school, chores, family noise, and the small choices that shape a child.',
+        choices: [
+          EventChoice(
+            text: 'Do your chores properly',
+            statChanges: {'discipline': 3, 'reputation': 2},
+            familyBondChange: 2,
+            outcome:
+                'You handled your chores without drama. Your family noticed the effort.',
+          ),
+          EventChoice(
+            text: 'Sneak outside to play',
+            statChanges: {'happiness': 4, 'streetSense': 2, 'discipline': -2},
+            outcome:
+                'You played until your name was shouted from the doorway. Worth it, mostly.',
+          ),
+        ],
+      );
+    }
+    return const LifeEvent(
+      title: 'A Year Of Decisions 🧭',
+      description:
+          'Life did not bring one huge headline this year, but pressure still arrived in small ways.',
+      choices: [
+        EventChoice(
+          text: 'Stay disciplined',
+          statChanges: {'discipline': 3, 'smarts': 1, 'happiness': -1},
+          outcome: 'You kept your head down and handled the year with focus.',
+        ),
+        EventChoice(
+          text: 'Chase joy where you can',
+          statChanges: {'happiness': 4, 'discipline': -1},
+          outcome:
+              'You chose some joy. Not every year has to be pure struggle.',
+        ),
+      ],
+    );
   }
 
   int _eventsThisYear() {
@@ -406,10 +478,14 @@ class _LifeScreenState extends State<LifeScreen> {
 
       final validEvents = allEvents.where(_isEventValid).toList();
 
-      if (validEvents.isNotEmpty && !widget.character.isDead) {
+      if (!widget.character.isDead) {
         _pendingEvents
           ..clear()
-          ..addAll(_pickYearEvents(validEvents));
+          ..addAll(
+            validEvents.isEmpty
+                ? [_fallbackEventForAge()]
+                : _pickYearEvents(validEvents),
+          );
         _showNextEventDialog();
       }
 
@@ -438,24 +514,6 @@ class _LifeScreenState extends State<LifeScreen> {
         _showNextEventDialog();
       }
     });
-  }
-
-  void _simLife() {
-    setState(() {
-      widget.character.age = 90;
-      widget.character.money += 450230;
-      widget.character.connections += 7;
-
-      if (widget.character.lifeLog.isEmpty) {
-        widget.character.lifeLog.addAll([
-          'Age 80: Peacefully retired — Enjoying the golden years.',
-          'Age 65: Promoted to Senior Director — Received a huge bonus!',
-          'Age 28: Got Married — To your high-school sweetheart.',
-          'Age 18: Graduated High School — With honors.',
-        ]);
-      }
-    });
-    _navToDeath();
   }
 
   void _navToDeath() {
@@ -572,66 +630,24 @@ class _LifeScreenState extends State<LifeScreen> {
   Widget build(BuildContext context) {
     final c = widget.character;
 
-    Widget tabBody;
-    if (_selectedTab == 0) {
-      tabBody = SocialScreen(
-        character: c,
-        onCharacterUpdated: () => setState(() {}),
-      );
-    } else if (_selectedTab == 1) {
-      tabBody = JobScreen(
-        character: c,
-        onCharacterUpdated: () => setState(() {}),
-      );
-    } else if (_selectedTab == 3) {
-      tabBody = SchoolScreen(
-        character: c,
-        onCharacterUpdated: () => setState(() {}),
-      );
-    } else {
-      tabBody = Column(
-        children: [
-          _buildHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 18, right: 18, bottom: 108),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 14.4),
-                  _buildStatsCard(c),
-                  const SizedBox(height: 14.4),
-                  _buildFundsCard(c),
-                  const SizedBox(height: 14.4),
-                  _buildLifeGoalCard(c),
-                  const SizedBox(height: 14.4),
-                  _buildActivitiesSection(c),
-                  const SizedBox(height: 14.4),
-                  _buildDoingNavButtons(c),
-                  const SizedBox(height: 14.4),
-                  Row(
-                    children: const [
-                      Icon(Icons.history, color: Color(0x99B39DDB), size: 18),
-                      SizedBox(width: 7.2),
-                      Text(
-                        'Recent Journey',
-                        style: TextStyle(
-                          fontSize: 14.4,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF757575),
-                        ),
-                      ),
-                    ],
+    final tabBody = Column(
+      children: [
+        _buildHeader(),
+        Expanded(
+          child: _selectedTab == 0
+              ? _buildDashboard(c)
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.only(
+                    left: 18,
+                    right: 18,
+                    top: 14.4,
+                    bottom: 108,
                   ),
-                  const SizedBox(height: 10.8),
-                  _buildLogList(c),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
+                  child: _buildGroupedTab(c),
+                ),
+        ),
+      ],
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFFCFAFF),
@@ -642,6 +658,61 @@ class _LifeScreenState extends State<LifeScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildDashboard(Character c) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(left: 18, right: 18, bottom: 108),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 14.4),
+          _buildStatsCard(c),
+          const SizedBox(height: 14.4),
+          _buildFundsCard(c),
+          const SizedBox(height: 14.4),
+          _buildLifeGoalCard(c),
+          const SizedBox(height: 14.4),
+          _buildAgePromptCard(c),
+          const SizedBox(height: 14.4),
+          _buildActivitiesSection(c),
+          if (c.age >= 6) ...[
+            const SizedBox(height: 14.4),
+            _buildSystemShortcuts(c),
+          ],
+          const SizedBox(height: 14.4),
+          Row(
+            children: const [
+              Icon(Icons.history, color: Color(0x99B39DDB), size: 18),
+              SizedBox(width: 7.2),
+              Text(
+                'Recent Journey',
+                style: TextStyle(
+                  fontSize: 14.4,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF757575),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.8),
+          _buildLogList(c),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupedTab(Character c) {
+    switch (_selectedTab) {
+      case 1:
+        return _buildCareerHub(c);
+      case 2:
+        return _buildRelationshipsHub(c);
+      case 3:
+        return _buildAssetsHub(c);
+      default:
+        return _buildDashboard(c);
+    }
   }
 
   String _housingBusinessLabel(Character c) {
@@ -936,41 +1007,6 @@ class _LifeScreenState extends State<LifeScreen> {
           ),
           Row(
             children: [
-              GestureDetector(
-                onTap: _simLife,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.8,
-                    vertical: 7.2,
-                  ),
-                  margin: const EdgeInsets.only(right: 7.2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF9800).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(9.7),
-                    border: Border.all(
-                      color: const Color(0xFFFF9800).withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.fast_forward,
-                        color: Color(0xFFFF9800),
-                        size: 14.4,
-                      ),
-                      SizedBox(width: 3.6),
-                      Text(
-                        'SIM LIFE',
-                        style: TextStyle(
-                          color: Color(0xFFFF9800),
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -1966,53 +2002,373 @@ class _LifeScreenState extends State<LifeScreen> {
     );
   }
 
-  Widget _buildDoingNavButtons(Character c) {
-    return Row(
+  Widget _buildAgePromptCard(Character c) {
+    final message = c.age < 4
+        ? 'Your world is family, health, first words, and tiny chaos. Age up to live each year through events.'
+        : c.age < 13
+        ? 'School, chores, church, siblings, and small trouble shape who you become.'
+        : c.age < 18
+        ? 'Teen years bring exams, reputation, peer pressure, crushes, and first independence.'
+        : 'Adult systems are open. Build your career, relationships, assets, and legacy.';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE0F2F1),
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(color: const Color(0xFFB2DFDB)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.auto_stories, color: Color(0xFF00897B), size: 23),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontSize: 12.2,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF424242),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSystemShortcuts(Character c) {
+    final shortcuts = <Widget>[
+      _flowNavCard(
+        icon: Icons.school,
+        emoji: '📚',
+        label: 'Career',
+        subtitle: c.age < 13
+            ? 'School and childhood growth'
+            : 'School, jobs, and side gigs',
+        color: const Color(0xFFEDE7F6),
+        borderColor: const Color(0xFFB39DDB),
+        onTap: () => setState(() => _selectedTab = 1),
+      ),
+      _flowNavCard(
+        icon: Icons.group,
+        emoji: '💕',
+        label: 'Relationships',
+        subtitle: c.age < 13
+            ? 'Family bonds for now'
+            : 'Family, romance, and children',
+        color: const Color(0xFFFFF3F6),
+        borderColor: const Color(0xFFF8BBD0),
+        onTap: () => setState(() => _selectedTab = 2),
+      ),
+    ];
+
+    if (c.age >= 13 ||
+        c.businessNames.isNotEmpty ||
+        c.housingStatus != 'With Parents') {
+      shortcuts.add(
+        _flowNavCard(
+          icon: Icons.account_balance,
+          emoji: '🏠',
+          label: 'Assets',
+          subtitle: c.age < 18
+              ? 'Housing unlocks later'
+              : 'Housing and businesses',
+          color: const Color(0xFFE0F2F1),
+          borderColor: const Color(0xFFB2DFDB),
+          onTap: () => setState(() => _selectedTab = 3),
+        ),
+      );
+    }
+
+    return Column(
       children: [
-        Expanded(
-          child: _doingNavCard(
+        for (var i = 0; i < shortcuts.length; i++) ...[
+          shortcuts[i],
+          if (i < shortcuts.length - 1) const SizedBox(height: 10.8),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCareerHub(Character c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _hubTitle('Career', 'School, work, side gigs'),
+        const SizedBox(height: 14.4),
+        if (c.age < 4)
+          _unlockCard(
+            icon: Icons.school,
+            title: 'School Starts Soon',
+            message:
+                'For now, your life is family, health, and early childhood events. School begins around age 4.',
+          )
+        else
+          _flowNavCard(
+            icon: Icons.school,
+            emoji: '📚',
+            label: c.isEnrolled ? c.enrolledIn : 'Education',
+            subtitle: c.isEnrolled
+                ? '${c.yearsLeftInSchool} year${c.yearsLeftInSchool == 1 ? '' : 's'} left'
+                : 'Study paths and graduation',
+            color: const Color(0xFFEDE7F6),
+            borderColor: const Color(0xFFB39DDB),
+            onTap: () => _openScreen(
+              SchoolScreen(
+                character: c,
+                onCharacterUpdated: () => setState(() {}),
+              ),
+            ),
+          ),
+        const SizedBox(height: 10.8),
+        if (c.age < 13)
+          _unlockCard(
+            icon: Icons.work,
+            title: 'Jobs Unlock Later',
+            message:
+                'Jobs and side gigs unlock when you become a teenager or young adult. Keep building smarts and discipline.',
+          )
+        else
+          _flowNavCard(
+            icon: Icons.work,
+            emoji: '💼',
+            label: c.careerPath == 'None' ? 'Jobs & Side Gigs' : c.careerPath,
+            subtitle: c.careerPath == 'None'
+                ? 'Find work or start a hustle'
+                : 'GHS ${_fmt(c.monthlyIncome + c.sideGigIncome)} / month',
+            color: const Color(0xFFE0F2F1),
+            borderColor: const Color(0xFFB2DFDB),
+            onTap: () => _openScreen(
+              JobScreen(
+                character: c,
+                onCharacterUpdated: () => setState(() {}),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildRelationshipsHub(Character c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _hubTitle('Relationships', 'Family, romance, children'),
+        const SizedBox(height: 14.4),
+        _familySummaryCard(c),
+        const SizedBox(height: 10.8),
+        if (c.age < 13)
+          _unlockCard(
+            icon: Icons.favorite,
+            title: 'Romance Unlocks When You Are Older',
+            message:
+                'Childhood relationships are about family, siblings, classmates, and learning how people work.',
+          )
+        else
+          _flowNavCard(
+            icon: Icons.favorite,
+            emoji: '💕',
+            label: c.relationshipStatus == 'Single'
+                ? 'Romance'
+                : c.relationshipStatus,
+            subtitle: c.relationshipStatus == 'Single'
+                ? 'Meet someone when life is ready'
+                : _relationshipLabel(c),
+            color: const Color(0xFFFFF3F6),
+            borderColor: const Color(0xFFF8BBD0),
+            onTap: () => _openScreen(
+              SocialScreen(
+                character: c,
+                onCharacterUpdated: () => setState(() {}),
+              ),
+            ),
+          ),
+        if (c.numberOfChildren > 0) ...[
+          const SizedBox(height: 10.8),
+          _unlockCard(
+            icon: Icons.child_care,
+            title:
+                '${c.numberOfChildren} Child${c.numberOfChildren == 1 ? '' : 'ren'}',
+            message:
+                'Children are tracked in your family life and influence expenses, happiness, and legacy.',
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAssetsHub(Character c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _hubTitle('Assets', 'Housing and businesses'),
+        const SizedBox(height: 14.4),
+        if (c.age < 18 && c.housingStatus == 'With Parents')
+          _unlockCard(
+            icon: Icons.home,
+            title: 'Housing Unlocks In Adulthood',
+            message:
+                'For now, you live with family. Focus on school, choices, and growing your stats.',
+          )
+        else
+          _flowNavCard(
+            icon: Icons.home,
             emoji: '🏠',
             label: 'Housing',
             subtitle: c.housingStatus,
             color: const Color(0xFFEDE7F6),
             borderColor: const Color(0xFFB39DDB),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => HousingScreen(
-                  character: c,
-                  onCharacterUpdated: () => setState(() {}),
-                ),
+            onTap: () => _openScreen(
+              HousingScreen(
+                character: c,
+                onCharacterUpdated: () => setState(() {}),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 10.8),
-        Expanded(
-          child: _doingNavCard(
-            emoji: '💼',
-            label: 'My Businesses',
+        const SizedBox(height: 10.8),
+        if (c.age < 18 && c.businessNames.isEmpty)
+          _unlockCard(
+            icon: Icons.storefront,
+            title: 'Businesses Unlock In Adulthood',
+            message:
+                'Businesses need adult money and responsibility. You will get there.',
+          )
+        else
+          _flowNavCard(
+            icon: Icons.storefront,
+            emoji: '🏪',
+            label: 'Businesses',
             subtitle: c.businessNames.isEmpty
-                ? 'None yet'
+                ? 'Start your first business'
                 : '${c.businessNames.length} running',
             color: const Color(0xFFE0F2F1),
             borderColor: const Color(0xFFB2DFDB),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BusinessScreen(
-                  character: c,
-                  onCharacterUpdated: () => setState(() {}),
-                ),
+            onTap: () => _openScreen(
+              BusinessScreen(
+                character: c,
+                onCharacterUpdated: () => setState(() {}),
               ),
             ),
+          ),
+      ],
+    );
+  }
+
+  Widget _hubTitle(String title, String subtitle) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 23,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF424242),
+          ),
+        ),
+        const SizedBox(height: 3.6),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 12.6,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF757575),
           ),
         ),
       ],
     );
   }
 
-  Widget _doingNavCard({
+  Widget _familySummaryCard(Character c) {
+    c.ensureFamilySeeded();
+    final aliveFamily = <String>[];
+    for (var i = 0; i < c.familyNames.length; i++) {
+      final alive = i >= c.familyAlive.length || c.familyAlive[i];
+      if (!alive) continue;
+      final relation = i < c.familyRelations.length
+          ? c.familyRelations[i]
+          : 'Family';
+      final name = c.familyNames[i];
+      aliveFamily.add('$relation: $name');
+    }
+
+    return _unlockCard(
+      icon: Icons.family_restroom,
+      title: 'Family',
+      message: aliveFamily.isEmpty
+          ? 'Your family story is still unfolding.'
+          : '${aliveFamily.take(3).join(' • ')}\nBond: ${c.averageFamilyBond.round()}/100',
+    );
+  }
+
+  Widget _unlockCard({
+    required IconData icon,
+    required String title,
+    required String message,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.2),
+        border: Border.all(color: const Color(0x1AB39DDB)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 39.6,
+            height: 39.6,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEDE7F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF7E57C2), size: 20),
+          ),
+          const SizedBox(width: 12.6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF424242),
+                  ),
+                ),
+                const SizedBox(height: 3.6),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 11.7,
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _flowNavCard({
+    required IconData icon,
     required String emoji,
     required String label,
     required String subtitle,
@@ -2023,6 +2379,7 @@ class _LifeScreenState extends State<LifeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12.6, vertical: 12.6),
         decoration: BoxDecoration(
           color: color,
@@ -2047,6 +2404,8 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                   Text(
                     subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 9.9,
                       color: Color(0xFF757575),
@@ -2055,6 +2414,8 @@ class _LifeScreenState extends State<LifeScreen> {
                 ],
               ),
             ),
+            Icon(icon, color: borderColor, size: 16.2),
+            const SizedBox(width: 4),
             const Icon(
               Icons.chevron_right,
               color: Color(0xFFBDBDBD),
@@ -2064,6 +2425,15 @@ class _LifeScreenState extends State<LifeScreen> {
         ),
       ),
     );
+  }
+
+  String _fmt(int n) => n.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
+
+  void _openScreen(Widget screen) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
   Widget _buildBottomNav() {
@@ -2092,8 +2462,8 @@ class _LifeScreenState extends State<LifeScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: _buildNavItem(Icons.group, 'Social', 0)),
-              Expanded(child: _buildNavItem(Icons.work, 'Job', 1)),
+              Expanded(child: _buildNavItem(Icons.home, 'Home', 0)),
+              Expanded(child: _buildNavItem(Icons.work, 'Career', 1)),
               Expanded(
                 child: GestureDetector(
                   onTap: _ageUp,
@@ -2140,8 +2510,10 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                 ),
               ),
-              Expanded(child: _buildNavItem(Icons.school, 'School', 3)),
-              Expanded(child: _buildNavItem(Icons.explore, 'Doing', 4)),
+              Expanded(child: _buildNavItem(Icons.group, 'Relations', 2)),
+              Expanded(
+                child: _buildNavItem(Icons.account_balance, 'Assets', 3),
+              ),
             ],
           ),
         ],

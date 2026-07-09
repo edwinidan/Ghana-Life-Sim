@@ -31,5 +31,9 @@ class EventChoiceService {
     if (choice.debtChange != 0) {
       character.adjustDebt(choice.debtChange);
     }
+    if (choice.familyBondChange != 0) {
+      character.ensureFamilySeeded();
+      character.adjustFamilyBonds(choice.familyBondChange);
+    }
   }
 }

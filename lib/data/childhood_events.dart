@@ -1,6 +1,399 @@
 import '../models/event.dart';
 
 final List<LifeEvent> childhoodEvents = [
+  LifeEvent(
+    title: 'Naming Ceremony 🎉',
+    description:
+        'Your family has gathered for your outdooring. Aunties are singing, elders are advising your parents, and everyone wants to carry you.',
+    minAge: 1,
+    maxAge: 1,
+    baseWeight: 80,
+    choices: [
+      EventChoice(
+        text: 'Smile at everyone',
+        statChanges: {'happiness': 5, 'reputation': 4},
+        familyBondChange: 5,
+        cashChange: 80,
+        outcome:
+            'You smiled at the perfect moment. Someone pressed small money into your blanket and the whole family said you are blessed.',
+      ),
+      EventChoice(
+        text: 'Cry until your mother rescues you',
+        statChanges: {'health': 2, 'happiness': -2, 'reputation': -2},
+        familyBondChange: 2,
+        outcome:
+            'You cried through the speeches. Your mother rescued you while the aunties debated who you resemble.',
+      ),
+      EventChoice(
+        text: 'Sleep through the whole thing',
+        statChanges: {'health': 4, 'discipline': 1},
+        familyBondChange: 3,
+        outcome:
+            'You slept like a tiny elder. Everyone agreed you are peaceful. For now.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'First Steps 👣',
+    description:
+        'You wobble across the hall while your family freezes. Your father is holding his phone, trying to record history.',
+    minAge: 1,
+    maxAge: 2,
+    baseWeight: 70,
+    choices: [
+      EventChoice(
+        text: 'Walk straight to your mother',
+        statChanges: {'health': 4, 'happiness': 4},
+        familyBondChange: 5,
+        outcome:
+            'You made it! The room exploded with cheers and your mother lifted you like a trophy.',
+      ),
+      EventChoice(
+        text: 'Fall, then try again',
+        statChanges: {'health': -1, 'discipline': 4, 'happiness': 2},
+        familyBondChange: 3,
+        outcome:
+            'You landed on your backside, frowned, and tried again. The family says you have fighting spirit.',
+      ),
+      EventChoice(
+        text: 'Refuse to perform',
+        statChanges: {'discipline': -2, 'streetSense': 3},
+        outcome:
+            'You sat down immediately. No free entertainment today. Your father still claims the camera scared you.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'First Words 🗣️',
+    description:
+        'Everyone is waiting to hear your first proper word. Your parents are campaigning hard for "mama" and "dada".',
+    minAge: 1,
+    maxAge: 3,
+    baseWeight: 65,
+    choices: [
+      EventChoice(
+        text: 'Say "mama"',
+        statChanges: {'smarts': 3, 'happiness': 3},
+        familyBondChange: 4,
+        outcome:
+            'Your mother shouted like Ghana had scored. Your father pretended not to be jealous.',
+      ),
+      EventChoice(
+        text: 'Say "dada"',
+        statChanges: {'smarts': 3, 'reputation': 2},
+        familyBondChange: 4,
+        outcome:
+            'Your father lifted you proudly. Your mother says she taught you the word anyway.',
+      ),
+      EventChoice(
+        text: 'Say something nobody understands',
+        statChanges: {'smarts': 2, 'streetSense': 2},
+        outcome:
+            'You produced a mysterious syllable. The family has decided it means you are deep.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Refusing Food 🍲',
+    description:
+        'Your mother is trying to feed you porridge. You have decided this spoon is your enemy.',
+    minAge: 1,
+    maxAge: 3,
+    baseWeight: 55,
+    choices: [
+      EventChoice(
+        text: 'Eat after small begging',
+        statChanges: {'health': 4, 'discipline': 2},
+        familyBondChange: 2,
+        outcome:
+            'You finally ate. Your mother looked relieved like she had completed a national assignment.',
+      ),
+      EventChoice(
+        text: 'Turn your head dramatically',
+        statChanges: {'happiness': 2, 'discipline': -3, 'health': -2},
+        outcome:
+            'You dodged the spoon like a professional. Unfortunately, hunger caught up with you later.',
+      ),
+      EventChoice(
+        text: 'Spit it on your shirt',
+        statChanges: {'happiness': 3, 'reputation': -2, 'discipline': -4},
+        familyBondChange: -1,
+        outcome:
+            'The porridge landed everywhere. Your mother sighed the sigh of someone rethinking parenthood.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Carried To Church ⛪',
+    description:
+        'Your parent carries you to church. The service is loud, warm, and full of aunties trying to pinch your cheeks.',
+    minAge: 1,
+    maxAge: 4,
+    baseWeight: 50,
+    choices: [
+      EventChoice(
+        text: 'Clap along to the singing',
+        statChanges: {'happiness': 5, 'reputation': 3},
+        familyBondChange: 3,
+        outcome:
+            'You clapped off beat but with confidence. The aunties declared you a church child.',
+      ),
+      EventChoice(
+        text: 'Sleep through the sermon',
+        statChanges: {'health': 4, 'discipline': 1},
+        outcome:
+            'You slept through everything, including the offertory. A peaceful victory.',
+      ),
+      EventChoice(
+        text: 'Cry during prayer',
+        statChanges: {'happiness': -3, 'reputation': -2},
+        familyBondChange: -1,
+        outcome:
+            'You cried during a very serious prayer point. Your parent bounced you outside quickly.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Baby Fever 🤒',
+    description:
+        'You wake up hot and weak. Your parents rush around the house deciding whether to go to the clinic immediately.',
+    minAge: 1,
+    maxAge: 4,
+    baseWeight: 55,
+    choices: [
+      EventChoice(
+        text: 'Go quietly to the clinic',
+        statChanges: {'health': 6, 'happiness': -2},
+        familyBondChange: 2,
+        debtChange: 120,
+        outcome:
+            'The clinic visit helped. Your parents added a small bill, but everyone slept better.',
+      ),
+      EventChoice(
+        text: 'Fight the thermometer',
+        statChanges: {'health': -2, 'discipline': -2, 'streetSense': 2},
+        outcome:
+            'You resisted every check. The adults eventually won, because adults always have backup.',
+      ),
+      EventChoice(
+        text: 'Rest after medicine',
+        statChanges: {'health': 4, 'discipline': 2},
+        familyBondChange: 2,
+        outcome:
+            'You took the medicine with only moderate betrayal in your eyes. Recovery began.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Daycare Drama 🧸',
+    description:
+        'At daycare, another child grabs your toy and crawls away like a tiny criminal.',
+    minAge: 2,
+    maxAge: 4,
+    baseWeight: 55,
+    choices: [
+      EventChoice(
+        text: 'Cry for the caregiver',
+        statChanges: {'happiness': -2, 'reputation': -1, 'discipline': 2},
+        outcome:
+            'The caregiver returned the toy. Justice arrived, wearing rubber slippers.',
+      ),
+      EventChoice(
+        text: 'Take it back yourself',
+        statChanges: {'streetSense': 4, 'reputation': 2, 'discipline': -2},
+        outcome:
+            'You reclaimed the toy with surprising confidence. The daycare has noticed you.',
+      ),
+      EventChoice(
+        text: 'Find another toy',
+        statChanges: {'smarts': 3, 'happiness': 2, 'discipline': 2},
+        outcome:
+            'You moved on quickly. Adaptability is a life skill, even with plastic blocks.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Sibling Jealousy 😤',
+    description:
+        'An older sibling says everyone only cares about you now. They are staring at your baby blanket with dangerous energy.',
+    minAge: 1,
+    maxAge: 5,
+    baseWeight: 45,
+    choices: [
+      EventChoice(
+        text: 'Offer a toy',
+        statChanges: {'happiness': 3, 'connections': 2},
+        familyBondChange: 5,
+        outcome:
+            'You shared a toy. Your sibling softened immediately, though they still think you get too much attention.',
+      ),
+      EventChoice(
+        text: 'Cry louder than them',
+        statChanges: {'happiness': -2, 'streetSense': 3},
+        familyBondChange: -2,
+        outcome:
+            'You won the noise battle. Your parents looked exhausted and nobody was truly happy.',
+      ),
+      EventChoice(
+        text: 'Ignore them completely',
+        statChanges: {'discipline': 2, 'reputation': -1},
+        outcome:
+            'You ignored the tension and played with your toes. A peaceful but politically risky move.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Breaking Something At Home 🏺',
+    description:
+        'You bump into a small table and a decorative bowl crashes to the floor. Everyone turns at once.',
+    minAge: 2,
+    maxAge: 5,
+    baseWeight: 50,
+    choices: [
+      EventChoice(
+        text: 'Point at someone else',
+        statChanges: {'streetSense': 4, 'discipline': -4, 'reputation': -3},
+        familyBondChange: -2,
+        outcome:
+            'Your accusation made no sense, but the instinct was there. Your family is worried and impressed.',
+      ),
+      EventChoice(
+        text: 'Start crying immediately',
+        statChanges: {'happiness': -3, 'health': 1},
+        familyBondChange: 1,
+        debtChange: 60,
+        outcome:
+            'The crying reduced the punishment, but the bowl still had to be replaced.',
+      ),
+      EventChoice(
+        text: 'Try to sweep the pieces',
+        statChanges: {'discipline': 4, 'health': -1, 'reputation': 2},
+        familyBondChange: 2,
+        outcome:
+            'You tried to help. An adult quickly moved you away from the sharp pieces, but the effort counted.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'First School Day 🎒',
+    description:
+        'You arrive for your first school day. Your bag is almost bigger than you and your parent is trying not to look emotional.',
+    minAge: 4,
+    maxAge: 5,
+    baseWeight: 85,
+    choices: [
+      EventChoice(
+        text: 'Walk in bravely',
+        statChanges: {'discipline': 4, 'smarts': 3, 'reputation': 3},
+        familyBondChange: 2,
+        outcome:
+            'You walked in with a serious face. Your teacher smiled and your parent bragged about you later.',
+      ),
+      EventChoice(
+        text: 'Hold your parent tightly',
+        statChanges: {'happiness': -2, 'health': 1},
+        familyBondChange: 4,
+        outcome:
+            'You needed extra hugs before entering. It was hard, but you made it inside.',
+      ),
+      EventChoice(
+        text: 'Run toward the toys',
+        statChanges: {'happiness': 5, 'streetSense': 2, 'discipline': -1},
+        outcome:
+            'You forgot the goodbye immediately. The toy corner had your full attention.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Class Rhyme Moment 🎶',
+    description:
+        'Your teacher asks the class to sing a rhyme. Somehow, everyone is looking at you to lead.',
+    minAge: 4,
+    maxAge: 6,
+    baseWeight: 55,
+    choices: [
+      EventChoice(
+        text: 'Sing loudly',
+        statChanges: {'happiness': 4, 'reputation': 4, 'connections': 2},
+        outcome:
+            'You sang with volume, if not accuracy. The class followed your energy.',
+      ),
+      EventChoice(
+        text: 'Mumble and hide',
+        statChanges: {'happiness': -2, 'reputation': -2, 'smarts': 1},
+        outcome:
+            'You mumbled into your collar. Nobody judged you for long; children move on quickly.',
+      ),
+      EventChoice(
+        text: 'Make up your own words',
+        statChanges: {'smarts': 3, 'streetSense': 3, 'discipline': -2},
+        outcome:
+            'The words were wrong but catchy. Half the class copied your remix.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Grandmother Spoils You 🍬',
+    description:
+        'Your grandmother visits and secretly gives you sweets before dinner. Your parent has warned her about this before.',
+    minAge: 3,
+    maxAge: 6,
+    baseWeight: 50,
+    choices: [
+      EventChoice(
+        text: 'Eat them quietly',
+        statChanges: {'happiness': 5, 'streetSense': 3, 'health': -1},
+        familyBondChange: 2,
+        outcome:
+            'You enjoyed every sweet in silence. Grandmother winked like you are co-conspirators.',
+      ),
+      EventChoice(
+        text: 'Tell your parent',
+        statChanges: {'discipline': 4, 'happiness': -2, 'reputation': 2},
+        familyBondChange: 1,
+        outcome:
+            'You reported honestly. Grandmother called you too serious, but your parent was pleased.',
+      ),
+      EventChoice(
+        text: 'Ask for money instead',
+        statChanges: {'streetSense': 4, 'reputation': -1},
+        cashChange: 20,
+        outcome:
+            'Grandmother laughed and gave you a small note. A negotiator is born.',
+      ),
+    ],
+  ),
+  LifeEvent(
+    title: 'Discipline Moment 🧹',
+    description:
+        'You pour powder all over the floor while playing. Your parent enters the room and becomes very quiet.',
+    minAge: 3,
+    maxAge: 5,
+    baseWeight: 50,
+    choices: [
+      EventChoice(
+        text: 'Help clean it',
+        statChanges: {'discipline': 5, 'happiness': -1, 'reputation': 2},
+        familyBondChange: 2,
+        outcome:
+            'You helped with a tiny cloth. It took forever, but your parent saw the effort.',
+      ),
+      EventChoice(
+        text: 'Laugh because it looks like snow',
+        statChanges: {'happiness': 4, 'discipline': -4, 'reputation': -2},
+        familyBondChange: -2,
+        outcome:
+            'You laughed. Your parent did not. The cleanup became a moral lesson.',
+      ),
+      EventChoice(
+        text: 'Hide behind the sofa',
+        statChanges: {'streetSense': 3, 'discipline': -2, 'happiness': -1},
+        outcome:
+            'You hid badly. Your toes were visible. Still, the survival instinct was developing.',
+      ),
+    ],
+  ),
+
   // EXISTING ONES (2)
   LifeEvent(
     title: 'A Childhood Fight 👊',

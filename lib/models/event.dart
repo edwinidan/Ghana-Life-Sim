@@ -10,6 +10,7 @@ class EventChoice {
   final String? flagToRemove;
   final int cashChange;
   final int debtChange;
+  final int familyBondChange;
 
   const EventChoice({
     required this.text,
@@ -23,6 +24,7 @@ class EventChoice {
     this.flagToRemove,
     this.cashChange = 0,
     this.debtChange = 0,
+    this.familyBondChange = 0,
   });
 }
 
