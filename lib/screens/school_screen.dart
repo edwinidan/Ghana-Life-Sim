@@ -87,12 +87,12 @@ class SchoolScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14.4),
       decoration: BoxDecoration(
-        color: const Color(0xFFB2DFDB).withOpacity(0.15),
+        color: const Color(0xFFB2DFDB).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(13),
         border: Border.all(color: const Color(0xFFB2DFDB)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB2DFDB).withOpacity(0.15),
+            color: const Color(0xFFB2DFDB).withValues(alpha: 0.15),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -147,7 +147,7 @@ class SchoolScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(4.9),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: Colors.white.withOpacity(0.6),
+              backgroundColor: Colors.white.withValues(alpha: 0.6),
               valueColor: const AlwaysStoppedAnimation<Color>(
                 Color(0xFF009688),
               ),
@@ -171,9 +171,11 @@ class SchoolScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.6, vertical: 7.2),
           decoration: BoxDecoration(
-            color: const Color(0xFFB39DDB).withOpacity(0.12),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(9.7),
-            border: Border.all(color: const Color(0xFFB39DDB).withOpacity(0.3)),
+            border: Border.all(
+              color: const Color(0xFFB39DDB).withValues(alpha: 0.3),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -204,7 +206,7 @@ class SchoolScreen extends StatelessWidget {
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -242,7 +244,7 @@ class SchoolScreen extends StatelessWidget {
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

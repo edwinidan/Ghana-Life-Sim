@@ -1,4 +1,4 @@
-package com.example.ghana_life_sim
+package com.wesleyconsults.ghanalifesim
 
 import io.flutter.embedding.android.FlutterActivity
 

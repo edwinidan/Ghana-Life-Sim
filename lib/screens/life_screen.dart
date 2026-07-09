@@ -18,6 +18,7 @@ import '../services/business_service.dart';
 import '../services/health_service.dart';
 import '../services/activity_service.dart';
 import '../services/life_goal_service.dart';
+import '../services/event_choice_service.dart';
 import 'achievements_screen.dart';
 import 'life_log_screen.dart';
 
@@ -422,35 +423,7 @@ class _LifeScreenState extends State<LifeScreen> {
   void _makeChoice(EventChoice choice) {
     Navigator.of(context, rootNavigator: true).pop(); // close dialog
     setState(() {
-      choice.statChanges.forEach((stat, amount) {
-        widget.character.adjustStat(stat, amount);
-      });
-      if (choice.illnessToAdd != null) {
-        if (!widget.character.activeIllnesses.contains(choice.illnessToAdd!)) {
-          widget.character.activeIllnesses.add(choice.illnessToAdd!);
-        }
-      }
-      if (choice.careerToSet != null) {
-        CareerService.enterCareer(widget.character, choice.careerToSet!);
-      }
-      if (choice.relationshipStatusToSet != null) {
-        widget.character.relationshipStatus = choice.relationshipStatusToSet!;
-      }
-      if (choice.housingStatusToSet != null) {
-        widget.character.housingStatus = choice.housingStatusToSet!;
-      }
-      if (choice.flagToAdd != null) {
-        widget.character.addFlag(choice.flagToAdd!);
-      }
-      if (choice.flagToRemove != null) {
-        widget.character.removeFlag(choice.flagToRemove!);
-      }
-      if (choice.cashChange != 0) {
-        widget.character.adjustCash(choice.cashChange);
-      }
-      if (choice.debtChange != 0) {
-        widget.character.adjustDebt(choice.debtChange);
-      }
+      EventChoiceService.applyChoice(widget.character, choice);
       // push to log
       widget.character.lifeLog.insert(
         0,
@@ -526,7 +499,7 @@ class _LifeScreenState extends State<LifeScreen> {
                         vertical: 3.6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFB39DDB).withOpacity(0.2),
+                        color: const Color(0xFFB39DDB).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6.5),
                       ),
                       child: Text(
@@ -586,7 +559,7 @@ class _LifeScreenState extends State<LifeScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
@@ -972,10 +945,10 @@ class _LifeScreenState extends State<LifeScreen> {
                   ),
                   margin: const EdgeInsets.only(right: 7.2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF9800).withOpacity(0.1),
+                    color: const Color(0xFFFF9800).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(9.7),
                     border: Border.all(
-                      color: const Color(0xFFFF9800).withOpacity(0.2),
+                      color: const Color(0xFFFF9800).withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -1058,7 +1031,7 @@ class _LifeScreenState extends State<LifeScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.3),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1310,9 +1283,9 @@ class _LifeScreenState extends State<LifeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10.8, vertical: 9),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(9.7),
-        border: Border.all(color: Colors.white.withOpacity(0.25)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
@@ -1343,7 +1316,7 @@ class _LifeScreenState extends State<LifeScreen> {
                           vertical: 1.8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4.9),
                         ),
                         child: Text(
@@ -1363,7 +1336,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     incomeText,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 9.9,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1374,7 +1347,7 @@ class _LifeScreenState extends State<LifeScreen> {
                   Text(
                     '+ ${c.sideGigs.length} side gig${c.sideGigs.length > 1 ? 's' : ''}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 9.9,
                     ),
                   ),
@@ -1443,7 +1416,7 @@ class _LifeScreenState extends State<LifeScreen> {
           Container(
             height: 9,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8.1),
             ),
             child: Align(
@@ -1478,7 +1451,7 @@ class _LifeScreenState extends State<LifeScreen> {
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.1),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.1),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -1493,7 +1466,7 @@ class _LifeScreenState extends State<LifeScreen> {
                 width: 43.2,
                 height: 43.2,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFB2DFDB).withOpacity(0.2),
+                  color: const Color(0xFFB2DFDB).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: const Icon(
@@ -1559,7 +1532,7 @@ class _LifeScreenState extends State<LifeScreen> {
               child: Container(
                 width: 27,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFB2DFDB).withOpacity(0.8),
+                  color: const Color(0xFFB2DFDB).withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(4.9),
                 ),
               ),
@@ -1605,7 +1578,7 @@ class _LifeScreenState extends State<LifeScreen> {
               border: Border.all(color: const Color(0x0DB39DDB)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -1629,7 +1602,7 @@ class _LifeScreenState extends State<LifeScreen> {
                                 BoxShadow(
                                   color: const Color(
                                     0xFFB39DDB,
-                                  ).withOpacity(0.4),
+                                  ).withValues(alpha: 0.4),
                                   blurRadius: 8,
                                 ),
                               ]
@@ -1654,7 +1627,7 @@ class _LifeScreenState extends State<LifeScreen> {
                         height: 27,
                         margin: const EdgeInsets.symmetric(vertical: 7.2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB39DDB).withOpacity(0.2),
+                          color: const Color(0xFFB39DDB).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(1.6),
                         ),
                       ),
@@ -2054,7 +2027,7 @@ class _LifeScreenState extends State<LifeScreen> {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(13),
-          border: Border.all(color: borderColor.withOpacity(0.5)),
+          border: Border.all(color: borderColor.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
@@ -2102,12 +2075,12 @@ class _LifeScreenState extends State<LifeScreen> {
         right: 14.4,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(21.6)),
         border: const Border(top: BorderSide(color: Color(0x1AB39DDB))),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB39DDB).withOpacity(0.1),
+            color: const Color(0xFFB39DDB).withValues(alpha: 0.1),
             blurRadius: 30,
             offset: const Offset(0, -10),
           ),
@@ -2139,7 +2112,9 @@ class _LifeScreenState extends State<LifeScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFB2DFDB).withOpacity(0.4),
+                              color: const Color(
+                                0xFFB2DFDB,
+                              ).withValues(alpha: 0.4),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),

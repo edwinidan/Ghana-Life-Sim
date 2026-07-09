@@ -84,7 +84,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(11.3),
-              border: Border.all(color: Colors.black.withOpacity(0.05)),
+              border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
             ),
             child: const Text(
               "You don't own any businesses yet. Start one below.",
@@ -149,7 +149,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -426,7 +426,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

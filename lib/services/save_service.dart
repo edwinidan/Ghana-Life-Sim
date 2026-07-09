@@ -8,8 +8,20 @@ class SaveService {
 
   static Future<void> init() async {
     await Hive.initFlutter();
-    Hive.registerAdapter(CharacterAdapter());
+    _registerAdapters();
     await Hive.openBox<Character>(_boxName);
+  }
+
+  static Future<void> initForTests(String path) async {
+    Hive.init(path);
+    _registerAdapters();
+    await Hive.openBox<Character>(_boxName);
+  }
+
+  static void _registerAdapters() {
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(CharacterAdapter());
+    }
   }
 
   static Future<void> saveGame(Character character) async {

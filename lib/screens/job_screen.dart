@@ -70,7 +70,10 @@ class JobScreen extends StatelessWidget {
             const SizedBox(height: 10.8),
           ],
           if (availableGigs.isEmpty)
-            _buildInfoCard('No new gigs available', 'No new gigs available right now.')
+            _buildInfoCard(
+              'No new gigs available',
+              'No new gigs available right now.',
+            )
           else
             ...availableGigs.map((gig) => _buildSideGigCard(context, gig)),
 
@@ -93,15 +96,23 @@ class JobScreen extends StatelessWidget {
 
   Widget _buildCurrentJobCard(BuildContext context) {
     if (character.careerPath == 'None') {
-      return _buildInfoCard('Unemployed 😬', 'You are currently unemployed. Check the job listings below.');
+      return _buildInfoCard(
+        'Unemployed 😬',
+        'You are currently unemployed. Check the job listings below.',
+      );
     }
 
     final careerData = CareerService.getCareerData(character);
-    final levelTitle = (careerData != null && character.careerLevel >= 1 && character.careerLevel <= careerData.levels.length)
+    final levelTitle =
+        (careerData != null &&
+            character.careerLevel >= 1 &&
+            character.careerLevel <= careerData.levels.length)
         ? careerData.levels[character.careerLevel - 1].title
         : '';
     final levelNames = ['', 'Entry', 'Mid', 'Senior'];
-    final levelLabel = character.careerLevel < levelNames.length ? levelNames[character.careerLevel] : '';
+    final levelLabel = character.careerLevel < levelNames.length
+        ? levelNames[character.careerLevel]
+        : '';
 
     return Container(
       padding: const EdgeInsets.all(14.4),
@@ -111,7 +122,7 @@ class JobScreen extends StatelessWidget {
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -138,7 +149,10 @@ class JobScreen extends StatelessWidget {
                     ),
                     Text(
                       '${character.careerPath}${levelLabel.isNotEmpty ? ' · $levelLabel Level' : ''}',
-                      style: const TextStyle(fontSize: 10.8, color: Color(0xFF9E9E9E)),
+                      style: const TextStyle(
+                        fontSize: 10.8,
+                        color: Color(0xFF9E9E9E),
+                      ),
                     ),
                   ],
                 ),
@@ -163,7 +177,9 @@ class JobScreen extends StatelessWidget {
                 foregroundColor: Colors.red,
                 side: const BorderSide(color: Colors.red),
                 padding: const EdgeInsets.symmetric(vertical: 10.8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(9.7),
+                ),
               ),
               child: const Text(
                 'Quit Job',
@@ -181,8 +197,13 @@ class JobScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
-        title: const Text('Quit your job?', style: TextStyle(fontWeight: FontWeight.w900)),
-        content: Text('Are you sure you want to leave ${character.careerPath}? This cannot be undone.'),
+        title: const Text(
+          'Quit your job?',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          'Are you sure you want to leave ${character.careerPath}? This cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -201,7 +222,10 @@ class JobScreen extends StatelessWidget {
                 ),
               );
             },
-            child: const Text('Quit', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700)),
+            child: const Text(
+              'Quit',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -211,7 +235,9 @@ class JobScreen extends StatelessWidget {
   Widget _buildJobCard(BuildContext context, CareerData career) {
     final entry = career.levels[0];
     final topReq = entry.statRequirements.isNotEmpty
-        ? entry.statRequirements.entries.reduce((a, b) => a.value >= b.value ? a : b)
+        ? entry.statRequirements.entries.reduce(
+            (a, b) => a.value >= b.value ? a : b,
+          )
         : null;
 
     return Padding(
@@ -224,7 +250,7 @@ class JobScreen extends StatelessWidget {
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -261,7 +287,10 @@ class JobScreen extends StatelessWidget {
                   const SizedBox(width: 14.4),
                   Text(
                     '${_capitalise(topReq.key)}: ${topReq.value}+',
-                    style: const TextStyle(fontSize: 10.8, color: Color(0xFF757575)),
+                    style: const TextStyle(
+                      fontSize: 10.8,
+                      color: Color(0xFF757575),
+                    ),
                   ),
                 ],
               ],
@@ -279,9 +308,13 @@ class JobScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(msg),
-                      backgroundColor: success ? const Color(0xFF009688) : Colors.grey[700],
+                      backgroundColor: success
+                          ? const Color(0xFF009688)
+                          : Colors.grey[700],
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.1),
+                      ),
                     ),
                   );
                 },
@@ -290,7 +323,9 @@ class JobScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12.6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9.7),
+                  ),
                 ),
                 child: const Text(
                   'Apply',
@@ -310,9 +345,11 @@ class JobScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14.4),
       decoration: BoxDecoration(
-        color: const Color(0xFFB2DFDB).withOpacity(0.1),
+        color: const Color(0xFFB2DFDB).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: const Color(0xFFB2DFDB).withOpacity(0.4)),
+        border: Border.all(
+          color: const Color(0xFFB2DFDB).withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +368,10 @@ class JobScreen extends StatelessWidget {
             runSpacing: 8,
             children: character.sideGigs.map((gigName) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10.8, vertical: 5.4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.8,
+                  vertical: 5.4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16.2),
@@ -352,19 +392,29 @@ class JobScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         try {
-                          final gig = allSideGigs.firstWhere((g) => g.name == gigName);
+                          final gig = allSideGigs.firstWhere(
+                            (g) => g.name == gigName,
+                          );
                           JobService.quitSideGig(character, gig);
                           onCharacterUpdated();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Quit $gigName. One less hustle. 😤'),
+                              content: Text(
+                                'Quit $gigName. One less hustle. 😤',
+                              ),
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.1),
+                              ),
                             ),
                           );
                         } catch (_) {}
                       },
-                      child: const Icon(Icons.close, size: 12.6, color: Color(0xFF9E9E9E)),
+                      child: const Icon(
+                        Icons.close,
+                        size: 12.6,
+                        color: Color(0xFF9E9E9E),
+                      ),
                     ),
                   ],
                 ),
@@ -387,7 +437,7 @@ class JobScreen extends StatelessWidget {
           border: Border.all(color: const Color(0x0DB39DDB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -435,10 +485,14 @@ class JobScreen extends StatelessWidget {
                   onCharacterUpdated();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Started ${gig.name}! Extra money, extra stress. 💪'),
+                      content: Text(
+                        'Started ${gig.name}! Extra money, extra stress. 💪',
+                      ),
                       backgroundColor: const Color(0xFF009688),
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.1)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.1),
+                      ),
                     ),
                   );
                 },
@@ -447,7 +501,9 @@ class JobScreen extends StatelessWidget {
                   foregroundColor: const Color(0xFF004D40),
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12.6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.7)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9.7),
+                  ),
                 ),
                 child: const Text(
                   'Take Gig',
@@ -470,7 +526,7 @@ class JobScreen extends StatelessWidget {
         border: Border.all(color: const Color(0x0DB39DDB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -479,16 +535,29 @@ class JobScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.6, color: Color(0xFF424242))),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12.6,
+              color: Color(0xFF424242),
+            ),
+          ),
           const SizedBox(height: 3.6),
-          Text(body, style: const TextStyle(fontSize: 11.7, color: Color(0xFF9E9E9E))),
+          Text(
+            body,
+            style: const TextStyle(fontSize: 11.7, color: Color(0xFF9E9E9E)),
+          ),
         ],
       ),
     );
   }
 
-  String _formatNumber(int n) =>
-      n.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+  String _formatNumber(int n) => n.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
 
-  String _capitalise(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  String _capitalise(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
