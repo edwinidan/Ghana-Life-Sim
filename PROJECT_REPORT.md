@@ -1,6 +1,6 @@
 # Ghana Life Sim - Project Report
 
-Last updated: 2026-07-09
+Last updated: 2026-07-26
 
 ## 1. Executive Summary
 
@@ -125,6 +125,19 @@ The player:
 6. Between age-ups, the player can spend action energy on activities (Study, Exercise, Church, etc.).
 7. Continues until health reaches 0 or age reaches 90.
 8. Lands on `DeathScreen` for summary and restart.
+
+### Early-age event gating
+
+The `_isEventValid()` filter includes early-age guardrails so that toddlers (age < 4) only see events capped at age 6, and young children (age < 6) only see events within the 5-12 age band. This prevents inappropriate adult-themed events from firing in early childhood.
+
+### Fallback events
+
+If the weighted random pool returns no matching events for the year, `_fallbackEventForAge()` provides age-appropriate default events with meaningful stat changes and narrative flavor. There are three tiers:
+- Toddler (age < 4): "A Quiet Family Year" — stay close to family or explore
+- Child (age < 13): "Ordinary Childhood Day" — chores or play
+- General: "A Year Of Decisions" — discipline or joy
+
+This guarantees every age-up produces at least one event, closing the "empty year" gap that existed in earlier builds.
 
 ## 7.1 MVP 1 Release Scope
 
@@ -505,9 +518,12 @@ Main gameplay hub with:
 - Activities section: grid of available actions with energy counter
 - Housing and Business quick-nav cards
 - Recent journey log (timeline)
-- Bottom nav: Social, Job, AGE button (center), School, Doing
-- SIM LIFE button: jump directly to death
+- Bottom nav (4 tabs): Dashboard, Career, Relationships, Assets
+- AGE button: advances one year, triggers events, saves game
+- SIM LIFE button: jump directly to death (dev/testing tool)
 - Trophy + book icon buttons: Achievements and full Life Log
+
+The bottom nav was restructured in July 2026 from `[Social, Job, AGE, School, Doing]` to `[Dashboard, Career, Relationships, Assets]` to better group related screens. Career tab combines job and school; Relationships tab leads to social; Assets tab covers housing and business.
 
 Event dialogs appear after age-up with choice buttons.
 
@@ -575,32 +591,27 @@ Light theme with soft pastel styling:
 ## 16. Testing Status
 
 ### Test File
-`test/widget_test.dart` — 4 tests, all passing.
+`test/widget_test.dart` — 10 tests, all passing.
 
 Tests cover:
 1. Character cash, debt, flags, and child tracking
 2. Family seeding, action energy consumption via activity, legacy ribbon
 3. Life goal completion and rotation
 4. Meta-progress recording (ribbons, achievements, goals, lives completed)
+5. Event consequence application (stat changes, flags, cash, debt, illnesses, career, relationship, housing)
+6. Activity filtering by age, partner status, children, and cash
+7. Death detection, restart flow, and save deletion
+8. Save/load round-trip fidelity
+9. Life goal progress checking at age-up
+10. Achievement unlock conditions
 
 ### Commands
 
 ```bash
-flutter pub get       # ✓ passes
-flutter test          # ✓ 4/4 tests pass
-flutter analyze       # 58 issues (all info-level deprecation warnings, no errors)
+flutter pub get       # passes
+flutter test          # 10/10 tests pass
+flutter analyze       # clean — no issues
 ```
-
-### Analyze Status
-
-All 58 issues are info-level:
-- `deprecated_member_use`: `withOpacity` should be `withValues(alpha: ...)` — widespread across screens
-- `unnecessary_non_null_assertion`: `!` on non-nullable types in character_creation_screen.dart (7 warnings)
-- `unnecessary_import`: `dart:ui` in character_creation_screen.dart
-- `unnecessary_underscores`: triple underscores in page route builder
-- `unnecessary_to_list_in_spreads`: `.toList()` in spread
-
-**No compile errors. No test failures.**
 
 ## 17. Development Setup
 
@@ -704,7 +715,7 @@ flutter run
 1. `lib/main.dart` — entry point, routing
 2. `lib/models/character.dart` — all persistent state
 3. `lib/models/event.dart` — event/choice model
-4. `lib/screens/life_screen.dart` — main gameplay loop (largest file, ~2200 lines)
+4. `lib/screens/life_screen.dart` — main gameplay loop (largest file, ~2557 lines)
 5. `lib/data/events.dart` — event registry
 6. `lib/services/save_service.dart` — persistence
 7. `lib/services/school_service.dart` — education logic
@@ -720,20 +731,22 @@ flutter run
 
 ## 22. Recommended Next Steps
 
-### Before Rebuilding
+### Near-term
 
-1. Clean the 58 `flutter analyze` warnings — replace `withOpacity` with `withValues(alpha:)`
-2. Fix theme inconsistency (dark seed with light screens)
-3. Add more unit tests for service classes
+1. Improve `LifeScreen` architecture — it's 2557+ lines and does too much; extract an `AgeUpService`
+2. Add more unit tests for service classes (school, job, career, relationship, housing, business)
+3. Complete Android physical-device testing
+4. Configure Android release signing keys for store upload
+5. Complete iOS TestFlight archive and upload
+6. Fix remaining theme inconsistency (dark seed with light screens)
 
-### For Rebuilding
+### Medium-term
 
-1. Improve `LifeScreen` architecture — it's 2200+ lines and does too much
-2. Add more activities and make action energy matter more
-3. Deepen family/children — family members should age and die, children should grow up
-4. Add more event chains using flags for compound consequences
-5. Improve UI polish: better transitions, haptic feedback, sound
-6. Add monetization only after gameplay feels complete
+1. Add more activities and make action energy matter more
+2. Deepen family/children — family members should age and die, children should grow up
+3. Add more event chains using flags for compound consequences
+4. Improve UI polish: better transitions, haptic feedback, sound
+5. Add monetization only after gameplay feels complete
 
 ## 23. Quick Onboarding Checklist
 
