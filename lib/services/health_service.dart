@@ -9,8 +9,7 @@ class HealthService {
         'At ${character.age}, you finally put down the load. A life fully lived. 🙏',
         'You made it to ${character.age}. Not bad for someone who ate that much waakye. 😄🕊️',
       ];
-      messages.shuffle();
-      return messages.first;
+      return messages[(character.lifeSeed + character.age) % messages.length];
     }
 
     if (character.health <= 0 && character.activeIllnesses.isNotEmpty) {
@@ -19,8 +18,7 @@ class HealthService {
         'The $illness finally won. You fought it as long as you could. 🕊️',
         '$illness took you at ${character.age}. The hospital bills came after you were gone. 💔',
       ];
-      messages.shuffle();
-      return messages.first;
+      return messages[(character.lifeSeed + character.age) % messages.length];
     }
 
     if (character.health <= 0) {
@@ -28,8 +26,7 @@ class HealthService {
         'Your body gave up at ${character.age}. It had been sending memos for years. 😔🕊️',
         'At ${character.age}, the health stat hit zero. Ghana lost one of its own. 🕊️',
       ];
-      messages.shuffle();
-      return messages.first;
+      return messages[(character.lifeSeed + character.age) % messages.length];
     }
 
     // Fallback: old age

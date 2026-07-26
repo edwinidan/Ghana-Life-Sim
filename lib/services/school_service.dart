@@ -9,14 +9,14 @@ class SchoolService {
     if (character.isEnrolled) return [];
     return allPrograms.where((p) {
       if (character.age < p.minAge) return false;
-      if (p.prerequisite != null &&
-          character.educationLevel != p.prerequisite) {
-        return false;
-      }
+      if (!p.accepts(character.educationLevel)) return false;
       if (character.smarts < p.smartsRequired) return false;
       if (programYearlyCashCost(p) > character.cash) return false;
       // Don't show programs for levels already achieved
       if (character.educationLevel == p.levelGranted) return false;
+      if (p.completionFlag != null && character.hasFlag(p.completionFlag!)) {
+        return false;
+      }
       return true;
     }).toList();
   }
@@ -63,7 +63,12 @@ class SchoolService {
 
     if (character.yearsLeftInSchool <= 0) {
       // Graduation!
-      character.educationLevel = program.levelGranted;
+      if (!program.preservesEducationLevel) {
+        character.educationLevel = program.levelGranted;
+      }
+      if (program.completionFlag != null) {
+        character.addFlag(program.completionFlag!);
+      }
       character.isEnrolled = false;
       character.enrolledIn = '';
       character.yearsLeftInSchool = 0;
@@ -80,6 +85,10 @@ class SchoolService {
             'Vocational Training complete. You now have a skill and a certificate to frame. 🔧',
         'University':
             'You graduated from University. Four years, one degree, and a lot of sobolo. 🎓',
+        'Tertiary Diploma':
+            'You completed professional tertiary training and earned your diploma. 🎓',
+        'NSS':
+            'You completed National Service. The allowance was modest, but the experience and connections were real. 🇬🇭',
       };
       final msg =
           messages[program.levelGranted] ??

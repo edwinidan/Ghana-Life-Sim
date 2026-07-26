@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "name": "Fixture Living",
+  "gender": "Female",
+  "age": 34,
+  "cash": 8200,
+  "debt": 1400,
+  "educationLevel": "University",
+  "familyNames": ["Ama", "Kofi"],
+  "businessNames": ["Fixture Foods"],
+  "businessTypes": ["Chop Bar"],
+  "businessHealthList": [68],
+  "businessIncomeList": [2500],
+  "activeIllnesses": ["Hypertension"],
+  "flags": ["education_family_sacrifice"]
+}

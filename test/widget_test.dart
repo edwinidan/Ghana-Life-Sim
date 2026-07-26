@@ -222,6 +222,12 @@ void main() {
       expect(loaded.cash, 5000);
       expect(loaded.familyNames, isNotEmpty);
 
+      await Hive.box<Character>('ghana_life_box').delete('current_character');
+      final recovered = await SaveService.loadGame();
+      expect(recovered, isNotNull);
+      expect(recovered!.name, 'Nana');
+      expect(recovered.cash, 5000);
+
       await SaveService.deleteSave();
 
       expect(SaveService.hasSavedGame(), isFalse);

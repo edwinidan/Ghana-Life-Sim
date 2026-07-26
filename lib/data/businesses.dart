@@ -16,6 +16,22 @@ class BusinessType {
     required this.minAge,
     required this.statRequirements,
   });
+
+  String get id => name
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+      .replaceAll(RegExp(r'^_+|_+$'), '');
+
+  int get baseAnnualRevenue => baseMonthlyIncome * 12;
+
+  int get baseAnnualExpenses => (baseAnnualRevenue * 0.62).round();
+
+  int get baseRisk => switch (id) {
+    'transport_trotro_taxi' => 58,
+    'poultry_farm' => 52,
+    'chop_bar' => 42,
+    _ => 34,
+  };
 }
 
 const List<BusinessType> allBusinessTypes = [
@@ -32,8 +48,7 @@ const List<BusinessType> allBusinessTypes = [
   BusinessType(
     name: 'Barbershop / Salon',
     emoji: '✂️',
-    description:
-        'Cutting hair and collecting information since day one.',
+    description: 'Cutting hair and collecting information since day one.',
     startupCost: 12,
     baseMonthlyIncome: 2000,
     minAge: 18,
@@ -42,8 +57,7 @@ const List<BusinessType> allBusinessTypes = [
   BusinessType(
     name: 'Poultry Farm',
     emoji: '🐔',
-    description:
-        'The chickens don\'t respect you but the money does.',
+    description: 'The chickens don\'t respect you but the money does.',
     startupCost: 20,
     baseMonthlyIncome: 3000,
     minAge: 22,
@@ -52,8 +66,7 @@ const List<BusinessType> allBusinessTypes = [
   BusinessType(
     name: 'Clothing / Fashion',
     emoji: '👗',
-    description:
-        'Dressing Ghana one ankara at a time. Mostly on credit.',
+    description: 'Dressing Ghana one ankara at a time. Mostly on credit.',
     startupCost: 18,
     baseMonthlyIncome: 2200,
     minAge: 20,
@@ -72,8 +85,7 @@ const List<BusinessType> allBusinessTypes = [
   BusinessType(
     name: 'Transport (Trotro/Taxi)',
     emoji: '🚐',
-    description:
-        'The road is your office. The passengers are your problems.',
+    description: 'The road is your office. The passengers are your problems.',
     startupCost: 25,
     baseMonthlyIncome: 3500,
     minAge: 22,

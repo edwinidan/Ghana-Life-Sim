@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 3,
+  "name": "Fixture Current",
+  "gender": "Male",
+  "age": 29,
+  "cash": 12500,
+  "debt": 0,
+  "businessStateRecords": 1,
+  "illnessStateRecords": 1,
+  "timelineRecords": 12,
+  "committedYearIds": 4
+}

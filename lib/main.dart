@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'app/theme/app_theme.dart';
 import 'screens/character_creation_screen.dart';
-import 'screens/life_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/save_service.dart';
+import 'services/settings_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SettingsService.init();
   await SaveService.init();
-  runApp(const GhanaLifeSimApp());
+  runApp(const ProviderScope(child: GhanaLifeSimApp()));
 }
 
 class GhanaLifeSimApp extends StatelessWidget {
@@ -19,14 +23,9 @@ class GhanaLifeSimApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ghana Life Sim',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFFD700),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        fontFamily: 'Georgia',
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.light,
+      themeMode: ThemeMode.light,
       home: const AppEntry(),
     );
   }
@@ -60,9 +59,7 @@ class _AppEntryState extends State<AppEntry> {
       final character = await SaveService.loadGame();
       if (character != null && !character.isDead) {
         if (mounted) {
-          setState(() {
-            _destination = LifeScreen(character: character);
-          });
+          setState(() => _destination = HomeScreen(character: character));
         }
         return;
       }

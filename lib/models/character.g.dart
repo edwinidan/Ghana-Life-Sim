@@ -16,7 +16,10 @@ class CharacterAdapter extends TypeAdapter<Character> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Character(name: fields[0] as String, gender: fields[1] as String)
+    return Character(
+      name: fields[0] as String,
+      gender: fields[1] as String,
+    )
       ..age = fields[2] as int
       ..isAlive = fields[3] as bool
       ..health = fields[4] as int
@@ -60,41 +63,59 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..cash = fields[42] == null ? 1000 : fields[42] as int
       ..debt = fields[43] == null ? 0 : fields[43] as int
       ..flags = fields[44] == null ? [] : (fields[44] as List).cast<String>()
-      ..childNames = fields[45] == null
-          ? []
-          : (fields[45] as List).cast<String>()
-      ..childGenders = fields[46] == null
-          ? []
-          : (fields[46] as List).cast<String>()
+      ..childNames =
+          fields[45] == null ? [] : (fields[45] as List).cast<String>()
+      ..childGenders =
+          fields[46] == null ? [] : (fields[46] as List).cast<String>()
       ..childAges = fields[47] == null ? [] : (fields[47] as List).cast<int>()
-      ..childBondScores = fields[48] == null
-          ? []
-          : (fields[48] as List).cast<int>()
-      ..familyNames = fields[49] == null
-          ? []
-          : (fields[49] as List).cast<String>()
-      ..familyRelations = fields[50] == null
-          ? []
-          : (fields[50] as List).cast<String>()
+      ..childBondScores =
+          fields[48] == null ? [] : (fields[48] as List).cast<int>()
+      ..familyNames =
+          fields[49] == null ? [] : (fields[49] as List).cast<String>()
+      ..familyRelations =
+          fields[50] == null ? [] : (fields[50] as List).cast<String>()
       ..familyAges = fields[51] == null ? [] : (fields[51] as List).cast<int>()
-      ..familyBondScores = fields[52] == null
-          ? []
-          : (fields[52] as List).cast<int>()
-      ..familyAlive = fields[53] == null
-          ? []
-          : (fields[53] as List).cast<bool>()
+      ..familyBondScores =
+          fields[52] == null ? [] : (fields[52] as List).cast<int>()
+      ..familyAlive =
+          fields[53] == null ? [] : (fields[53] as List).cast<bool>()
       ..actionEnergy = fields[54] == null ? 3 : fields[54] as int
       ..activeLifeGoalId = fields[55] == null ? '' : fields[55] as String
-      ..completedLifeGoalIds = fields[56] == null
-          ? []
-          : (fields[56] as List).cast<String>()
-      ..deathRewardsRecorded = fields[57] == null ? false : fields[57] as bool;
+      ..completedLifeGoalIds =
+          fields[56] == null ? [] : (fields[56] as List).cast<String>()
+      ..deathRewardsRecorded = fields[57] == null ? false : fields[57] as bool
+      ..schemaVersion = fields[58] == null ? 3 : fields[58] as int
+      ..lifeSeed = fields[59] == null ? 0 : fields[59] as int
+      ..eventHistory =
+          fields[60] == null ? [] : (fields[60] as List).cast<String>()
+      ..choiceHistory =
+          fields[61] == null ? [] : (fields[61] as List).cast<String>()
+      ..timelineRecords =
+          fields[62] == null ? [] : (fields[62] as List).cast<String>()
+      ..birthRegion =
+          fields[63] == null ? 'Greater Accra' : fields[63] as String
+      ..originSummary = fields[64] == null ? '' : fields[64] as String
+      ..householdClass =
+          fields[65] == null ? 'Getting By' : fields[65] as String
+      ..birthYear = fields[66] == null ? 0 : fields[66] as int
+      ..businessStateRecords =
+          fields[67] == null ? [] : (fields[67] as List).cast<String>()
+      ..illnessStateRecords =
+          fields[68] == null ? [] : (fields[68] as List).cast<String>()
+      ..annualLedgerRecords =
+          fields[69] == null ? [] : (fields[69] as List).cast<String>()
+      ..committedYearIds =
+          fields[70] == null ? [] : (fields[70] as List).cast<String>()
+      ..consequenceRecords =
+          fields[71] == null ? [] : (fields[71] as List).cast<String>()
+      ..pendingDecisionIds =
+          fields[72] == null ? [] : (fields[72] as List).cast<String>();
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(58)
+      ..writeByte(73)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -210,7 +231,37 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(56)
       ..write(obj.completedLifeGoalIds)
       ..writeByte(57)
-      ..write(obj.deathRewardsRecorded);
+      ..write(obj.deathRewardsRecorded)
+      ..writeByte(58)
+      ..write(obj.schemaVersion)
+      ..writeByte(59)
+      ..write(obj.lifeSeed)
+      ..writeByte(60)
+      ..write(obj.eventHistory)
+      ..writeByte(61)
+      ..write(obj.choiceHistory)
+      ..writeByte(62)
+      ..write(obj.timelineRecords)
+      ..writeByte(63)
+      ..write(obj.birthRegion)
+      ..writeByte(64)
+      ..write(obj.originSummary)
+      ..writeByte(65)
+      ..write(obj.householdClass)
+      ..writeByte(66)
+      ..write(obj.birthYear)
+      ..writeByte(67)
+      ..write(obj.businessStateRecords)
+      ..writeByte(68)
+      ..write(obj.illnessStateRecords)
+      ..writeByte(69)
+      ..write(obj.annualLedgerRecords)
+      ..writeByte(70)
+      ..write(obj.committedYearIds)
+      ..writeByte(71)
+      ..write(obj.consequenceRecords)
+      ..writeByte(72)
+      ..write(obj.pendingDecisionIds);
   }
 
   @override

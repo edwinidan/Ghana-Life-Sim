@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import '../models/character.dart';
+import '../data/illnesses.dart';
+import '../domain/models/illness_state.dart';
+import '../domain/repositories/illness_state_repository.dart';
 
 class ActivityOption {
   final String id;
@@ -118,6 +121,14 @@ class ActivityService {
       emoji: '🛣️',
       minAge: 16,
     ),
+    ActivityOption(
+      id: 'debt_repayment',
+      title: 'Repay Debt',
+      subtitle: 'Pay down up to GHS 500',
+      emoji: '💳',
+      minAge: 18,
+      cashCost: 500,
+    ),
   ];
 
   static List<ActivityOption> availableActivities(Character character) {
@@ -125,9 +136,15 @@ class ActivityService {
       if (character.age < option.minAge) return false;
       if (option.requiresPartner && !_hasPartner(character)) return false;
       if (option.requiresChild && character.numberOfChildren <= 0) return false;
+      if (option.id == 'debt_repayment' && character.debt <= 0) return false;
       return true;
     }).toList();
   }
+
+  static int cashCostFor(Character character, ActivityOption option) =>
+      option.id == 'debt_repayment'
+      ? min(option.cashCost, character.debt)
+      : option.cashCost;
 
   static ActivityResult performActivity(
     Character character,
@@ -157,16 +174,17 @@ class ActivityService {
         message: 'You need children before you can do this.',
       );
     }
-    if (character.cash < option.cashCost) {
+    final cashCost = cashCostFor(character, option);
+    if (character.cash < cashCost) {
       return ActivityResult(
         success: false,
-        message: 'You need GHS ${option.cashCost} for ${option.title}.',
+        message: 'You need GHS $cashCost for ${option.title}.',
       );
     }
 
     character.consumeActionEnergy();
-    if (option.cashCost > 0) {
-      character.adjustCash(-option.cashCost);
+    if (cashCost > 0) {
+      character.adjustCash(-cashCost);
     }
 
     final message = switch (option.id) {
@@ -181,6 +199,7 @@ class ActivityService {
       'partner_time' => _partnerTime(character),
       'child_time' => _childTime(character),
       'risky_hustle' => _riskyHustle(character),
+      'debt_repayment' => _repayDebt(character, cashCost),
       _ => 'You tried something new. Life moved a little.',
     };
 
@@ -214,6 +233,38 @@ class ActivityService {
 
   static String _doctor(Character character) {
     character.adjustStat('health', 10);
+    final typedIllnesses = const IllnessStateRepository().read(character);
+    final typedIndex = typedIllnesses.indexWhere(
+      (illness) => !illness.resolved,
+    );
+    if (typedIndex >= 0) {
+      final illness = typedIllnesses[typedIndex];
+      final definition = illnessById(illness.illnessDefinitionId);
+      final resolved = !definition.chronic && _rng.nextDouble() < 0.45;
+      typedIllnesses[typedIndex] = illness.copyWith(
+        treatmentStatus: TreatmentStatus.monitoring,
+        severityModifier: (illness.severityModifier - 2).clamp(-10, 25),
+        resolved: resolved,
+        history: [
+          ...illness.history,
+          IllnessHistoryEntry(
+            age: character.age,
+            action: 'doctor_visit',
+            summary: resolved
+                ? '${definition.displayName} resolved after a doctor visit.'
+                : '${definition.displayName} was assessed and monitored.',
+          ),
+        ],
+      );
+      const IllnessStateRepository().write(character, typedIllnesses);
+      character.activeIllnesses = typedIllnesses
+          .where((item) => !item.resolved)
+          .map((item) => illnessById(item.illnessDefinitionId).displayName)
+          .toList();
+      return resolved
+          ? 'The doctor treated your ${definition.displayName}. Your health improved.'
+          : 'The doctor assessed your ${definition.displayName} and set up monitoring.';
+    }
     if (character.activeIllnesses.isNotEmpty && _rng.nextDouble() < 0.65) {
       final illness = character.activeIllnesses.removeLast();
       return 'The doctor treated your $illness. Your health improved.';
@@ -300,5 +351,11 @@ class ActivityService {
     character.adjustStat('reputation', -4);
     character.addFlag('risky_hustle_trouble');
     return 'The hustle went sideways. You owe GHS $penalty now.';
+  }
+
+  static String _repayDebt(Character character, int amount) {
+    character.adjustDebt(-amount);
+    character.adjustStat('happiness', 1);
+    return 'You paid GHS $amount toward your debt. The balance is now GHS ${character.debt}.';
   }
 }

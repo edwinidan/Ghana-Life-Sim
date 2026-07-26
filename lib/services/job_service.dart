@@ -25,7 +25,10 @@ class JobService {
     return allSideGigs.where((gig) {
       if (character.age < gig.minAge) return false;
       if (character.sideGigs.contains(gig.name)) return false;
-      if (gig.requiredCareer != null && gig.requiredCareer != character.careerPath) return false;
+      if (gig.requiredCareer != null &&
+          gig.requiredCareer != character.careerPath) {
+        return false;
+      }
       for (final entry in gig.statRequirements.entries) {
         if (_getStat(character, entry.key) < entry.value) return false;
       }
@@ -34,7 +37,11 @@ class JobService {
   }
 
   /// Applies for a job. Returns true on success, false on failure.
-  static bool applyForJob(Character character, CareerData career) {
+  static bool applyForJob(
+    Character character,
+    CareerData career, {
+    Random? random,
+  }) {
     final entryReqs = career.levels[0].statRequirements;
     int statDelta = 0;
     if (entryReqs.isNotEmpty) {
@@ -43,7 +50,7 @@ class JobService {
     }
     final successChance = (0.60 + statDelta * 0.01).clamp(0.1, 0.95);
 
-    if (_rng.nextDouble() < successChance) {
+    if ((random ?? _rng).nextDouble() < successChance) {
       CareerService.enterCareer(character, career.name);
       return true;
     } else {
@@ -100,9 +107,14 @@ class JobService {
 
   static bool _meetsEducationGate(Character character, String careerName) {
     final level = character.educationLevel;
-    final hasSHS = level == 'SHS' || level == 'University';
-    final hasUniOrVoc = level == 'University' || level == 'Vocational';
-    final hasUni = level == 'University';
+    final hasSHS =
+        level == 'SHS' || level == 'Tertiary Diploma' || level == 'University';
+    final hasUniOrVoc =
+        level == 'University' ||
+        level == 'Tertiary Diploma' ||
+        level == 'Vocational';
+    final hasHealthcareTraining =
+        level == 'University' || level == 'Tertiary Diploma';
 
     switch (careerName) {
       case 'Hustle':
@@ -115,7 +127,7 @@ class JobService {
       case 'Tech':
         return hasUniOrVoc;
       case 'Healthcare':
-        return hasUni;
+        return hasHealthcareTraining;
       default:
         return true;
     }
@@ -123,16 +135,26 @@ class JobService {
 
   static int _getStat(Character c, String stat) {
     switch (stat) {
-      case 'health': return c.health;
-      case 'happiness': return c.happiness;
-      case 'smarts': return c.smarts;
-      case 'looks': return c.looks;
-      case 'money': return c.money;
-      case 'reputation': return c.reputation;
-      case 'discipline': return c.discipline;
-      case 'streetSense': return c.streetSense;
-      case 'connections': return c.connections;
-      default: return 0;
+      case 'health':
+        return c.health;
+      case 'happiness':
+        return c.happiness;
+      case 'smarts':
+        return c.smarts;
+      case 'looks':
+        return c.looks;
+      case 'money':
+        return c.money;
+      case 'reputation':
+        return c.reputation;
+      case 'discipline':
+        return c.discipline;
+      case 'streetSense':
+        return c.streetSense;
+      case 'connections':
+        return c.connections;
+      default:
+        return 0;
     }
   }
 }

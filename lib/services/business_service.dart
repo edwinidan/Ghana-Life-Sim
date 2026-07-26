@@ -1,6 +1,8 @@
 import 'dart:math';
 import '../models/character.dart';
 import '../data/businesses.dart';
+import '../domain/models/business_state.dart';
+import '../domain/repositories/business_state_repository.dart';
 
 class BusinessService {
   static final _random = Random();
@@ -32,16 +34,35 @@ class BusinessService {
     character.businessTypes.add(type.name);
     character.businessHealthList.add(70);
     character.businessIncomeList.add(type.baseMonthlyIncome);
+    final typedBusinesses = const BusinessStateRepository().read(character);
+    typedBusinesses.add(
+      BusinessState(
+        id:
+            'business-${character.lifeSeed}-${character.age}-'
+            '${typedBusinesses.length}',
+        definitionId: type.id,
+        displayName: businessName,
+        startedAtAge: character.age,
+        reputation: 55,
+        risk: type.baseRisk,
+        annualRevenue: type.baseAnnualRevenue,
+        annualExpenses: type.baseAnnualExpenses,
+      ),
+    );
+    const BusinessStateRepository().write(character, typedBusinesses);
     _syncTotalIncome(character);
     character.lifeLog.insert(
       0,
       'Age ${character.age}: You opened $businessName (${type.emoji} ${type.name}). The whole neighbourhood is already talking. 🚀',
     );
-    character.save();
   }
 
   /// Called every age-up for each business. Applies income and health drift.
-  static void progressBusinesses(Character character) {
+  static void progressBusinesses(
+    Character character, {
+    Random? random,
+    bool persist = true,
+  }) {
     if (character.businessNames.isEmpty) return;
 
     // Iterate in reverse so removal by index is safe
@@ -58,7 +79,7 @@ class BusinessService {
       character.adjustStat('money', incomeGain);
 
       // Health drift: -5 to +3
-      final drift = _random.nextInt(9) - 5; // -5 to +3
+      final drift = (random ?? _random).nextInt(9) - 5; // -5 to +3
       final newHealth = (health + drift).clamp(0, 100);
       character.businessHealthList[i] = newHealth;
 
@@ -81,7 +102,6 @@ class BusinessService {
     }
 
     _syncTotalIncome(character);
-    character.save();
   }
 
   /// Invest in a business to boost its health.
@@ -107,12 +127,29 @@ class BusinessService {
         );
 
     final name = character.businessNames[businessIndex];
+    final typedBusinesses = const BusinessStateRepository().read(character);
+    final typedIndex = typedBusinesses.indexWhere(
+      (business) =>
+          business.displayName == name &&
+          (business.status == BusinessStatus.active ||
+              business.status == BusinessStatus.struggling),
+    );
+    if (typedIndex >= 0) {
+      final business = typedBusinesses[typedIndex];
+      typedBusinesses[typedIndex] = business.copyWith(
+        growthLevel: investmentLevel == 1
+            ? business.growthLevel
+            : (business.growthLevel + 1).clamp(1, 5),
+        reputation: (business.reputation + healthBoost ~/ 3).clamp(0, 100),
+        risk: (business.risk - healthBoost ~/ 2).clamp(0, 100),
+      );
+      const BusinessStateRepository().write(character, typedBusinesses);
+    }
     final typeEmoji = _emojiForType(character.businessTypes[businessIndex]);
     character.lifeLog.insert(
       0,
       'Age ${character.age}: You invested ($size) in your $name. New energy, new hustle. $typeEmoji',
     );
-    character.save();
   }
 
   /// Close a business voluntarily. Partial refund of GHS 5,000.
@@ -122,6 +159,19 @@ class BusinessService {
     }
 
     final name = character.businessNames[businessIndex];
+    final typedBusinesses = const BusinessStateRepository().read(character);
+    final typedIndex = typedBusinesses.indexWhere(
+      (business) =>
+          business.displayName == name &&
+          (business.status == BusinessStatus.active ||
+              business.status == BusinessStatus.struggling),
+    );
+    if (typedIndex >= 0) {
+      typedBusinesses[typedIndex] = typedBusinesses[typedIndex].copyWith(
+        status: BusinessStatus.closed,
+      );
+      const BusinessStateRepository().write(character, typedBusinesses);
+    }
     character.businessNames.removeAt(businessIndex);
     character.businessTypes.removeAt(businessIndex);
     character.businessHealthList.removeAt(businessIndex);
@@ -133,7 +183,6 @@ class BusinessService {
       0,
       'Age ${character.age}: You closed $name. It was a good run. You walked away with something at least. 🏳️',
     );
-    character.save();
   }
 
   static void _syncTotalIncome(Character character) {

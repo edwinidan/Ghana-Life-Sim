@@ -14,7 +14,7 @@ class CareerService {
   }
 
   /// Checks if the character qualifies for a promotion this year (40% chance if requirements met).
-  static bool checkPromotion(Character character) {
+  static bool checkPromotion(Character character, {Random? random}) {
     if (character.careerPath == 'None') return false;
     if (character.careerLevel >= 3) return false;
 
@@ -32,7 +32,7 @@ class CareerService {
       if (charStat < entry.value) return false;
     }
 
-    return Random().nextDouble() < 0.40;
+    return (random ?? Random()).nextDouble() < 0.40;
   }
 
   /// Applies a promotion: increments careerLevel, syncs income, adds a lifeLog entry.
@@ -74,7 +74,8 @@ class CareerService {
     final messages = {
       'Civil Service': 'Time to learn how to sleep with your eyes open. 🏛️',
       'Healthcare': 'Get ready for long nights and very demanding patients. 🏥',
-      'Education': 'Chalk, noise, and marking scripts for the foreseeable future. 📚',
+      'Education':
+          'Chalk, noise, and marking scripts for the foreseeable future. 📚',
       'Tech': 'The grind begins. 💻',
       'Trade': 'Time to count every single pesewa. 🛒',
       'Entertainment': 'Make sure they spell your name right. 🎤',
@@ -102,16 +103,26 @@ class CareerService {
 
   static int _getStat(Character c, String stat) {
     switch (stat) {
-      case 'health': return c.health;
-      case 'happiness': return c.happiness;
-      case 'smarts': return c.smarts;
-      case 'looks': return c.looks;
-      case 'money': return c.money;
-      case 'reputation': return c.reputation;
-      case 'discipline': return c.discipline;
-      case 'streetSense': return c.streetSense;
-      case 'connections': return c.connections;
-      default: return 0;
+      case 'health':
+        return c.health;
+      case 'happiness':
+        return c.happiness;
+      case 'smarts':
+        return c.smarts;
+      case 'looks':
+        return c.looks;
+      case 'money':
+        return c.money;
+      case 'reputation':
+        return c.reputation;
+      case 'discipline':
+        return c.discipline;
+      case 'streetSense':
+        return c.streetSense;
+      case 'connections':
+        return c.connections;
+      default:
+        return 0;
     }
   }
 }

@@ -531,15 +531,23 @@ final List<LifeEvent> seniorEvents = [
     ],
   ),
   LifeEvent(
+    id: 'senior.health.final_twilight.v1',
     title: 'The Final Twilight 🌅',
     description: 'The pain is gone. The room is quiet. A profound sense of peace washes over you. It is time.',
-    minAge: 65,
-    maxAge: 90,
+    minAge: 85,
+    maxAge: 109,
     choices: [
       EventChoice(
         text: 'Close your eyes and let go',
-        statChanges: {'happiness': 15, 'health': 0}, // Health 0 signifies the end logic handled elsewhere
+        statChanges: {'happiness': 15, 'health': -100},
         outcome: 'You smiled softly. You lived a full, incredible Ghanaian life. The ancestors are waiting. You rest peacefully.',
+      ),
+      EventChoice(
+        text: 'Ask your family to stay with you',
+        statChanges: {'happiness': 20, 'health': -100},
+        familyBondChange: 8,
+        outcome:
+            'Your people held your hands and shared old stories until you slipped away peacefully.',
       ),
     ],
   ),

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../models/character.dart';
 import '../data/businesses.dart';
 import '../services/business_service.dart';
+import '../domain/models/business_state.dart';
+import '../domain/repositories/business_state_repository.dart';
+import '../domain/services/typed_business_service.dart';
+import '../services/save_service.dart';
 
 class BusinessScreen extends StatefulWidget {
   final Character character;
@@ -129,6 +133,15 @@ class _BusinessScreenState extends State<BusinessScreen> {
     final type = c.businessTypes[index];
     final health = c.businessHealthList[index];
     final income = c.businessIncomeList[index];
+    BusinessState? typed;
+    for (final business in const BusinessStateRepository().read(c)) {
+      if (business.displayName == name &&
+          (business.status == BusinessStatus.active ||
+              business.status == BusinessStatus.struggling)) {
+        typed = business;
+        break;
+      }
+    }
 
     Color healthColor;
     if (health >= 60) {
@@ -192,6 +205,22 @@ class _BusinessScreenState extends State<BusinessScreen> {
                     ),
                   ),
                 ),
+                if (typed != null)
+                  PopupMenuButton<String>(
+                    tooltip: 'Business actions',
+                    onSelected: (action) => _runTypedAction(typed!.id, action),
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'expand', child: Text('Expand')),
+                      PopupMenuItem(value: 'hire', child: Text('Hire staff')),
+                      PopupMenuItem(
+                        value: 'reduce',
+                        child: Text('Reduce operations'),
+                      ),
+                      PopupMenuItem(value: 'borrow', child: Text('Borrow')),
+                      PopupMenuDivider(),
+                      PopupMenuItem(value: 'sell', child: Text('Sell')),
+                    ],
+                  ),
               ],
             ),
             const SizedBox(height: 10.8),
@@ -244,6 +273,30 @@ class _BusinessScreenState extends State<BusinessScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
+            if (typed != null && typed.history.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Last year: Revenue GHS ${_fmt(typed.annualRevenue)} · '
+                'Expenses GHS ${_fmt(typed.annualExpenses)}',
+                style: const TextStyle(
+                  fontSize: 11.7,
+                  color: Color(0xFF616161),
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                'Profit/loss: ${typed.lastAnnualProfit < 0 ? '-' : ''}'
+                'GHS ${_fmt(typed.lastAnnualProfit.abs())} · '
+                'Growth ${typed.growthLevel}/5 · Risk ${typed.risk}%',
+                style: TextStyle(
+                  fontSize: 11.7,
+                  fontWeight: FontWeight.w700,
+                  color: typed.lastAnnualProfit >= 0
+                      ? const Color(0xFF2E7D32)
+                      : const Color(0xFFC62828),
+                ),
+              ),
+            ],
             const SizedBox(height: 10.8),
             Row(
               children: [
@@ -370,6 +423,44 @@ class _BusinessScreenState extends State<BusinessScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _runTypedAction(String businessId, String action) async {
+    const service = TypedBusinessService();
+    if (action == 'sell') {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Sell this business?'),
+          content: const Text(
+            'Selling is permanent. The business will leave active operations.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Sell business'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    final result = switch (action) {
+      'expand' => service.expand(widget.character, businessId),
+      'hire' => service.hire(widget.character, businessId),
+      'reduce' => service.reduceOperations(widget.character, businessId),
+      'borrow' => service.borrow(widget.character, businessId),
+      'sell' => service.sell(widget.character, businessId),
+      _ => const BusinessActionResult(false, 'Unknown business action.'),
+    };
+    if (result.success) await SaveService.saveGame(widget.character);
+    if (!mounted) return;
+    _refresh();
+    _showSnack(result.message);
   }
 
   // ── Start a Business ──────────────────────────────────────────────────────

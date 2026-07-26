@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 3,
+  "name": "Fixture Ancestor",
+  "gender": "Female",
+  "age": 87,
+  "isAlive": false,
+  "health": 0,
+  "causeOfDeath": "A chronic condition contributed to death.",
+  "deathRewardsRecorded": true,
+  "completedLifeGoalIds": ["own_home"]
+}

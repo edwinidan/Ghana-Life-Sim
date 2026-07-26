@@ -251,6 +251,7 @@ final List<LifeEvent> ghanaEvents = [
 
   // FOOD CULTURE (5)
   LifeEvent(
+    id: 'ghana.food.jollof_debate.v1',
     title: 'The Jollof War 🇬🇭🇳🇬',
     description: 'A Nigerian friend confidently states that Nigerian Jollof is better at a dinner table.',
     minAge: 15,

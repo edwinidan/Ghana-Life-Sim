@@ -30,7 +30,6 @@ class HousingService {
       0,
       'Age ${character.age}: You moved out of your parents\' house. Freedom. Also rent. 🏠',
     );
-    character.save();
   }
 
   /// Buy a home. Down payment costs 20 money. Happiness +20, reputation +10.
@@ -45,7 +44,6 @@ class HousingService {
       0,
       'Age ${character.age}: You bought your own home. Your mother has already claimed the guest room. 🏡',
     );
-    character.save();
   }
 
   /// Called every age-up. Deducts rent expense if renting.

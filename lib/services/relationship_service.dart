@@ -12,7 +12,6 @@ class RelationshipService {
     character.partnerName = name;
     character.partnerJob = job;
     character.partnerPersonality = personality;
-    character.save();
     return name;
   }
 
@@ -28,7 +27,6 @@ class RelationshipService {
         0,
         'Age ${character.age}: You asked ${character.partnerName} out. They said yes! Your mother will be pleased. 💕',
       );
-      character.save();
       return true;
     } else {
       final failedName = character.partnerName;
@@ -39,12 +37,16 @@ class RelationshipService {
         0,
         'Age ${character.age}: You asked $failedName out. They said no. Very painful. 😔',
       );
-      character.save();
       return false;
     }
   }
 
-  static void progressRelationship(Character character) {
+  static void progressRelationship(
+    Character character, {
+    Random? random,
+    bool persist = true,
+  }) {
+    final rng = random ?? _random;
     int drift = 0;
     switch (character.partnerPersonality) {
       case 'Clingy':
@@ -60,13 +62,13 @@ class RelationshipService {
         drift = 2;
         break;
       default:
-        drift = _random.nextInt(5) - 2; // -2 to +2
+        drift = rng.nextInt(5) - 2; // -2 to +2
     }
     if (character.isCheating) {
       drift -= 5;
       // 15% chance of getting caught
-      if (_random.nextInt(100) < 15) {
-        getCaught(character);
+      if (rng.nextInt(100) < 15) {
+        getCaught(character, persist: persist);
         return;
       }
     }
@@ -74,7 +76,6 @@ class RelationshipService {
       0,
       100,
     );
-    character.save();
   }
 
   static bool propose(Character character) {
@@ -88,7 +89,6 @@ class RelationshipService {
       0,
       'Age ${character.age}: You proposed to ${character.partnerName}. They said yes! Now comes the family meeting. 💍',
     );
-    character.save();
     return true;
   }
 
@@ -113,7 +113,6 @@ class RelationshipService {
       0,
       'Age ${character.age}: You married ${character.partnerName}! The whole town came to the wedding. The jollof was excellent. 💒',
     );
-    character.save();
   }
 
   static void startCheating(Character character) {
@@ -124,10 +123,9 @@ class RelationshipService {
       0,
       'Age ${character.age}: You started seeing $sideName on the side. God is watching. 👀',
     );
-    character.save();
   }
 
-  static void getCaught(Character character) {
+  static void getCaught(Character character, {bool persist = true}) {
     final sideName = character.sidePartnerName;
     character.reputation = (character.reputation - 20).clamp(0, 100);
     character.relationshipScore = (character.relationshipScore - 40).clamp(
@@ -137,11 +135,11 @@ class RelationshipService {
     character.happiness = (character.happiness - 10).clamp(0, 100);
     character.isCheating = false;
     character.sidePartnerName = '';
+    character.addFlag('betrayal_exposed');
     character.lifeLog.insert(
       0,
       'Age ${character.age}: ${character.partnerName} found out about $sideName. The whole compound knows. Your reputation is finished. 😭',
     );
-    character.save();
   }
 
   static void breakUp(Character character) {
@@ -158,7 +156,6 @@ class RelationshipService {
       0,
       'Age ${character.age}: You and $exName broke up. Painful, but not every love story reaches family introduction. 💔',
     );
-    character.save();
   }
 
   static void callOffEngagement(Character character) {
@@ -176,10 +173,9 @@ class RelationshipService {
       0,
       'Age ${character.age}: You called off the engagement with $exName. Both families are still discussing it. 💍',
     );
-    character.save();
   }
 
-  static void divorce(Character character) {
+  static void divorce(Character character, {bool persist = true}) {
     final exName = character.partnerName;
     character.relationshipStatus = 'Divorced';
     const legalCost = 3500;
@@ -203,7 +199,6 @@ class RelationshipService {
       0,
       'Age ${character.age}: You and $exName are divorced. The lawyer got rich. You did not. 📄',
     );
-    character.save();
   }
 
   static void haveChild(Character character) {
@@ -233,6 +228,5 @@ class RelationshipService {
       0,
       'Age ${character.age}: Your ${character.partnerName} gave birth to a baby $childGender. You named them $childName. Life will never be the same. 👶',
     );
-    character.save();
   }
 }

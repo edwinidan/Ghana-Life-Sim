@@ -934,6 +934,7 @@ final List<LifeEvent> adultEvents = [
     ],
   ),
   LifeEvent(
+    id: 'adult.health.high_blood_pressure.v1',
     title: 'High Blood Pressure 🩺',
     description:
         'A routine checkup reveals your blood pressure is dangerously high due to adulting stress.',
@@ -1207,6 +1208,7 @@ final List<LifeEvent> adultEvents = [
     ],
   ),
   LifeEvent(
+    id: 'adult.food.last_jollof.v1',
     title: 'The Jollof War 🍚',
     description:
         'You are at a grand party. They are serving food, but someone cuts the line and takes the last scoop of Jollof.',
@@ -2046,4 +2048,3 @@ final List<LifeEvent> adultEvents = [
     ],
   ),
 ];
-

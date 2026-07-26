@@ -108,6 +108,7 @@ final List<LifeEvent> healthEvents = [
   ),
 
   LifeEvent(
+    id: 'health.hypertension.diagnosis.v1',
     title: 'High Blood Pressure 🩺',
     description:
         'The nurse said your BP is 160/100. She looked at you the way people look at a car that is clearly not roadworthy. You have been eating too much salt, working too hard, and worrying about everything.',

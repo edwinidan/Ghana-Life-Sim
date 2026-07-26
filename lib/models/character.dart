@@ -132,6 +132,36 @@ class Character extends HiveObject {
   List<String> completedLifeGoalIds;
   @HiveField(57, defaultValue: false)
   bool deathRewardsRecorded;
+  @HiveField(58, defaultValue: 3)
+  int schemaVersion;
+  @HiveField(59, defaultValue: 0)
+  int lifeSeed;
+  @HiveField(60, defaultValue: [])
+  List<String> eventHistory;
+  @HiveField(61, defaultValue: [])
+  List<String> choiceHistory;
+  @HiveField(62, defaultValue: [])
+  List<String> timelineRecords;
+  @HiveField(63, defaultValue: 'Greater Accra')
+  String birthRegion;
+  @HiveField(64, defaultValue: '')
+  String originSummary;
+  @HiveField(65, defaultValue: 'Getting By')
+  String householdClass;
+  @HiveField(66, defaultValue: 0)
+  int birthYear;
+  @HiveField(67, defaultValue: [])
+  List<String> businessStateRecords;
+  @HiveField(68, defaultValue: [])
+  List<String> illnessStateRecords;
+  @HiveField(69, defaultValue: [])
+  List<String> annualLedgerRecords;
+  @HiveField(70, defaultValue: [])
+  List<String> committedYearIds;
+  @HiveField(71, defaultValue: [])
+  List<String> consequenceRecords;
+  @HiveField(72, defaultValue: [])
+  List<String> pendingDecisionIds;
 
   Character({required this.name, required this.gender})
     : age = 0,
@@ -181,6 +211,21 @@ class Character extends HiveObject {
       activeLifeGoalId = '',
       completedLifeGoalIds = [],
       deathRewardsRecorded = false,
+      schemaVersion = 3,
+      lifeSeed = Random.secure().nextInt(0x7fffffff),
+      eventHistory = [],
+      choiceHistory = [],
+      timelineRecords = [],
+      birthRegion = 'Greater Accra',
+      originSummary = '',
+      householdClass = 'Getting By',
+      birthYear = DateTime.now().year,
+      businessStateRecords = [],
+      illnessStateRecords = [],
+      annualLedgerRecords = [],
+      committedYearIds = [],
+      consequenceRecords = [],
+      pendingDecisionIds = [],
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -191,6 +236,9 @@ class Character extends HiveObject {
       streetSense = _randomStat(20, 60),
       connections = _randomStat(10, 40) {
     ensureFamilySeeded();
+    originSummary =
+        'You were born in $birthRegion to a family that is $householdClass. '
+        'Your story is only beginning.';
   }
 
   static int _randomStat(int min, int max) {
@@ -246,13 +294,44 @@ class Character extends HiveObject {
 
   void addFlag(String flag) {
     if (!flags.contains(flag)) flags.add(flag);
+    if (!consequenceRecords.any((record) => record.startsWith('$flag|'))) {
+      consequenceRecords.add('$flag|$age|-1');
+    }
   }
 
   void removeFlag(String flag) {
     flags.remove(flag);
+    consequenceRecords.removeWhere((record) => record.startsWith('$flag|'));
   }
 
   bool hasFlag(String flag) => flags.contains(flag);
+
+  void addTimedFlag(String flag, int durationYears) {
+    addFlag(flag);
+    consequenceRecords.removeWhere((record) => record.startsWith('$flag|'));
+    consequenceRecords.add('$flag|$age|${age + durationYears}');
+  }
+
+  int? flagSetAge(String flag) {
+    final matches = consequenceRecords.where(
+      (record) => record.startsWith('$flag|'),
+    );
+    if (matches.isEmpty) return null;
+    return int.tryParse(matches.first.split('|')[1]);
+  }
+
+  void expireConsequences() {
+    final expired = <String>[];
+    for (final record in consequenceRecords) {
+      final parts = record.split('|');
+      if (parts.length < 3) continue;
+      final expiresAt = int.tryParse(parts[2]) ?? -1;
+      if (expiresAt >= 0 && age >= expiresAt) expired.add(parts[0]);
+    }
+    for (final flag in expired) {
+      removeFlag(flag);
+    }
+  }
 
   void addChild({
     required String name,
@@ -354,7 +433,13 @@ class Character extends HiveObject {
   }
 
   void resetActionEnergy() {
-    actionEnergy = age < 6 ? 2 : 3;
+    if (age < 6) {
+      actionEnergy = 1;
+    } else if (age < 13) {
+      actionEnergy = 2;
+    } else {
+      actionEnergy = 3;
+    }
   }
 
   bool consumeActionEnergy() {
@@ -369,15 +454,91 @@ class Character extends HiveObject {
     }
   }
 
-  bool get isDead => health <= 0 || age >= 90;
+  bool get isDead => !isAlive || health <= 0 || age >= 110;
+
+  Character detachedCopy() {
+    return Character(name: name, gender: gender)
+      ..age = age
+      ..isAlive = isAlive
+      ..health = health
+      ..happiness = happiness
+      ..smarts = smarts
+      ..looks = looks
+      ..money = money
+      ..reputation = reputation
+      ..discipline = discipline
+      ..streetSense = streetSense
+      ..connections = connections
+      ..job = job
+      ..education = education
+      ..lifeLog = List<String>.from(lifeLog)
+      ..careerPath = careerPath
+      ..careerLevel = careerLevel
+      ..monthlyIncome = monthlyIncome
+      ..educationLevel = educationLevel
+      ..isEnrolled = isEnrolled
+      ..enrolledIn = enrolledIn
+      ..yearsLeftInSchool = yearsLeftInSchool
+      ..sideGigs = List<String>.from(sideGigs)
+      ..sideGigIncome = sideGigIncome
+      ..relationshipStatus = relationshipStatus
+      ..partnerName = partnerName
+      ..partnerJob = partnerJob
+      ..partnerPersonality = partnerPersonality
+      ..relationshipScore = relationshipScore
+      ..numberOfChildren = numberOfChildren
+      ..isCheating = isCheating
+      ..sidePartnerName = sidePartnerName
+      ..housingStatus = housingStatus
+      ..rentExpensePerYear = rentExpensePerYear
+      ..businessNames = List<String>.from(businessNames)
+      ..businessTypes = List<String>.from(businessTypes)
+      ..businessHealthList = List<int>.from(businessHealthList)
+      ..businessIncomeList = List<int>.from(businessIncomeList)
+      ..totalBusinessIncome = totalBusinessIncome
+      ..causeOfDeath = causeOfDeath
+      ..activeIllnesses = List<String>.from(activeIllnesses)
+      ..cash = cash
+      ..debt = debt
+      ..flags = List<String>.from(flags)
+      ..childNames = List<String>.from(childNames)
+      ..childGenders = List<String>.from(childGenders)
+      ..childAges = List<int>.from(childAges)
+      ..childBondScores = List<int>.from(childBondScores)
+      ..familyNames = List<String>.from(familyNames)
+      ..familyRelations = List<String>.from(familyRelations)
+      ..familyAges = List<int>.from(familyAges)
+      ..familyBondScores = List<int>.from(familyBondScores)
+      ..familyAlive = List<bool>.from(familyAlive)
+      ..actionEnergy = actionEnergy
+      ..activeLifeGoalId = activeLifeGoalId
+      ..completedLifeGoalIds = List<String>.from(completedLifeGoalIds)
+      ..deathRewardsRecorded = deathRewardsRecorded
+      ..schemaVersion = schemaVersion
+      ..lifeSeed = lifeSeed
+      ..eventHistory = List<String>.from(eventHistory)
+      ..choiceHistory = List<String>.from(choiceHistory)
+      ..timelineRecords = List<String>.from(timelineRecords)
+      ..birthRegion = birthRegion
+      ..originSummary = originSummary
+      ..householdClass = householdClass
+      ..birthYear = birthYear
+      ..businessStateRecords = List<String>.from(businessStateRecords)
+      ..illnessStateRecords = List<String>.from(illnessStateRecords)
+      ..annualLedgerRecords = List<String>.from(annualLedgerRecords)
+      ..committedYearIds = List<String>.from(committedYearIds)
+      ..consequenceRecords = List<String>.from(consequenceRecords)
+      ..pendingDecisionIds = List<String>.from(pendingDecisionIds);
+  }
 
   String get lifeStage {
-    if (age < 6) return 'Toddler';
+    if (age < 3) return 'Infant';
+    if (age < 6) return 'Early Childhood';
     if (age < 13) return 'Child';
     if (age < 18) return 'Teenager';
-    if (age < 25) return 'Young Adult';
-    if (age < 50) return 'Adult';
-    if (age < 70) return 'Middle Aged';
+    if (age < 26) return 'Young Adult';
+    if (age < 40) return 'Adult';
+    if (age < 60) return 'Middle Age';
     return 'Senior';
   }
 }

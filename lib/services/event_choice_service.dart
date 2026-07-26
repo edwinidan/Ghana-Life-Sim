@@ -1,6 +1,8 @@
 import '../models/character.dart';
 import '../models/event.dart';
 import 'career_service.dart';
+import '../data/illnesses.dart';
+import '../domain/services/illness_progression_service.dart';
 
 class EventChoiceService {
   static void applyChoice(Character character, EventChoice choice) {
@@ -9,6 +11,10 @@ class EventChoiceService {
     if (choice.illnessToAdd != null &&
         !character.activeIllnesses.contains(choice.illnessToAdd)) {
       character.activeIllnesses.add(choice.illnessToAdd!);
+      const IllnessProgressionService().diagnose(
+        character,
+        illnessIdForLegacyName(choice.illnessToAdd!),
+      );
     }
     if (choice.careerToSet != null) {
       CareerService.enterCareer(character, choice.careerToSet!);
@@ -20,7 +26,11 @@ class EventChoiceService {
       character.housingStatus = choice.housingStatusToSet!;
     }
     if (choice.flagToAdd != null) {
-      character.addFlag(choice.flagToAdd!);
+      if (choice.flagDurationYears != null) {
+        character.addTimedFlag(choice.flagToAdd!, choice.flagDurationYears!);
+      } else {
+        character.addFlag(choice.flagToAdd!);
+      }
     }
     if (choice.flagToRemove != null) {
       character.removeFlag(choice.flagToRemove!);
