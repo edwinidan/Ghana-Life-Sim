@@ -374,6 +374,23 @@ Can be built in parallel with Phase 6.
 
 ---
 
+## Phase 8.5 — Life-Path Completion and Balance ✅
+
+- [x] DONE — Added education specializations and split Nursing, Teacher Training, Technical University, and five university fields
+- [x] DONE — Added six selectable NSS placement sectors with connections, reputation, and retention advantages
+- [x] DONE — Added Commerce and Sports & Media career paths with three progression levels each
+- [x] DONE — Added ten dedicated Commerce and Sports & Media career events
+- [x] DONE — Job listings now show locked paths and exact missing education, specialization, age, enrollment, and stat requirements
+- [x] DONE — Added annual job performance, tenure, work-hard action, reviews, raises, promotion, dismissal, redundancy, retirement, and pensions
+- [x] DONE — Added schema-v4 fields and migration inference for existing graduates and established careers
+- [x] DONE — Fixed graduates being able to re-enrol in Primary School and overwrite higher qualifications
+- [x] DONE — Added education financing plus merit-based fee support and tuned the headless career strategy
+- [x] DONE — Final validation: clean analysis, 39 passing tests, and 10,000 simulated lives with all nine careers reached and 0% stuck progression
+
+Detailed report: `docs/CAREER_PATH_COMPLETION_REPORT.md`
+
+---
+
 ## Phase 9 — Monetization Integration
 
 Do not start this phase until Phase 7 is complete and the game loop is solid. Monetization on a broken game is wasted effort.
@@ -519,6 +536,6 @@ lib/
 
 ## What To Do Next
 
-Phase 8 — UI Polish is complete.
-The next incomplete task is Phase 9 — Monetization Integration.
-Do not start Phase 9 until the game loop has been tested on device and feels solid.
+Phase 8.5 — Life-Path Completion and Balance is complete.
+The next task is physical-device gameplay and accessibility QA, especially the complete school → NSS → job → retirement loop.
+Do not start Phase 9 monetization until that device pass confirms the expanded game loop feels solid.

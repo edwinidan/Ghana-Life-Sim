@@ -35,6 +35,65 @@ class CareerService {
     return (random ?? Random()).nextDouble() < 0.40;
   }
 
+  static bool qualifiesForPromotion(Character character) {
+    if (character.careerPath == 'None' || character.careerLevel >= 3) {
+      return false;
+    }
+    final career = getCareerData(character);
+    if (career == null || character.careerLevel >= career.levels.length) {
+      return false;
+    }
+    final nextLevel = career.levels[character.careerLevel];
+    return nextLevel.statRequirements.entries.every(
+      (entry) => _getStat(character, entry.key) >= entry.value,
+    );
+  }
+
+  static CareerYearResult progressEmployment(
+    Character character, {
+    Random? random,
+  }) {
+    if (character.careerPath == 'None' ||
+        character.employmentStatus == 'Retired') {
+      return CareerYearResult.none;
+    }
+    final rng = random ?? Random();
+    character.employmentStatus = 'Employed';
+    character.yearsInCareer++;
+    final skillSignal =
+        (character.discipline + character.smarts + character.reputation) ~/ 3;
+    final drift = skillSignal >= 65
+        ? 5
+        : skillSignal < 38
+        ? -7
+        : 1;
+    character.jobPerformance =
+        (character.jobPerformance + drift + rng.nextInt(9) - 4).clamp(0, 100);
+
+    if (character.age >= 67) {
+      retire(character);
+      return CareerYearResult.retired;
+    }
+    if (character.jobPerformance <= 20 && rng.nextDouble() < 0.30) {
+      _dismiss(
+        character,
+        'You were dismissed after a difficult performance review.',
+      );
+      return CareerYearResult.dismissed;
+    }
+    if (rng.nextDouble() < 0.015) {
+      _dismiss(character, 'Your role was made redundant during restructuring.');
+      return CareerYearResult.redundant;
+    }
+    if (character.jobPerformance >= 62 &&
+        qualifiesForPromotion(character) &&
+        rng.nextDouble() < 0.32) {
+      applyPromotion(character);
+      return CareerYearResult.promoted;
+    }
+    return CareerYearResult.continued;
+  }
+
   /// Applies a promotion: increments careerLevel, syncs income, adds a lifeLog entry.
   static void applyPromotion(Character character) {
     character.careerLevel++;
@@ -65,6 +124,10 @@ class CareerService {
   static void enterCareer(Character character, String careerName) {
     character.careerPath = careerName;
     character.careerLevel = 1;
+    character.employmentStatus = 'Employed';
+    character.jobPerformance = 55;
+    character.yearsInCareer = 0;
+    character.careerSalaryBonusPercent = 0;
     syncIncome(character);
 
     final career = getCareerData(character);
@@ -91,14 +154,51 @@ class CareerService {
 
   /// Syncs monthlyIncome to match current careerPath + careerLevel.
   static void syncIncome(Character character) {
+    if (character.employmentStatus == 'Retired') {
+      character.monthlyIncome = character.monthlyPension;
+      return;
+    }
     if (character.careerPath == 'None' || character.careerLevel < 1) {
       character.monthlyIncome = 0;
       return;
     }
     final career = getCareerData(character);
     if (career != null && character.careerLevel <= career.levels.length) {
-      character.monthlyIncome = career.levels[character.careerLevel - 1].salary;
+      final base = career.levels[character.careerLevel - 1].salary;
+      character.monthlyIncome =
+          (base * (100 + character.careerSalaryBonusPercent) / 100).round();
     }
+  }
+
+  static void retire(Character character) {
+    final career = getCareerData(character);
+    if (career == null) return;
+    final finalSalary = career.levels[character.careerLevel - 1].salary;
+    character.monthlyPension = (finalSalary * 0.38).round();
+    character.retiredCareerPath = character.careerPath;
+    character.employmentStatus = 'Retired';
+    character.monthlyIncome = character.monthlyPension;
+    character.lifeLog.insert(
+      0,
+      'Age ${character.age}: You retired from ${character.careerPath} with a pension of GHS ${character.monthlyPension}/month. 🌅',
+    );
+  }
+
+  static void _dismiss(Character character, String message) {
+    final formerCareer = character.careerPath;
+    character.careerPath = 'None';
+    character.careerLevel = 0;
+    character.monthlyIncome = 0;
+    character.employmentStatus = 'Unemployed';
+    character.jobPerformance = 50;
+    character.yearsInCareer = 0;
+    character.careerSalaryBonusPercent = 0;
+    character.adjustStat('happiness', -8);
+    character.adjustStat('reputation', -3);
+    character.lifeLog.insert(
+      0,
+      'Age ${character.age}: $message Your $formerCareer chapter ended. 💼',
+    );
   }
 
   static int _getStat(Character c, String stat) {
@@ -125,4 +225,13 @@ class CareerService {
         return 0;
     }
   }
+}
+
+enum CareerYearResult {
+  none,
+  continued,
+  promoted,
+  dismissed,
+  redundant,
+  retired,
 }

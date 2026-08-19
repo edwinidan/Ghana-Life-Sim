@@ -21,7 +21,7 @@ enum LifeStage {
 }
 
 abstract final class SimulationConfig {
-  static const currentSaveSchemaVersion = 3;
+  static const currentSaveSchemaVersion = 4;
   static const debtInterestRate = 0.08;
   static const maxMajorDecisionsPerYear = 2;
 

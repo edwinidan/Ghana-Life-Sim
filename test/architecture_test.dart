@@ -16,6 +16,7 @@ import 'package:ghana_life_sim/domain/services/event_catalog_validator.dart';
 import 'package:ghana_life_sim/domain/use_cases/age_up_use_case.dart';
 import 'package:ghana_life_sim/models/character.dart';
 import 'package:ghana_life_sim/models/event.dart';
+import 'package:ghana_life_sim/app/config/simulation_config.dart';
 
 void main() {
   const timelineRepository = TimelineRepository();
@@ -48,7 +49,7 @@ void main() {
     expect(character.lifeSeed, isNonZero);
     expect(character.birthYear, isNonZero);
     expect(character.originSummary, isNotEmpty);
-    expect(character.schemaVersion, 3);
+    expect(character.schemaVersion, SimulationConfig.currentSaveSchemaVersion);
     expect(
       timelineRepository.read(character).single.type,
       TimelineEntryType.birth,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/character.dart';
-import '../data/careers.dart';
 import '../data/side_gigs.dart';
 import '../services/career_service.dart';
 import '../services/job_service.dart';
@@ -17,7 +16,7 @@ class JobScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final availableJobs = JobService.getAvailableJobs(character);
+    final jobListings = JobService.getJobListings(character);
     final availableGigs = JobService.getAvailableSideGigs(character);
 
     return Scaffold(
@@ -52,13 +51,13 @@ class JobScreen extends StatelessWidget {
           if (character.careerPath == 'None') ...[
             _buildSectionHeader('Job Listings'),
             const SizedBox(height: 10.8),
-            if (availableJobs.isEmpty)
+            if (jobListings.isEmpty)
               _buildInfoCard(
                 'No listings right now',
                 'No job listings match your qualifications right now. Study more or build your stats.',
               )
             else
-              ...availableJobs.map((job) => _buildJobCard(context, job)),
+              ...jobListings.map((job) => _buildJobCard(context, job)),
             const SizedBox(height: 21.6),
           ],
 
@@ -168,29 +167,91 @@ class JobScreen extends StatelessWidget {
               color: Color(0xFF009688),
             ),
           ),
+          const SizedBox(height: 7.2),
+          Text(
+            character.employmentStatus == 'Retired'
+                ? 'Retired · Pension income'
+                : 'Performance ${character.jobPerformance}/100 · ${character.yearsInCareer} years in this path',
+            style: const TextStyle(fontSize: 10.8, color: Color(0xFF757575)),
+          ),
+          if (character.employmentStatus != 'Retired') ...[
+            const SizedBox(height: 10.8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: character.actionEnergy > 0
+                        ? () {
+                            JobService.workHard(character);
+                            onCharacterUpdated();
+                          }
+                        : null,
+                    child: const Text('Work Hard'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: character.lastCareerReviewAge == character.age
+                        ? null
+                        : () {
+                            final result = JobService.requestCareerReview(
+                              character,
+                            );
+                            onCharacterUpdated();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(_reviewMessage(result))),
+                            );
+                          },
+                    child: const Text('Request Review'),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 12.6),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => _confirmQuitJob(context),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-                padding: const EdgeInsets.symmetric(vertical: 10.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(9.7),
+          if (character.employmentStatus != 'Retired')
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => _confirmQuitJob(context),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  side: const BorderSide(color: Colors.red),
+                  padding: const EdgeInsets.symmetric(vertical: 10.8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9.7),
+                  ),
+                ),
+                child: const Text(
+                  'Quit Job',
+                  style: TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
-              child: const Text(
-                'Quit Job',
-                style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          if (character.age >= 60 && character.employmentStatus != 'Retired')
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  JobService.retire(character);
+                  onCharacterUpdated();
+                },
+                child: const Text('Retire with pension'),
               ),
             ),
-          ),
         ],
       ),
     );
   }
+
+  String _reviewMessage(CareerReviewResult result) => switch (result) {
+    CareerReviewResult.promoted => 'Promotion approved. Congratulations! 🎉',
+    CareerReviewResult.raise => 'Your manager approved a 5% raise. 📈',
+    CareerReviewResult.declined => 'No promotion or raise this time.',
+    CareerReviewResult.unavailable =>
+      'You already requested a review this year.',
+  };
 
   void _confirmQuitJob(BuildContext context) {
     showDialog(
@@ -232,7 +293,8 @@ class JobScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildJobCard(BuildContext context, CareerData career) {
+  Widget _buildJobCard(BuildContext context, JobEligibility listing) {
+    final career = listing.career;
     final entry = career.levels[0];
     final topReq = entry.statRequirements.isNotEmpty
         ? entry.statRequirements.entries.reduce(
@@ -272,6 +334,16 @@ class JobScreen extends StatelessWidget {
               career.name,
               style: const TextStyle(fontSize: 10.8, color: Color(0xFF9E9E9E)),
             ),
+            if (career.summary.isNotEmpty) ...[
+              const SizedBox(height: 3.6),
+              Text(
+                career.summary,
+                style: const TextStyle(
+                  fontSize: 10.8,
+                  color: Color(0xFF757575),
+                ),
+              ),
+            ],
             const SizedBox(height: 7.2),
             Row(
               children: [
@@ -296,28 +368,50 @@ class JobScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12.6),
+            if (!listing.isEligible) ...[
+              ...listing.reasons
+                  .take(3)
+                  .map(
+                    (reason) => Padding(
+                      padding: const EdgeInsets.only(bottom: 3.6),
+                      child: Text(
+                        '🔒 $reason',
+                        style: const TextStyle(
+                          fontSize: 10.8,
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                    ),
+                  ),
+              const SizedBox(height: 7.2),
+            ],
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  final success = JobService.applyForJob(character, career);
-                  onCharacterUpdated();
-                  final msg = success
-                      ? 'You got the job! Welcome to ${career.name}. 🎉'
-                      : 'They said no. Ghana is hard. 😔';
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(msg),
-                      backgroundColor: success
-                          ? const Color(0xFF009688)
-                          : Colors.grey[700],
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.1),
-                      ),
-                    ),
-                  );
-                },
+                onPressed: listing.isEligible
+                    ? () {
+                        final success = JobService.applyForJob(
+                          character,
+                          career,
+                        );
+                        onCharacterUpdated();
+                        final msg = success
+                            ? 'You got the job! Welcome to ${career.name}. 🎉'
+                            : 'They said no. Ghana is hard. 😔';
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(msg),
+                            backgroundColor: success
+                                ? const Color(0xFF009688)
+                                : Colors.grey[700],
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.1),
+                            ),
+                          ),
+                        );
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFB39DDB),
                   foregroundColor: Colors.white,
@@ -327,9 +421,12 @@ class JobScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(9.7),
                   ),
                 ),
-                child: const Text(
-                  'Apply',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.6),
+                child: Text(
+                  listing.isEligible ? 'Apply' : 'Locked',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12.6,
+                  ),
                 ),
               ),
             ),

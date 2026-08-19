@@ -157,7 +157,7 @@ class SchoolScreen extends StatelessWidget {
           const SizedBox(height: 5.4),
           if (program.costPerYear > 0)
             Text(
-              'Cost: ${program.costPerYear} money/year',
+              'Cost: GHS ${_formatCash(SchoolService.programYearlyCashCost(program, character: character))}/year after aid',
               style: const TextStyle(fontSize: 10.8, color: Color(0xFF9E9E9E)),
             ),
         ],
@@ -166,7 +166,8 @@ class SchoolScreen extends StatelessWidget {
   }
 
   Widget _buildLevelBadge() {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.6, vertical: 7.2),
@@ -178,21 +179,34 @@ class SchoolScreen extends StatelessWidget {
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.school, size: 14.4, color: Color(0xFF5E35B1)),
               const SizedBox(width: 7.2),
-              Text(
-                'Current Level: ${character.educationLevel} ✅',
-                style: const TextStyle(
-                  color: Color(0xFF5E35B1),
-                  fontSize: 11.7,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  'Current Level: ${character.educationLevel}'
+                  '${character.educationSpecialization.isEmpty ? '' : ' · ${character.educationSpecialization}'} ✅',
+                  style: const TextStyle(
+                    color: Color(0xFF5E35B1),
+                    fontSize: 11.7,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
           ),
         ),
+        if (character.nssPlacement.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            'NSS placement: ${character.nssPlacement}',
+            style: const TextStyle(
+              color: Color(0xFF00695C),
+              fontSize: 10.8,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -270,7 +284,7 @@ class SchoolScreen extends StatelessWidget {
                   '💰 Cost/year',
                   program.costPerYear == 0
                       ? 'Free'
-                      : 'GHS ${_formatCash(SchoolService.programYearlyCashCost(program))}',
+                      : 'GHS ${_formatCash(SchoolService.programYearlyCashCost(program, character: character))}',
                 ),
               ],
             ),

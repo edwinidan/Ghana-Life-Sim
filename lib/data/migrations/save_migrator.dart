@@ -14,6 +14,38 @@ class SaveMigrator {
   bool migrate(Character character) {
     var changed = false;
 
+    if (character.schemaVersion < 4) {
+      if (character.educationSpecialization.isEmpty) {
+        final inferred = switch (character.careerPath) {
+          'Healthcare' => 'Health Sciences',
+          'Education' => 'Education',
+          'Tech' => 'Engineering & Technology',
+          'Commerce' => 'Business & Administration',
+          'Sports & Media' || 'Entertainment' => 'Arts, Media & Sport',
+          _ when character.educationLevel == 'Vocational' => 'Technical Trade',
+          _
+              when character.educationLevel == 'University' ||
+                  character.educationLevel == 'Tertiary Diploma' =>
+            'General Studies',
+          _ => '',
+        };
+        character.educationSpecialization = inferred;
+        if ((character.educationLevel == 'University' ||
+                character.educationLevel == 'Tertiary Diploma' ||
+                character.enrolledIn == 'University' ||
+                character.enrolledIn == 'Nursing / Teacher Training College') &&
+            character.careerPath == 'None') {
+          character.addFlag('legacy_broad_degree');
+        }
+        changed = true;
+      }
+      if (character.careerPath != 'None') {
+        character.employmentStatus = 'Employed';
+        character.jobPerformance = 55;
+        changed = true;
+      }
+    }
+
     if (character.lifeSeed == 0) {
       character.lifeSeed =
           character.name.codeUnits.fold<int>(

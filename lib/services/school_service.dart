@@ -8,13 +8,20 @@ class SchoolService {
   static List<EducationProgram> getAvailablePrograms(Character character) {
     if (character.isEnrolled) return [];
     return allPrograms.where((p) {
+      if (p.legacyOnly) return false;
       if (character.age < p.minAge) return false;
       if (!p.accepts(character.educationLevel)) return false;
       if (character.smarts < p.smartsRequired) return false;
-      if (programYearlyCashCost(p) > character.cash) return false;
+      // Players may finance fees through the existing annual education-debt
+      // flow. Requiring a full year's cash here made tertiary paths disappear.
       // Don't show programs for levels already achieved
       if (character.educationLevel == p.levelGranted) return false;
       if (p.completionFlag != null && character.hasFlag(p.completionFlag!)) {
+        return false;
+      }
+      if (!p.preservesEducationLevel &&
+          _educationRank(p.levelGranted) <=
+              _educationRank(character.educationLevel)) {
         return false;
       }
       return true;
@@ -41,7 +48,7 @@ class SchoolService {
     }
 
     // Deduct cost
-    final yearlyCost = programYearlyCashCost(program);
+    final yearlyCost = programYearlyCashCost(program, character: character);
     if (yearlyCost > 0) {
       if (character.cash >= yearlyCost) {
         character.adjustCash(-yearlyCost);
@@ -65,6 +72,18 @@ class SchoolService {
       // Graduation!
       if (!program.preservesEducationLevel) {
         character.educationLevel = program.levelGranted;
+      }
+      if (program.specializationGranted.isNotEmpty) {
+        character.educationSpecialization = program.specializationGranted;
+      }
+      if (program.nssPlacementGranted.isNotEmpty) {
+        character.nssPlacement = program.nssPlacementGranted;
+        character.adjustStat('connections', 6);
+        character.adjustStat('reputation', 3);
+        final retentionPath = _retentionCareerFor(program.nssPlacementGranted);
+        if (retentionPath.isNotEmpty) {
+          character.addFlag('nss_retention_$retentionPath');
+        }
       }
       if (program.completionFlag != null) {
         character.addFlag(program.completionFlag!);
@@ -107,7 +126,35 @@ class SchoolService {
     }
   }
 
-  static int programYearlyCashCost(EducationProgram program) {
-    return program.costPerYear * feeUnit;
+  static int programYearlyCashCost(
+    EducationProgram program, {
+    Character? character,
+  }) {
+    final baseCost = program.costPerYear * feeUnit;
+    if (character == null || baseCost == 0) return baseCost;
+    if (character.smarts >= 80) return (baseCost * 0.2).round();
+    if (character.smarts >= 65) return (baseCost * 0.5).round();
+    return baseCost;
   }
+
+  static String _retentionCareerFor(String placement) {
+    return switch (placement) {
+      'Health Service' => 'Healthcare',
+      'Education Service' => 'Education',
+      'Digital & Engineering' => 'Tech',
+      'Private Enterprise' => 'Commerce',
+      'Media & Sports Development' => 'Sports & Media',
+      'Public Administration' => 'Civil Service',
+      _ => '',
+    };
+  }
+
+  static int _educationRank(String level) => switch (level) {
+    'Primary' => 1,
+    'JHS' => 2,
+    'SHS' || 'Vocational' => 3,
+    'Tertiary Diploma' => 4,
+    'University' => 5,
+    _ => 0,
+  };
 }

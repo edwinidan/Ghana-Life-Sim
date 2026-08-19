@@ -84,7 +84,7 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..completedLifeGoalIds =
           fields[56] == null ? [] : (fields[56] as List).cast<String>()
       ..deathRewardsRecorded = fields[57] == null ? false : fields[57] as bool
-      ..schemaVersion = fields[58] == null ? 3 : fields[58] as int
+      ..schemaVersion = fields[58] == null ? 4 : fields[58] as int
       ..lifeSeed = fields[59] == null ? 0 : fields[59] as int
       ..eventHistory =
           fields[60] == null ? [] : (fields[60] as List).cast<String>()
@@ -109,13 +109,23 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..consequenceRecords =
           fields[71] == null ? [] : (fields[71] as List).cast<String>()
       ..pendingDecisionIds =
-          fields[72] == null ? [] : (fields[72] as List).cast<String>();
+          fields[72] == null ? [] : (fields[72] as List).cast<String>()
+      ..educationSpecialization = fields[73] == null ? '' : fields[73] as String
+      ..nssPlacement = fields[74] == null ? '' : fields[74] as String
+      ..employmentStatus =
+          fields[75] == null ? 'Unemployed' : fields[75] as String
+      ..jobPerformance = fields[76] == null ? 50 : fields[76] as int
+      ..yearsInCareer = fields[77] == null ? 0 : fields[77] as int
+      ..careerSalaryBonusPercent = fields[78] == null ? 0 : fields[78] as int
+      ..lastCareerReviewAge = fields[79] == null ? -1 : fields[79] as int
+      ..retiredCareerPath = fields[80] == null ? '' : fields[80] as String
+      ..monthlyPension = fields[81] == null ? 0 : fields[81] as int;
   }
 
   @override
   void write(BinaryWriter writer, Character obj) {
     writer
-      ..writeByte(73)
+      ..writeByte(82)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -261,7 +271,25 @@ class CharacterAdapter extends TypeAdapter<Character> {
       ..writeByte(71)
       ..write(obj.consequenceRecords)
       ..writeByte(72)
-      ..write(obj.pendingDecisionIds);
+      ..write(obj.pendingDecisionIds)
+      ..writeByte(73)
+      ..write(obj.educationSpecialization)
+      ..writeByte(74)
+      ..write(obj.nssPlacement)
+      ..writeByte(75)
+      ..write(obj.employmentStatus)
+      ..writeByte(76)
+      ..write(obj.jobPerformance)
+      ..writeByte(77)
+      ..write(obj.yearsInCareer)
+      ..writeByte(78)
+      ..write(obj.careerSalaryBonusPercent)
+      ..writeByte(79)
+      ..write(obj.lastCareerReviewAge)
+      ..writeByte(80)
+      ..write(obj.retiredCareerPath)
+      ..writeByte(81)
+      ..write(obj.monthlyPension);
   }
 
   @override

@@ -6,6 +6,7 @@ import 'ghana_events.dart';
 import 'rare_events.dart';
 import 'senior_events.dart';
 import 'career_events.dart';
+import 'career_expansion_events.dart';
 import 'relationship_events.dart';
 import 'doing_events.dart';
 import 'health_events.dart';
@@ -22,6 +23,7 @@ final List<LifeEvent> allEvents = [
   ...rareEvents,
   ...careerEntryEvents,
   ...careerSpecificEvents,
+  ...careerExpansionEvents,
   ...relationshipEvents,
   ...doingEvents,
   ...healthEvents,

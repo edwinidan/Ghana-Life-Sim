@@ -10,6 +10,8 @@ import 'package:ghana_life_sim/domain/repositories/financial_ledger_repository.d
 import 'package:ghana_life_sim/domain/repositories/timeline_repository.dart';
 import 'package:ghana_life_sim/domain/services/event_selection_service.dart';
 import 'package:ghana_life_sim/domain/use_cases/age_up_use_case.dart';
+import 'package:ghana_life_sim/data/careers.dart';
+import 'package:ghana_life_sim/data/education.dart';
 import 'package:ghana_life_sim/models/character.dart';
 import 'package:ghana_life_sim/models/event.dart';
 import 'package:ghana_life_sim/services/business_service.dart';
@@ -66,6 +68,7 @@ class _BalanceRunner {
   final _causes = <String, int>{};
   final _education = <String, int>{};
   final _careers = <String, int>{};
+  final _careerEntries = <String, int>{};
   final _strategyDeaths = <String, List<int>>{};
   final _strategyCash = <String, List<int>>{};
   final _genderAges = <String, List<int>>{};
@@ -107,6 +110,7 @@ class _BalanceRunner {
       'causesOfDeath': _sortedMap(_causes),
       'educationOutcomes': _sortedMap(_education),
       'careerOutcomes': _sortedMap(_careers),
+      'everCareerOutcomes': _sortedMap(_careerEntries),
       'nssCompletionRate': nssCompleted / lifeCount,
       'everEmployedRate': everEmployed / lifeCount,
       'businessStartRate': businessStarted / lifeCount,
@@ -154,6 +158,7 @@ class _BalanceRunner {
     var noDecisionYears = 0;
     var recoveredDebt = false;
     final seenEvents = <String>{};
+    final seenCareerPaths = <String>{};
     final previousBusinessStatuses = <String, BusinessStatus>{};
 
     while (!character.isDead && character.age < 110) {
@@ -166,6 +171,7 @@ class _BalanceRunner {
       final stage = character.lifeStage;
       _stageYears.update(stage, (count) => count + 1, ifAbsent: () => 1);
       if (character.careerPath != 'None') {
+        seenCareerPaths.add(character.careerPath);
         _employmentYears.update(stage, (count) => count + 1, ifAbsent: () => 1);
       }
       if (debtBefore > 0 && character.debt == 0) recoveredDebt = true;
@@ -235,6 +241,9 @@ class _BalanceRunner {
       (count) => count + 1,
       ifAbsent: () => 1,
     );
+    for (final path in seenCareerPaths) {
+      _careerEntries.update(path, (count) => count + 1, ifAbsent: () => 1);
+    }
     if (character.hasFlag('nss_completed')) nssCompleted++;
     if (hadJob) everEmployed++;
     if (hadBusiness) businessStarted++;
@@ -292,6 +301,18 @@ class _BalanceRunner {
     SimulationStrategy strategy,
     Random random,
   ) {
+    if ((strategy == SimulationStrategy.career ||
+            strategy == SimulationStrategy.education) &&
+        character.actionEnergy > 0) {
+      if (character.careerPath != 'None') {
+        JobService.workHard(character);
+      } else {
+        final study = ActivityService.options.firstWhere(
+          (option) => option.id == 'study',
+        );
+        ActivityService.performActivity(character, study);
+      }
+    }
     if (strategy != SimulationStrategy.passive &&
         character.debt > 0 &&
         character.cash >= 500 &&
@@ -307,8 +328,10 @@ class _BalanceRunner {
           (strategy == SimulationStrategy.education ||
               strategy == SimulationStrategy.career ||
               random.nextDouble() < 0.45)) {
-        final selected = strategy == SimulationStrategy.education
-            ? programmes.last
+        final selected = strategy == SimulationStrategy.career
+            ? _careerProgramme(character, programmes)
+            : strategy == SimulationStrategy.education
+            ? programmes[random.nextInt(programmes.length)]
             : programmes[random.nextInt(programmes.length)];
         SchoolService.enroll(character, selected);
       }
@@ -324,8 +347,15 @@ class _BalanceRunner {
           (strategy == SimulationStrategy.career ||
               random.nextDouble() < 0.35)) {
         final selected = strategy == SimulationStrategy.career
-            ? jobs[(character.lifeSeed ~/ SimulationStrategy.values.length) %
-                  jobs.length]
+            ? jobs.firstWhere(
+                (career) =>
+                    career.name ==
+                    allCareers[(character.lifeSeed ~/
+                                SimulationStrategy.values.length) %
+                            allCareers.length]
+                        .name,
+                orElse: () => jobs[random.nextInt(jobs.length)],
+              )
             : jobs[random.nextInt(jobs.length)];
         JobService.applyForJob(character, selected, random: random);
       }
@@ -384,6 +414,49 @@ class _BalanceRunner {
         character.adjustDebt(350);
       }
     }
+  }
+
+  EducationProgram _careerProgramme(
+    Character character,
+    List<EducationProgram> programmes,
+  ) {
+    final target =
+        allCareers[(character.lifeSeed ~/ SimulationStrategy.values.length) %
+                allCareers.length]
+            .name;
+    final preferredIds = switch (target) {
+      'Healthcare' => [
+        'nss_health',
+        'university_health',
+        'nursing_training',
+        'shs',
+      ],
+      'Education' => [
+        'nss_education',
+        'university_education',
+        'teacher_training',
+        'shs',
+      ],
+      'Tech' => [
+        'nss_technology',
+        'university_technology',
+        'technical_university',
+        'shs',
+        'tvet',
+      ],
+      'Commerce' => ['nss_private', 'university_business', 'shs'],
+      'Sports & Media' ||
+      'Entertainment' => ['nss_media', 'university_media', 'shs'],
+      'Civil Service' => ['nss_public', 'university_business', 'shs'],
+      'Trade' => ['tvet', 'apprenticeship', 'shs'],
+      _ => ['shs'],
+    };
+    for (final id in preferredIds) {
+      for (final programme in programmes) {
+        if (programme.id == id) return programme;
+      }
+    }
+    return programmes.first;
   }
 
   EventChoice _choose(
@@ -546,6 +619,10 @@ String _markdown(Map<String, Object> report) {
 ## Career outcomes
 
 `${jsonEncode(report['careerOutcomes'])}`
+
+## Ever entered career paths
+
+`${jsonEncode(report['everCareerOutcomes'])}`
 
 ## Death causes
 

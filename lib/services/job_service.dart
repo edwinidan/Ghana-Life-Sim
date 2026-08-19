@@ -4,19 +4,61 @@ import '../data/careers.dart';
 import '../data/side_gigs.dart';
 import 'career_service.dart';
 
+class JobEligibility {
+  const JobEligibility({required this.career, required this.reasons});
+
+  final CareerData career;
+  final List<String> reasons;
+  bool get isEligible => reasons.isEmpty;
+}
+
 class JobService {
   static final _rng = Random();
 
   /// Returns all career entry-level jobs the character can apply for right now.
   static List<CareerData> getAvailableJobs(Character character) {
-    if (character.careerPath != 'None') return [];
-    return allCareers.where((career) {
-      if (!_meetsEducationGate(character, career.name)) return false;
+    return getJobListings(character)
+        .where((listing) => listing.isEligible)
+        .map((listing) => listing.career)
+        .toList();
+  }
+
+  static List<JobEligibility> getJobListings(Character character) {
+    if (character.careerPath != 'None' ||
+        character.employmentStatus == 'Retired') {
+      return [];
+    }
+    return allCareers.map((career) {
+      final reasons = <String>[];
+      if (character.age < 18) reasons.add('You must be at least 18.');
+      if (character.isEnrolled) {
+        reasons.add('Finish your current programme first.');
+      }
+      if (career.acceptedEducationLevels.isNotEmpty &&
+          !career.acceptedEducationLevels.contains(character.educationLevel)) {
+        reasons.add(
+          'Requires ${career.acceptedEducationLevels.join(' or ')} education.',
+        );
+      }
+      if (career.acceptedSpecializations.isNotEmpty &&
+          !character.hasFlag('legacy_broad_degree') &&
+          !career.acceptedSpecializations.contains(
+            character.educationSpecialization,
+          )) {
+        reasons.add(
+          'Requires ${career.acceptedSpecializations.join(' or ')} training.',
+        );
+      }
       final entryReqs = career.levels[0].statRequirements;
       for (final entry in entryReqs.entries) {
-        if (_getStat(character, entry.key) < entry.value) return false;
+        final actual = _getStat(character, entry.key);
+        if (actual < entry.value) {
+          reasons.add(
+            '${_label(entry.key)} needs ${entry.value} (now $actual).',
+          );
+        }
       }
-      return true;
+      return JobEligibility(career: career, reasons: reasons);
     }).toList();
   }
 
@@ -42,16 +84,26 @@ class JobService {
     CareerData career, {
     Random? random,
   }) {
+    final listing = getJobListings(
+      character,
+    ).where((item) => item.career.name == career.name).firstOrNull;
+    if (listing == null || !listing.isEligible) return false;
     final entryReqs = career.levels[0].statRequirements;
     int statDelta = 0;
     if (entryReqs.isNotEmpty) {
       final firstEntry = entryReqs.entries.first;
       statDelta = _getStat(character, firstEntry.key) - firstEntry.value;
     }
-    final successChance = (0.60 + statDelta * 0.01).clamp(0.1, 0.95);
+    final nssBoost = character.hasFlag('nss_retention_${career.name}')
+        ? 0.25
+        : character.hasFlag('nss_completed')
+        ? 0.08
+        : 0.0;
+    final successChance = (0.60 + statDelta * 0.01 + nssBoost).clamp(0.1, 0.98);
 
     if ((random ?? _rng).nextDouble() < successChance) {
       CareerService.enterCareer(character, career.name);
+      character.removeFlag('nss_retention_${career.name}');
       return true;
     } else {
       character.lifeLog.insert(
@@ -88,6 +140,10 @@ class JobService {
     character.careerPath = 'None';
     character.careerLevel = 0;
     character.monthlyIncome = 0;
+    character.employmentStatus = 'Unemployed';
+    character.jobPerformance = 50;
+    character.yearsInCareer = 0;
+    character.careerSalaryBonusPercent = 0;
     character.lifeLog.insert(
       0,
       'Age ${character.age}: Left the $oldCareer job. Bold move. Let\'s see how this plays out. 🚪',
@@ -105,33 +161,59 @@ class JobService {
     character.sideGigIncome = total;
   }
 
-  static bool _meetsEducationGate(Character character, String careerName) {
-    final level = character.educationLevel;
-    final hasSHS =
-        level == 'SHS' || level == 'Tertiary Diploma' || level == 'University';
-    final hasUniOrVoc =
-        level == 'University' ||
-        level == 'Tertiary Diploma' ||
-        level == 'Vocational';
-    final hasHealthcareTraining =
-        level == 'University' || level == 'Tertiary Diploma';
-
-    switch (careerName) {
-      case 'Hustle':
-      case 'Trade':
-      case 'Entertainment':
-        return true;
-      case 'Civil Service':
-      case 'Education':
-        return hasSHS;
-      case 'Tech':
-        return hasUniOrVoc;
-      case 'Healthcare':
-        return hasHealthcareTraining;
-      default:
-        return true;
+  static bool workHard(Character character) {
+    if (character.careerPath == 'None' || !character.consumeActionEnergy()) {
+      return false;
     }
+    character.jobPerformance = (character.jobPerformance + 12).clamp(0, 100);
+    character.adjustStat('discipline', 2);
+    character.adjustStat('happiness', -2);
+    character.lifeLog.insert(
+      0,
+      'Age ${character.age}: You put extra effort into work. Your performance improved. 💪',
+    );
+    return true;
   }
+
+  static CareerReviewResult requestCareerReview(
+    Character character, {
+    Random? random,
+  }) {
+    if (character.careerPath == 'None' ||
+        character.lastCareerReviewAge == character.age) {
+      return CareerReviewResult.unavailable;
+    }
+    character.lastCareerReviewAge = character.age;
+    if (CareerService.qualifiesForPromotion(character) &&
+        character.jobPerformance >= 65) {
+      CareerService.applyPromotion(character);
+      return CareerReviewResult.promoted;
+    }
+    final chance = (0.25 + character.jobPerformance / 200).clamp(0.25, 0.75);
+    if ((random ?? _rng).nextDouble() < chance) {
+      character.careerSalaryBonusPercent =
+          (character.careerSalaryBonusPercent + 5).clamp(0, 25);
+      CareerService.syncIncome(character);
+      character.lifeLog.insert(
+        0,
+        'Age ${character.age}: Your review earned you a 5% raise. 📈',
+      );
+      return CareerReviewResult.raise;
+    }
+    character.adjustStat('happiness', -1);
+    return CareerReviewResult.declined;
+  }
+
+  static bool retire(Character character) {
+    if (character.careerPath == 'None' || character.age < 60) return false;
+    CareerService.retire(character);
+    return true;
+  }
+
+  static String _label(String value) => switch (value) {
+    'streetSense' => 'Street sense',
+    _ => '${value[0].toUpperCase()}${value.substring(1)}',
+  };
 
   static int _getStat(Character c, String stat) {
     switch (stat) {
@@ -158,3 +240,5 @@ class JobService {
     }
   }
 }
+
+enum CareerReviewResult { unavailable, promoted, raise, declined }

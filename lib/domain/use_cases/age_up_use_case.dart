@@ -106,9 +106,7 @@ class AgeUpUseCase {
         'education',
       );
     }
-    if (CareerService.checkPromotion(character, random: random)) {
-      CareerService.applyPromotion(character);
-    }
+    CareerService.progressEmployment(character, random: random);
 
     final employmentIncome = character.monthlyIncome * 12;
     final sideGigIncome = character.sideGigIncome * 12;
@@ -120,7 +118,9 @@ class AgeUpUseCase {
           category: TransactionCategory.employmentIncome,
           amount: employmentIncome,
           age: character.age,
-          description: 'Employment income',
+          description: character.employmentStatus == 'Retired'
+              ? 'Retirement pension'
+              : 'Employment income',
           sourceId: character.careerPath,
         ),
       );

@@ -132,7 +132,7 @@ class Character extends HiveObject {
   List<String> completedLifeGoalIds;
   @HiveField(57, defaultValue: false)
   bool deathRewardsRecorded;
-  @HiveField(58, defaultValue: 3)
+  @HiveField(58, defaultValue: 4)
   int schemaVersion;
   @HiveField(59, defaultValue: 0)
   int lifeSeed;
@@ -162,6 +162,25 @@ class Character extends HiveObject {
   List<String> consequenceRecords;
   @HiveField(72, defaultValue: [])
   List<String> pendingDecisionIds;
+
+  @HiveField(73, defaultValue: '')
+  String educationSpecialization;
+  @HiveField(74, defaultValue: '')
+  String nssPlacement;
+  @HiveField(75, defaultValue: 'Unemployed')
+  String employmentStatus;
+  @HiveField(76, defaultValue: 50)
+  int jobPerformance;
+  @HiveField(77, defaultValue: 0)
+  int yearsInCareer;
+  @HiveField(78, defaultValue: 0)
+  int careerSalaryBonusPercent;
+  @HiveField(79, defaultValue: -1)
+  int lastCareerReviewAge;
+  @HiveField(80, defaultValue: '')
+  String retiredCareerPath;
+  @HiveField(81, defaultValue: 0)
+  int monthlyPension;
 
   Character({required this.name, required this.gender})
     : age = 0,
@@ -211,7 +230,7 @@ class Character extends HiveObject {
       activeLifeGoalId = '',
       completedLifeGoalIds = [],
       deathRewardsRecorded = false,
-      schemaVersion = 3,
+      schemaVersion = 4,
       lifeSeed = Random.secure().nextInt(0x7fffffff),
       eventHistory = [],
       choiceHistory = [],
@@ -226,6 +245,15 @@ class Character extends HiveObject {
       committedYearIds = [],
       consequenceRecords = [],
       pendingDecisionIds = [],
+      educationSpecialization = '',
+      nssPlacement = '',
+      employmentStatus = 'Unemployed',
+      jobPerformance = 50,
+      yearsInCareer = 0,
+      careerSalaryBonusPercent = 0,
+      lastCareerReviewAge = -1,
+      retiredCareerPath = '',
+      monthlyPension = 0,
       health = _randomStat(60, 90),
       happiness = _randomStat(50, 80),
       smarts = _randomStat(30, 80),
@@ -528,7 +556,16 @@ class Character extends HiveObject {
       ..annualLedgerRecords = List<String>.from(annualLedgerRecords)
       ..committedYearIds = List<String>.from(committedYearIds)
       ..consequenceRecords = List<String>.from(consequenceRecords)
-      ..pendingDecisionIds = List<String>.from(pendingDecisionIds);
+      ..pendingDecisionIds = List<String>.from(pendingDecisionIds)
+      ..educationSpecialization = educationSpecialization
+      ..nssPlacement = nssPlacement
+      ..employmentStatus = employmentStatus
+      ..jobPerformance = jobPerformance
+      ..yearsInCareer = yearsInCareer
+      ..careerSalaryBonusPercent = careerSalaryBonusPercent
+      ..lastCareerReviewAge = lastCareerReviewAge
+      ..retiredCareerPath = retiredCareerPath
+      ..monthlyPension = monthlyPension;
   }
 
   String get lifeStage {
